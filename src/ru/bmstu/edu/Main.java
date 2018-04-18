@@ -1,4 +1,4 @@
-package sample;
+package ru.bmstu.edu;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,9 +10,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        Parent root = FXMLLoader.load(getClass().getResource("../edu/fxml/main.fxml"));
+        primaryStage.setTitle("Нечеткая логика");
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

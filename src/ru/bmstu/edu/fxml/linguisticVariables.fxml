@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+
+<AnchorPane prefHeight="685.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.LinguisticVariableController">
+   <children>
+      <HBox layoutX="141.0" layoutY="51.0" prefHeight="48.0" prefWidth="923.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <CustomTextField layoutX="622.0" layoutY="131.0" />
+      <TableView fx:id="tableViewVariables" layoutX="14.0" layoutY="48.0" prefHeight="620.0" prefWidth="546.0">
+        <columns>
+          <TableColumn minWidth="200.0" prefWidth="75.0" text="Наименование" />
+          <TableColumn minWidth="300.0" prefWidth="75.0" text="Значение" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
