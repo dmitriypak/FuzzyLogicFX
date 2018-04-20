@@ -12,17 +12,17 @@
    <children>
       <HBox layoutX="141.0" layoutY="51.0" prefHeight="48.0" prefWidth="923.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button fx:id="btnAddVariable" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" stylesheets="@../resources/css/style.css">
+            <Button fx:id="btnAddVariable" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css">
                <HBox.margin>
                   <Insets left="10.0" top="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="btnEditVariable" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" stylesheets="@../resources/css/style.css">
+            <Button fx:id="btnEditVariable" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css">
                <HBox.margin>
                   <Insets left="10.0" top="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="btnDeleteVariable" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" stylesheets="@../resources/css/style.css">
+            <Button fx:id="btnDeleteVariable" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css">
                <HBox.margin>
                   <Insets left="10.0" top="10.0" />
                </HBox.margin>
