@@ -34,7 +34,7 @@
       </HBox>
       <HBox layoutY="25.0" prefHeight="35.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
          <children>
-            <Button fx:id="btnLinguisticVariables" maxHeight="32.0" maxWidth="32.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#showVariables" stylesheets="@../css/style.css" />
+            <Button fx:id="btnLinguisticVariables" maxHeight="32.0" maxWidth="32.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#showVariables" stylesheets="@../resources/css/style.css" />
          </children>
       </HBox>
    </children>

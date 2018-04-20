@@ -9,6 +9,18 @@ public class LinguisticVariable {
   private SimpleStringProperty description = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
 
+  public LinguisticVariable(){
+
+  }
+
+  public LinguisticVariable(int id, String name, String value){
+    this.id = new SimpleIntegerProperty(id);
+    this.name = new SimpleStringProperty(name);
+    this.value = new SimpleStringProperty(value);
+  }
+
+
+
   public String getName() {
     return name.get();
   }
@@ -57,9 +69,6 @@ public class LinguisticVariable {
     this.value.set(value);
   }
 
-  public LinguisticVariable(){
-
-  }
 
 
 }

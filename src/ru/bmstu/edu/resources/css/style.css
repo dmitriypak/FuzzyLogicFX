@@ -1,0 +1,105 @@
+#tableViewVariables{
+    -fx-font-family: Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #f0f0f0;
+}
+
+#btnAddVariable{
+    -fx-background-image: url("../../resources/images/Chart-Line-Add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnEditVariable{
+    -fx-background-image: url("../../resources/images/Calendar-Edit.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteVariable{
+    -fx-background-image: url("../../resources/images/Chart-Line-Delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#colEndDate{
+    -fx-alignment: center;
+}
+#colStartDate{
+    -fx-alignment: center;
+}
+
+#btnLinguisticVariables{
+    -fx-background-image: url("../../resources/images/Candlestickchart.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnAddWorkers{
+    -fx-background-image: url("../../resources/images/Walk.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnUsersSettings{
+    -fx-background-image: url("../../resources/images/User.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnProjectSettings{
+    -fx-background-image: url("../../resources/images/Application-View-Tile.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+
+#btnAddProject{
+    -fx-background-image: url("../../resources/images/Page-Add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnEditProject{
+    -fx-background-image: url("../../resources/images/Page-Edit.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteProject{
+    -fx-background-image: url("../../resources/images/Page-Delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnAddTask{
+    -fx-background-image: url("../resources/images/Calendar-Add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnEditTask{
+    -fx-background-image: url("../resources/images/Calendar-Edit.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteTask{
+    -fx-background-image: url("../resources/images/Calendar-Delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+
+#btnAddUser{
+    -fx-background-image: url("../resources/images/User-Add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnEditUser{
+    -fx-background-image: url("../resources/images/User-Edit.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteUser{
+    -fx-background-image: url("../resources/images/User-Delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
