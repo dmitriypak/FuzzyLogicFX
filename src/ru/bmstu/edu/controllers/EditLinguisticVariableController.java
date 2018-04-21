@@ -1,42 +1,152 @@
 package ru.bmstu.edu.controllers;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.controlsfx.control.RangeSlider;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 
-public class EditLinguisticVariableController {
+public class EditLinguisticVariableController implements Initializable {
 
   @FXML
   private TextArea txtValueVariable;
   @FXML
-  private TextField txtNameVariable;
+  private CustomTextField txtNameVariable;
   @FXML
-  private RangeSlider rangeSlider1;
+  private LineChart chart;
+  @FXML
+  private CustomTextField txtParamMF;
+  @FXML
+  private CustomTextField txtMFName;
+
 
   private LinguisticVariable linguisticVariable;
 
-  @FXML
-  public void initialize() {
-    rangeSlider1.
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    setupClearButtonField(txtMFName);
+    setupClearButtonField(txtNameVariable);
+    setupClearButtonField(txtParamMF);
+  }
+  public void setupClearButtonField(CustomTextField txtFunction){
+    try {
+      Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+      m.setAccessible(true);
+      m.invoke(null, txtFunction, txtFunction.rightProperty());
+    }catch (Exception e){
+      e.printStackTrace();
+    }
   }
 
+  private void createLineChart(){
+    XYChart.Series series = new XYChart.Series();
+    series.getData().clear();
+
+      chart.setTitle(linguisticVariable.getName());
+      XYChart.Series series1 = new XYChart.Series();
+      XYChart.Series series2 = new XYChart.Series();
+//      labelB.setVisible(false);
+//      txtB.setVisible(false);
+//      series.setName("Функция распределения f(x)");
+//
+//      series1.setName("Плотность вероятности p(x)");
+//      for (Data data : dataListImpl.getDataObservableList()) {
+//        series.getData().add(new XYChart.Data(data.getRange(), data.getValue()));
+//        series1.getData().add(new XYChart.Data(data.getRange(),data.getValue2()));
+//      }
+
+  }
+
+
+
+  public void addParam(){
+    JSONObject obj = new JSONObject();
+//    obj.put(tx, "mkyong.com");
+//    obj.put("age", new Integer(100));
+//
+//    JSONArray list = new JSONArray();
+//    list.add("msg 1");
+//    list.add("msg 2");
+//    list.add("msg 3");
+//
+//    obj.put("messages", list);
+//
+//    try (FileWriter file = new FileWriter("f:\\test.json")) {
+//
+//      file.write(obj.toJSONString());
+//      file.flush();
+//
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+
+    System.out.print(obj);
+  }
 
   public void setLinguisticVariable(LinguisticVariable linguisticVariable){
     if(linguisticVariable==null){
       return;
     }
+
     this.linguisticVariable=linguisticVariable;
     txtNameVariable.setText(linguisticVariable.getName());
     txtValueVariable.setText(linguisticVariable.getValue());
+    parseJSON(linguisticVariable.getValue());
+
+  }
+
+  private void parseJSON(String value) {
+    JSONParser parser = new JSONParser();
+    try {
+
+      Object obj = parser.parse(value);
+
+      JSONObject jsonObject = (JSONObject) obj;
+      System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+      String nameMF = (String) jsonObject.get("MFName");
+      System.out.println(nameMF);
+
+
+//      JSONObject mf = (JSONObject) jsonObject.get("MFParams");
+//      System.out.println(mf.toString());
+      JSONArray mf = (JSONArray) jsonObject.get("MFParams");
+      for(int i = 0;i<mf.size();i++){
+        JSONObject mfParamName = (JSONObject) mf.get(i);
+        System.out.println(mfParamName.get("MFParamName").toString());
+        String mfParamValue =  mfParamName.get("MFParamValue").toString();
+        System.out.println(mfParamValue);
+      }
+
+
+
+//      Iterator<JSONArray> iterator = mf.iterator();
+//      while (iterator.hasNext()) {
+//        System.out.println(iterator.next());
+//
+//
+//      }
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
   }
 
   public void actionClose(ActionEvent actionEvent) {
@@ -89,9 +199,6 @@ public class EditLinguisticVariableController {
   public LinguisticVariable getVariable(){
     return linguisticVariable;
   }
-
-
-
 
 
 
