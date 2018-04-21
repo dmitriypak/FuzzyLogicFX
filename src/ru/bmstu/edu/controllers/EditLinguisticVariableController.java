@@ -12,12 +12,10 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
+import ru.bmstu.edu.objects.utils.JSONParser;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -110,44 +108,11 @@ public class EditLinguisticVariableController implements Initializable {
     this.linguisticVariable=linguisticVariable;
     txtNameVariable.setText(linguisticVariable.getName());
     txtValueVariable.setText(linguisticVariable.getValue());
-    parseJSON(linguisticVariable.getValue());
+    JSONParser.parseJSON(linguisticVariable.getValue());
 
   }
 
-  private void parseJSON(String value) {
-    JSONParser parser = new JSONParser();
-    try {
 
-      Object obj = parser.parse(value);
-
-      JSONObject jsonObject = (JSONObject) obj;
-      System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
-      String nameMF = (String) jsonObject.get("MFName");
-      System.out.println(nameMF);
-
-
-//      JSONObject mf = (JSONObject) jsonObject.get("MFParams");
-//      System.out.println(mf.toString());
-      JSONArray mf = (JSONArray) jsonObject.get("MFParams");
-      for(int i = 0;i<mf.size();i++){
-        JSONObject mfParamName = (JSONObject) mf.get(i);
-        System.out.println(mfParamName.get("MFParamName").toString());
-        String mfParamValue =  mfParamName.get("MFParamValue").toString();
-        System.out.println(mfParamValue);
-      }
-
-
-
-//      Iterator<JSONArray> iterator = mf.iterator();
-//      while (iterator.hasNext()) {
-//        System.out.println(iterator.next());
-//
-//
-//      }
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-  }
 
   public void actionClose(ActionEvent actionEvent) {
     Node source = (Node) actionEvent.getSource();
