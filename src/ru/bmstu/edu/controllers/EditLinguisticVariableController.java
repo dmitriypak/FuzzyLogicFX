@@ -1,29 +1,35 @@
 package ru.bmstu.edu.controllers;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
-import ru.bmstu.edu.objects.utils.JSONParser;
+import ru.bmstu.edu.objects.MembershipFunction;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ResourceBundle;
 
-public class EditLinguisticVariableController implements Initializable {
+public class EditLinguisticVariableController{
 
   @FXML
   private TextArea txtValueVariable;
@@ -32,18 +38,36 @@ public class EditLinguisticVariableController implements Initializable {
   @FXML
   private LineChart chart;
   @FXML
-  private CustomTextField txtParamMF;
+  private TableColumn colMFName;
   @FXML
-  private CustomTextField txtMFName;
-
+  private TableColumn colMFParamValue;
+  @FXML
+  private TableView tableMF;
+  @FXML
+  private Button btnAdd;
 
   private LinguisticVariable linguisticVariable;
+  private ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
+  private Parent fxmlEdit;
+  private FXMLLoader fxmlLoader = new FXMLLoader();
+  private EditMembershipFunctionController editMembershipFunctionController;
+  private Stage editMembershipFunctionStage;
+  private Node nodesource;
 
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    setupClearButtonField(txtMFName);
+
+  public void initialize() {
     setupClearButtonField(txtNameVariable);
-    setupClearButtonField(txtParamMF);
+
+    colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFname"));
+    colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFParamValue"));
+
+    try {
+      fxmlLoader.setLocation(getClass().getResource("../fxml/editMembershipFunction.fxml"));
+      fxmlEdit = fxmlLoader.load();
+      editMembershipFunctionController = fxmlLoader.getController();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
   public void setupClearButtonField(CustomTextField txtFunction){
     try {
@@ -73,13 +97,68 @@ public class EditLinguisticVariableController implements Initializable {
 //      }
 
   }
+  public void actionButtonPressed(ActionEvent actionEvent) {
+    Object source = actionEvent.getSource();
+    if (!(source instanceof Button)) {
+      return;
+    }
+    nodesource = (Node) actionEvent.getSource();
+    Button clickedButton = (Button) source;
+
+    switch (clickedButton.getId()) {
+      case "btnAddMF":
+        MembershipFunction membershipFunction = new MembershipFunction();
+        editMembershipFunctionController.setMF(membershipFunction);
+        membershipFunction = editMembershipFunctionController.getMF();
+        showDialog();
+        break;
+
+      case "btnEditMF":
+        editMembershipFunctionController.setMF((MembershipFunction)tableMF.getSelectionModel().getSelectedItem());
+        showDialog();
+        break;
+
+      case "btnDeleteMF":
+//        User deluser;
+//        deluser = (User)tableUsers.getSelectionModel().getSelectedItem();
+//        usersListImpl.delete(deluser);
+//        deleteUser(deluser);
+        break;
+    }
+
+  }
+  private void showDialog() {
+    if (editMembershipFunctionStage==null) {
+      editMembershipFunctionStage = new Stage();
+      editMembershipFunctionStage.setTitle("Функция принадлежности");
+      editMembershipFunctionStage.setMinHeight(150);
+      editMembershipFunctionStage.setMinWidth(300);
+      editMembershipFunctionStage.setResizable(false);
+      editMembershipFunctionStage.setScene(new Scene(fxmlEdit));
+      editMembershipFunctionStage.initModality(Modality.WINDOW_MODAL);
+      editMembershipFunctionStage.initOwner((Stage) nodesource.getScene().getWindow());
+    }
+    editMembershipFunctionStage.showAndWait();
+  }
+
+  public void addMFParam(){
+//    String nameMF = txtMFName.getText();
+//    String paramMF = txtParamMF.getText();
+//    if(!nameMF.isEmpty() && !paramMF.isEmpty()){
+//      MembershipFunction mf = new MembershipFunction(nameMF,paramMF);
+//      mfList.add(mf);
+//      tableMF.setItems(mfList);
+//    }
 
 
-
-  public void addParam(){
-    JSONObject obj = new JSONObject();
-//    obj.put(tx, "mkyong.com");
-//    obj.put("age", new Integer(100));
+//    JSONObject obj = new JSONObject();
+//    JSONArray ar = new JSONArray();
+//    obj.put("Variable", txtNameVariable.getText());
+//
+//    ar.add("MFParamName");
+//    JSONObject objMF = new JSONObject();
+//    objMF.put("MFParamName",)
+//    ar.add(txtMFName.getText());
 //
 //    JSONArray list = new JSONArray();
 //    list.add("msg 1");
@@ -97,7 +176,7 @@ public class EditLinguisticVariableController implements Initializable {
 //      e.printStackTrace();
 //    }
 
-    System.out.print(obj);
+    //System.out.print(obj);
   }
 
   public void setLinguisticVariable(LinguisticVariable linguisticVariable){
@@ -108,11 +187,69 @@ public class EditLinguisticVariableController implements Initializable {
     this.linguisticVariable=linguisticVariable;
     txtNameVariable.setText(linguisticVariable.getName());
     txtValueVariable.setText(linguisticVariable.getValue());
-    JSONParser.parseJSON(linguisticVariable.getValue());
+    mfList = parseJSON(linguisticVariable.getValue());
+
+
+
+    System.out.println("Получен список " + mfList.size());
+    fillData();
+
+
+  }
+
+  private void fillData(){
+//    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables")) {
+//      ResultSet rs = statement.executeQuery();
+//      while (rs.next()){
+//        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"), rs.getString("value"));
+//        MFList.add(linguisticVariable);
+//      }
+//      tableViewVariables.setItems(variableList.getVariablesList());
+//    } catch (SQLException e) {
+//      e.printStackTrace();
+//    }
+
+
+    //System.out.println("Список" + mfList.size());
+    if(mfList.size()>0){
+      tableMF.setItems(mfList);
+    }
 
   }
 
 
+  public ObservableList parseJSON(String value){
+    ObservableList list = FXCollections.observableArrayList();
+    org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
+    try {
+
+      Object obj = parser.parse(value);
+
+      JSONObject jsonObject = (JSONObject) obj;
+      System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+      String nameMF = (String) jsonObject.get("Variable");
+      System.out.println(nameMF);
+      JSONArray mf = (JSONArray) jsonObject.get("MFParams");
+      for(int i = 0;i<mf.size();i++){
+        JSONObject mfParamName = (JSONObject) mf.get(i);
+        String mfParam = mfParamName.get("MFParamName").toString();
+        System.out.println(mfParam);
+        String mfParamValue =  mfParamName.get("MFParamValue").toString();
+        System.out.println(mfParamValue);
+        MembershipFunction membershipFunction = new MembershipFunction(mfParam, mfParamValue);
+        list.add(membershipFunction);
+      }
+//      Iterator<JSONArray> iterator = mf.iterator();
+//      while (iterator.hasNext()) {
+//        System.out.println(iterator.next());
+//
+//
+//      }
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return list;
+  }
 
   public void actionClose(ActionEvent actionEvent) {
     Node source = (Node) actionEvent.getSource();

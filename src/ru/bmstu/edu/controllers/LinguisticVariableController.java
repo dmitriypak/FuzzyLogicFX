@@ -50,7 +50,6 @@ public class LinguisticVariableController {
 
 
 
-  @FXML
   public void initialize(){
     colIDVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("id"));
     colValueVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("value"));
