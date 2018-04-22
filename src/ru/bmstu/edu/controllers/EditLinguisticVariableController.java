@@ -24,7 +24,6 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -45,9 +44,15 @@ public class EditLinguisticVariableController{
   private TableView tableMF;
   @FXML
   private Button btnAdd;
+  @FXML
+  private Button btnSaveMF;
+  @FXML
+  private CustomTextField txtNameMF;
+  @FXML
+  private CustomTextField txtParamMF;
 
   private LinguisticVariable linguisticVariable;
-  private ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
+  public static ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private EditMembershipFunctionController editMembershipFunctionController;
@@ -56,18 +61,27 @@ public class EditLinguisticVariableController{
 
 
   public void initialize() {
+    setupClearButtonField(txtNameMF);
+    setupClearButtonField(txtParamMF);
     setupClearButtonField(txtNameVariable);
 
     colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFname"));
     colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFParamValue"));
+    tableMF.setOnMouseClicked( event -> {
+      if( event.getClickCount() == 1 ) {
+        MembershipFunction mf = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
+        txtParamMF.setText(mf.getMFParamValue());
+        txtNameMF.setText(mf.getMFname());
 
-    try {
-      fxmlLoader.setLocation(getClass().getResource("../fxml/editMembershipFunction.fxml"));
-      fxmlEdit = fxmlLoader.load();
-      editMembershipFunctionController = fxmlLoader.getController();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+      }});
+
+//    try {
+//      fxmlLoader.setLocation(getClass().getResource("../fxml/editMembershipFunction.fxml"));
+//      fxmlEdit = fxmlLoader.load();
+//      editMembershipFunctionController = fxmlLoader.getController();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
   }
   public void setupClearButtonField(CustomTextField txtFunction){
     try {
@@ -107,26 +121,52 @@ public class EditLinguisticVariableController{
 
     switch (clickedButton.getId()) {
       case "btnAddMF":
-        MembershipFunction membershipFunction = new MembershipFunction();
-        editMembershipFunctionController.setMF(membershipFunction);
-        membershipFunction = editMembershipFunctionController.getMF();
-        showDialog();
+//        MembershipFunction membershipFunction = new MembershipFunction();
+//        editMembershipFunctionController.setMF(membershipFunction);
+//        membershipFunction = editMembershipFunctionController.getMF();
+//        showDialog();
+        addMFParam();
         break;
 
-      case "btnEditMF":
-        editMembershipFunctionController.setMF((MembershipFunction)tableMF.getSelectionModel().getSelectedItem());
-        showDialog();
+      case "btnSaveMF":
+        MembershipFunction saveMF = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
+        saveMF.setMFname(txtNameMF.getText());
+        saveMF.setMFParamValue(txtParamMF.getText());
+        mfList.set(tableMF.getSelectionModel().getSelectedIndex(),saveMF);
+        drawGraphMF();
+//        editMembershipFunctionController.setMF((MembershipFunction)tableMF.getSelectionModel().getSelectedItem());
+//        showDialog();
         break;
 
       case "btnDeleteMF":
-//        User deluser;
-//        deluser = (User)tableUsers.getSelectionModel().getSelectedItem();
-//        usersListImpl.delete(deluser);
-//        deleteUser(deluser);
+        MembershipFunction delMF;
+        delMF = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
+        mfList.remove(delMF);
         break;
     }
 
   }
+
+  private void drawGraphMF() {
+    //XYChart.Series series = new XYChart.Series();
+    //series.getData().clear();
+    //series.setName("Функция распределения f(x)");
+
+      for (MembershipFunction mf : mfList) {
+        //int i =0 ;
+        XYChart.Series series = new XYChart.Series();
+        series.getData().add(new XYChart.Data(1,19));
+        String value[] = mf.getMFParamValue().split(" ");
+        for(int i =0;i<value.length;i++){
+          series.setName("value");
+          series.getData().add(new XYChart.Data(Double.valueOf(value[i]),Double.valueOf(value[i])));
+          //series.getData().add(new XYChart.Data(1,19));
+          System.out.println(value[i]);
+        }
+        chart.getData().add(series);
+      }
+  }
+
   private void showDialog() {
     if (editMembershipFunctionStage==null) {
       editMembershipFunctionStage = new Stage();
@@ -142,13 +182,15 @@ public class EditLinguisticVariableController{
   }
 
   public void addMFParam(){
-//    String nameMF = txtMFName.getText();
-//    String paramMF = txtParamMF.getText();
-//    if(!nameMF.isEmpty() && !paramMF.isEmpty()){
-//      MembershipFunction mf = new MembershipFunction(nameMF,paramMF);
-//      mfList.add(mf);
-//      tableMF.setItems(mfList);
-//    }
+    String nameMF = txtNameMF.getText();
+    String paramMF = txtParamMF.getText();
+    if(!nameMF.isEmpty() && !paramMF.isEmpty()){
+      MembershipFunction mf = new MembershipFunction(nameMF,paramMF);
+      mfList.add(mf);
+      tableMF.setItems(mfList);
+      txtNameMF.clear();
+      txtParamMF.clear();
+    }
 
 
 //    JSONObject obj = new JSONObject();
@@ -213,7 +255,9 @@ public class EditLinguisticVariableController{
     //System.out.println("Список" + mfList.size());
     if(mfList.size()>0){
       tableMF.setItems(mfList);
+      drawGraphMF();
     }
+
 
   }
 

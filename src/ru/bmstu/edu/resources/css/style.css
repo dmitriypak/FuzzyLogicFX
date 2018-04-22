@@ -4,6 +4,21 @@
     -fx-background-color: #f0f0f0;
 }
 
+#btnSaveMF{
+    -fx-background-image: url("../../resources/images/Save.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnAddMF{
+    -fx-background-image: url("../../resources/images/Chart-Bar-Add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteMF{
+    -fx-background-image: url("../../resources/images/Chart-Bar-Delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
 #btnAddVariable{
     -fx-background-image: url("../../resources/images/Chart-Line-Add.png");
     -fx-background-size: stretch;

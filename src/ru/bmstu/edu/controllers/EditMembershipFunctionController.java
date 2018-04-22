@@ -12,6 +12,8 @@ import ru.bmstu.edu.objects.MembershipFunction;
 
 import java.lang.reflect.Method;
 
+import static ru.bmstu.edu.controllers.EditLinguisticVariableController.mfList;
+
 
 public class EditMembershipFunctionController {
 
@@ -19,6 +21,7 @@ public class EditMembershipFunctionController {
   private CustomTextField txtNameMF;
   @FXML
   private CustomTextField txtParamMF;
+
 
   private MembershipFunction membershipFunction;
 
@@ -59,6 +62,12 @@ public class EditMembershipFunctionController {
     stage.hide();
   }
 
+  public void actionSave(ActionEvent actionEvent) {
+    membershipFunction.setMFname(txtNameMF.getText());
+    membershipFunction.setMFParamValue(txtParamMF.getText());
+    mfList.add(membershipFunction);
 
+    actionClose(actionEvent);
+  }
 
 }

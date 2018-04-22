@@ -15,10 +15,10 @@
 <AnchorPane prefHeight="681.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditLinguisticVariableController">
    <children>
       <Label layoutX="158.0" layoutY="22.0" text="Наименование переменной:" />
-      <TextArea fx:id="txtValueVariable" layoutX="34.0" layoutY="608.0" prefHeight="37.0" prefWidth="371.0" />
+      <TextArea fx:id="txtValueVariable" layoutX="47.0" layoutY="621.0" prefHeight="37.0" prefWidth="485.0" />
       <Button fx:id="bntSave" layoutX="550.0" layoutY="627.0" minWidth="75.0" mnemonicParsing="false" onAction="#actionSave" text="Сохранить" />
       <Button fx:id="btnClose" layoutX="636.0" layoutY="627.0" minWidth="50.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="75.0" text="Отмена" />
-      <LineChart fx:id="chart" layoutX="34.0" layoutY="379.0" prefHeight="248.0" prefWidth="617.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+      <LineChart fx:id="chart" layoutX="34.0" layoutY="346.0" prefHeight="281.0" prefWidth="712.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
@@ -26,28 +26,31 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </LineChart>
-      <Button fx:id="btnAdd" layoutX="114.0" layoutY="651.0" mnemonicParsing="false" onAction="#addMFParam" text="Сохранить" />
-      <TableView fx:id="tableMF" layoutX="23.0" layoutY="67.0" prefHeight="285.0" prefWidth="712.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="67.0">
+      <TableView fx:id="tableMF" layoutX="15.0" layoutY="134.0" prefHeight="188.0" prefWidth="712.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="134.0">
         <columns>
           <TableColumn fx:id="colMFName" prefWidth="175.0" text="Функция принадлежности" />
           <TableColumn fx:id="colMFParamValue" prefWidth="536.0" text="Параметры" />
         </columns>
       </TableView>
       <CustomTextField fx:id="txtNameVariable" layoutX="341.0" layoutY="19.0" prefHeight="25.0" prefWidth="381.0" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="btnAddMF" layoutX="15.0" layoutY="14.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" AnchorPane.topAnchor="14.0">
+      <Button fx:id="btnAddMF" layoutX="15.0" layoutY="14.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" AnchorPane.topAnchor="14.0">
          <padding>
             <Insets right="10.0" />
          </padding>
       </Button>
-      <Button fx:id="btnEditMF" layoutX="57.0" layoutY="14.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" AnchorPane.topAnchor="14.0">
+      <Button fx:id="btnSaveMF" layoutX="57.0" layoutY="14.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" AnchorPane.topAnchor="14.0">
          <padding>
             <Insets right="10.0" />
          </padding>
       </Button>
-      <Button fx:id="btnDeleteMF" layoutX="98.0" layoutY="14.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" AnchorPane.topAnchor="14.0">
+      <Button fx:id="btnDeleteMF" layoutX="98.0" layoutY="14.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" AnchorPane.topAnchor="14.0">
          <padding>
             <Insets right="10.0" />
          </padding>
       </Button>
+      <Label layoutX="17.0" layoutY="60.0" text="Наименование функции принадлежности:" />
+      <CustomTextField fx:id="txtNameMF" layoutX="15.0" layoutY="88.0" prefHeight="25.0" prefWidth="303.0" />
+      <Label layoutX="341.0" layoutY="60.0" text="Параметры:" />
+      <CustomTextField fx:id="txtParamMF" layoutX="341.0" layoutY="88.0" prefHeight="25.0" prefWidth="381.0" />
    </children>
 </AnchorPane>
