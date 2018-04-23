@@ -2,12 +2,23 @@ package ru.bmstu.edu.objects;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class LinguisticVariable {
   private SimpleStringProperty name = new SimpleStringProperty("");
   private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
   private SimpleStringProperty description = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
+  private ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
+
+  public ObservableList<MembershipFunction> getMfList() {
+    return mfList;
+  }
+
+  public void setMfList(ObservableList<MembershipFunction> mfList) {
+    this.mfList = mfList;
+  }
 
   public LinguisticVariable(){
 

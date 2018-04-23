@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
@@ -43,16 +44,19 @@ public class EditLinguisticVariableController{
   @FXML
   private TableView tableMF;
   @FXML
-  private Button btnAdd;
-  @FXML
   private Button btnSaveMF;
   @FXML
   private CustomTextField txtNameMF;
   @FXML
   private CustomTextField txtParamMF;
+  @FXML
+  private AreaChart chart1;
+  @FXML
+  private Button btnSave;
 
   private LinguisticVariable linguisticVariable;
-  public static ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
+
+  private ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private EditMembershipFunctionController editMembershipFunctionController;
@@ -148,23 +152,19 @@ public class EditLinguisticVariableController{
   }
 
   private void drawGraphMF() {
-    //XYChart.Series series = new XYChart.Series();
-    //series.getData().clear();
-    //series.setName("Функция распределения f(x)");
-
-      for (MembershipFunction mf : mfList) {
-        //int i =0 ;
-        XYChart.Series series = new XYChart.Series();
-        series.getData().add(new XYChart.Data(1,19));
-        String value[] = mf.getMFParamValue().split(" ");
-        for(int i =0;i<value.length;i++){
-          series.setName("value");
-          series.getData().add(new XYChart.Data(Double.valueOf(value[i]),Double.valueOf(value[i])));
-          //series.getData().add(new XYChart.Data(1,19));
-          System.out.println(value[i]);
-        }
-        chart.getData().add(series);
+    chart1.getData().clear();
+    chart1.setTitle(linguisticVariable.getName());
+    for (MembershipFunction mf : mfList) {
+      XYChart.Series series = new XYChart.Series();
+      String value[] = mf.getMFParamValue().split(" ");
+      for(int i =0;i<value.length;i++){
+        series.setName(mf.getMFname());
+        series.getData().add(new XYChart.Data(Double.valueOf(value[i]),Double.valueOf(value[i])));
+        //series.getData().add(new XYChart.Data(1,19));
+        System.out.println(value[i]);
       }
+      chart1.getData().add(series);
+    }
   }
 
   private void showDialog() {
@@ -187,37 +187,11 @@ public class EditLinguisticVariableController{
     if(!nameMF.isEmpty() && !paramMF.isEmpty()){
       MembershipFunction mf = new MembershipFunction(nameMF,paramMF);
       mfList.add(mf);
-      tableMF.setItems(mfList);
+      ObservableList<MembershipFunction> mfList2 = FXCollections.observableArrayList(mfList);
+      tableMF.setItems(mfList2);
       txtNameMF.clear();
       txtParamMF.clear();
     }
-
-
-//    JSONObject obj = new JSONObject();
-//    JSONArray ar = new JSONArray();
-//    obj.put("Variable", txtNameVariable.getText());
-//
-//    ar.add("MFParamName");
-//    JSONObject objMF = new JSONObject();
-//    objMF.put("MFParamName",)
-//    ar.add(txtMFName.getText());
-//
-//    JSONArray list = new JSONArray();
-//    list.add("msg 1");
-//    list.add("msg 2");
-//    list.add("msg 3");
-//
-//    obj.put("messages", list);
-//
-//    try (FileWriter file = new FileWriter("f:\\test.json")) {
-//
-//      file.write(obj.toJSONString());
-//      file.flush();
-//
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
-
     //System.out.print(obj);
   }
 
@@ -301,15 +275,33 @@ public class EditLinguisticVariableController{
     stage.hide();
   }
   public void actionSave(ActionEvent actionEvent) throws SQLException {
-    linguisticVariable.setName(txtNameVariable.getText());
-    linguisticVariable.setValue(txtValueVariable.getText());
 
-    if(linguisticVariable.getId()!=0){
-      updateLinguisticVariable(linguisticVariable);
+    JSONObject obj = new JSONObject();
+    JSONArray ar = new JSONArray();
+
+    for(int i = 0;i<mfList.size();i++){
+      JSONObject objMF = new JSONObject();
+      objMF.put("MFParamName",mfList.get(i).getMFname());
+      objMF.put("MFParamValue",mfList.get(i).getMFParamValue());
+      ar.add(objMF);
     }
-    else{
-      insertLinguisticVariable(linguisticVariable);
-    }
+    obj.put("MFParams",ar);
+    obj.put("Variable", txtNameVariable.getText());
+    System.out.println(obj.toString());
+
+
+
+
+
+//    linguisticVariable.setName(txtNameVariable.getText());
+//    linguisticVariable.setValue(txtValueVariable.getText());
+//
+//    if(linguisticVariable.getId()!=0){
+//      updateLinguisticVariable(linguisticVariable);
+//    }
+//    else{
+//      insertLinguisticVariable(linguisticVariable);
+//    }
 
     actionClose(actionEvent);
   }

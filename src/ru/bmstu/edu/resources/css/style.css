@@ -15,7 +15,7 @@
     -fx-background-repeat: no-repeat;
 }
 #btnDeleteMF{
-    -fx-background-image: url("../../resources/images/Chart-Bar-Delete.png");
+    -fx-background-image: url("../../resources/images/bullet_delete.png");
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
