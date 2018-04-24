@@ -98,7 +98,9 @@ public class LinguisticVariableController {
     switch (clickedButton.getId()) {
       case "btnAddVariable":
         LinguisticVariable linguisticVariable = new LinguisticVariable();
+        linguisticVariable.setId(0);
         editLinguisticVariableController.setLinguisticVariable(linguisticVariable);
+
         linguisticVariable = editLinguisticVariableController.getVariable();
         variableList.add(linguisticVariable);
         showDialog();

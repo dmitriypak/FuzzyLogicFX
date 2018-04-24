@@ -10,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,6 +20,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
@@ -32,11 +32,7 @@ import java.sql.SQLException;
 public class EditLinguisticVariableController{
 
   @FXML
-  private TextArea txtValueVariable;
-  @FXML
   private CustomTextField txtNameVariable;
-  @FXML
-  private LineChart chart;
   @FXML
   private TableColumn colMFName;
   @FXML
@@ -97,24 +93,6 @@ public class EditLinguisticVariableController{
     }
   }
 
-  private void createLineChart(){
-    XYChart.Series series = new XYChart.Series();
-    series.getData().clear();
-
-      chart.setTitle(linguisticVariable.getName());
-      XYChart.Series series1 = new XYChart.Series();
-      XYChart.Series series2 = new XYChart.Series();
-//      labelB.setVisible(false);
-//      txtB.setVisible(false);
-//      series.setName("Функция распределения f(x)");
-//
-//      series1.setName("Плотность вероятности p(x)");
-//      for (Data data : dataListImpl.getDataObservableList()) {
-//        series.getData().add(new XYChart.Data(data.getRange(), data.getValue()));
-//        series1.getData().add(new XYChart.Data(data.getRange(),data.getValue2()));
-//      }
-
-  }
   public void actionButtonPressed(ActionEvent actionEvent) {
     Object source = actionEvent.getSource();
     if (!(source instanceof Button)) {
@@ -159,7 +137,7 @@ public class EditLinguisticVariableController{
       String value[] = mf.getMFParamValue().split(" ");
       for(int i =0;i<value.length;i++){
         series.setName(mf.getMFname());
-        series.getData().add(new XYChart.Data(Double.valueOf(value[i]),Double.valueOf(value[i])));
+        series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
         //series.getData().add(new XYChart.Data(1,19));
         System.out.println(value[i]);
       }
@@ -199,18 +177,14 @@ public class EditLinguisticVariableController{
     if(linguisticVariable==null){
       return;
     }
-
+    System.out.println("Получена переменная id: " + linguisticVariable.getId());
     this.linguisticVariable=linguisticVariable;
     txtNameVariable.setText(linguisticVariable.getName());
-    txtValueVariable.setText(linguisticVariable.getValue());
-    mfList = parseJSON(linguisticVariable.getValue());
-
-
-
-    System.out.println("Получен список " + mfList.size());
-    fillData();
-
-
+    if(linguisticVariable.getId()!=0){
+      mfList = parseJSON(linguisticVariable.getValue());
+      System.out.println("Получен список " + mfList.size());
+      fillData();
+    }
   }
 
   private void fillData(){
@@ -288,20 +262,15 @@ public class EditLinguisticVariableController{
     obj.put("MFParams",ar);
     obj.put("Variable", txtNameVariable.getText());
     System.out.println(obj.toString());
+    linguisticVariable.setName(txtNameVariable.getText());
+    linguisticVariable.setValue(obj.toJSONString());
 
-
-
-
-
-//    linguisticVariable.setName(txtNameVariable.getText());
-//    linguisticVariable.setValue(txtValueVariable.getText());
-//
-//    if(linguisticVariable.getId()!=0){
-//      updateLinguisticVariable(linguisticVariable);
-//    }
-//    else{
-//      insertLinguisticVariable(linguisticVariable);
-//    }
+    if(linguisticVariable.getId()!=0){
+      updateLinguisticVariable(linguisticVariable);
+    }
+    else{
+      insertLinguisticVariable(linguisticVariable);
+    }
 
     actionClose(actionEvent);
   }
@@ -313,7 +282,10 @@ public class EditLinguisticVariableController{
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
       int i = 0;
       pstmt.setString(++i,linguisticVariable.getName());
-      pstmt.setString(++i,linguisticVariable.getValue());
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(linguisticVariable.getValue());
+      pstmt.setObject(++i, jsonObject);
       pstmt.setString(++i,"");
       pstmt.executeUpdate();
     }
@@ -321,23 +293,24 @@ public class EditLinguisticVariableController{
 
   private void updateLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
     String query = "update cvdata.bmstu.linguisticvariables "
-        + " set name = ?, value = ?, description = ?) ";
+        + " set name = ?, value = ?, description = ? WHERE id = ?";
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
       int i = 0;
       pstmt.setString(++i,linguisticVariable.getName());
-      pstmt.setString(++i,linguisticVariable.getValue());
+
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(linguisticVariable.getValue());
+      pstmt.setObject(++i, jsonObject);
       pstmt.setString(++i,"");
+      pstmt.setInt(++i,linguisticVariable.getId());
+
       pstmt.executeUpdate();
     }
   }
-  
-  
-
 
   public LinguisticVariable getVariable(){
     return linguisticVariable;
   }
-
-
 
 }
