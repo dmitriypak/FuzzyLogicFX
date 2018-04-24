@@ -169,6 +169,7 @@ public class EditLinguisticVariableController{
       tableMF.setItems(mfList2);
       txtNameMF.clear();
       txtParamMF.clear();
+      drawGraphMF();
     }
     //System.out.print(obj);
   }
@@ -184,7 +185,14 @@ public class EditLinguisticVariableController{
       mfList = parseJSON(linguisticVariable.getValue());
       System.out.println("Получен список " + mfList.size());
       fillData();
+    }else{
+      txtNameVariable.setText("");
+      txtNameMF.setText("");
+      txtParamMF.setText("");
+      mfList.clear();
+      chart1.getData().clear();
     }
+
   }
 
   private void fillData(){
@@ -249,7 +257,7 @@ public class EditLinguisticVariableController{
     stage.hide();
   }
   public void actionSave(ActionEvent actionEvent) throws SQLException {
-
+    if(mfList.size()==0) return;
     JSONObject obj = new JSONObject();
     JSONArray ar = new JSONArray();
 

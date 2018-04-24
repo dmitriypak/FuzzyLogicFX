@@ -34,4 +34,9 @@ public class LinguisticVariableList implements LinguisticVariableCollection{
     return variablesList;
   }
 
+  @Override
+  public void clear() {
+    variablesList.clear();
+  }
+
 }

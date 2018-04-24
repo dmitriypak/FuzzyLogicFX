@@ -10,4 +10,5 @@ public interface LinguisticVariableCollection {
   void delete(LinguisticVariable linguisticVariable);
   void update(int index, LinguisticVariable linguisticVariable);
   ObservableList getVariablesList();
+  void clear();
 }

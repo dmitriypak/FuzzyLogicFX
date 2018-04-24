@@ -87,7 +87,7 @@ public class LinguisticVariableController {
     editLinguisticVariableStage.showAndWait();
   }
 
-  public void actionButtonPressed(ActionEvent actionEvent) {
+  public void actionButtonPressed(ActionEvent actionEvent) throws SQLException {
     Object source = actionEvent.getSource();
     if (!(source instanceof Button)) {
       return;
@@ -103,24 +103,37 @@ public class LinguisticVariableController {
 
         linguisticVariable = editLinguisticVariableController.getVariable();
         variableList.add(linguisticVariable);
+        //variableList.clear();
+        //fillData();
         showDialog();
         break;
 
       case "btnEditVariable":
         editLinguisticVariableController.setLinguisticVariable((LinguisticVariable) tableViewVariables.getSelectionModel().getSelectedItem());
+        //variableList.clear();
+        //fillData();
         showDialog();
         break;
-//
-//      case "btnDeleteUser":
-//        User deluser;
-//        deluser = (User)tableUsers.getSelectionModel().getSelectedItem();
-//        usersListImpl.delete(deluser);
-//        deleteUser(deluser);
-//        break;
+
+      case "btnDeleteVariable":
+        LinguisticVariable delVariable;
+        delVariable = (LinguisticVariable)tableViewVariables.getSelectionModel().getSelectedItem();
+        variableList.delete(delVariable);
+        deleteVariable(delVa  `riable);
+        break;
     }
 
   }
 
+  private void deleteVariable(LinguisticVariable delVariable) throws SQLException {
+    String query = "delete from cvdata.bmstu.linguisticvariables WHERE id = ?";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      pstmt.setInt(1,delVariable.getId());
+      pstmt.executeUpdate();
+    }
+
+
+  }
 
 
   private void fillData(){
