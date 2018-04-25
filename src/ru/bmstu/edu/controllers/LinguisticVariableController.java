@@ -41,7 +41,10 @@ public class LinguisticVariableController {
   private Button btnDeleteVariable;
 
 
+
+
   private LinguisticVariableCollection variableList = new LinguisticVariableList();
+  private CvWebViewController cvWebViewController = new CvWebViewController();
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private EditLinguisticVariableController editLinguisticVariableController;
@@ -119,8 +122,10 @@ public class LinguisticVariableController {
         LinguisticVariable delVariable;
         delVariable = (LinguisticVariable)tableViewVariables.getSelectionModel().getSelectedItem();
         variableList.delete(delVariable);
-        deleteVariable(delVa  `riable);
+        deleteVariable(delVariable);
         break;
+
+        //webViewCV( "https://eclipse.org");
     }
 
   }
