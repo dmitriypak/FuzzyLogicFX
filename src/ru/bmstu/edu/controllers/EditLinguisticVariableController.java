@@ -194,6 +194,7 @@ public class EditLinguisticVariableController{
       txtParamMF.setText("");
       mfList.clear();
       chart1.getData().clear();
+      chart1.setTitle("");
     }
 
   }

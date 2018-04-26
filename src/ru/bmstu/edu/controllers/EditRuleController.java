@@ -2,6 +2,7 @@ package ru.bmstu.edu.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -34,17 +35,26 @@ public class EditRuleController {
   private void initialize(){
 
     if(mapVariables.size()>0){
-
       for (Map.Entry<String, LinguisticVariable> entry : mapVariables.entrySet()) {
         variablesNameList.add(entry.getKey());
       }
       comboIFVarName.setItems(variablesNameList);
+      comboAndVarName.setItems(variablesNameList);
+      comboThenVarName.setItems(variablesNameList);
     }
   }
 
 
-  public void selectVarName(){
-    LinguisticVariable selectVariable = mapVariables.get(comboIFVarName.getValue());
+  public void selectVarName(ActionEvent actionEvent){
+    Object source = actionEvent.getSource();
+    if (!(source instanceof ComboBox)) {
+      return;
+    }
+
+    nodesource = (Node) actionEvent.getSource();
+    ComboBox comboBox = (ComboBox) source;
+    System.out.println(comboBox.getValue());
+    LinguisticVariable selectVariable = mapVariables.get(comboBox.getValue());
     ObservableList<String>mfNameList = FXCollections.observableArrayList();
     System.out.println(comboIFVarName.getValue());
     if(selectVariable!=null){
@@ -53,9 +63,17 @@ public class EditRuleController {
         MembershipFunction mf = mfList.get(i);
         mfNameList.add(mf.getMFname());
       }
-      comboIFMFName.setItems(mfNameList);
+      switch (comboBox.getId()) {
+        case "comboIFVarName":
+          comboIFMFName.setItems(mfNameList);
+          break;
+        case "comboAndVarName":
+          comboAndMFName.setItems(mfNameList);
+          break;
+        case "comboThenVarName":
+          comboThenMFName.setItems(mfNameList);
+          break;
+      }
     }
-
-
   }
 }

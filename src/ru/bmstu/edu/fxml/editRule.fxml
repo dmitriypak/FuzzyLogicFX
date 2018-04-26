@@ -5,39 +5,46 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="708.0" prefWidth="1170.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditRuleController">
    <children>
-      <Label layoutX="25.0" layoutY="172.0" text="IF" textFill="#210dff">
+      <Label layoutX="44.0" layoutY="86.0" text="IF" textFill="#210dff">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Label layoutX="374.0" layoutY="169.0" text="AND" textFill="#0d9431">
+      <Label layoutX="393.0" layoutY="84.0" text="AND" textFill="#0d9431">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Label layoutX="719.0" layoutY="169.0" text="THEN" textFill="RED">
+      <Label layoutX="740.0" layoutY="83.0" text="THEN" textFill="RED">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <ComboBox fx:id="comboIFVarName" layoutX="84.0" layoutY="147.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
-      <ComboBox fx:id="comboIFMFName" layoutX="84.0" layoutY="186.0" prefHeight="25.0" prefWidth="246.0" />
-      <ComboBox fx:id="comboAndVarName" layoutX="450.0" layoutY="147.0" prefHeight="25.0" prefWidth="246.0" />
-      <ComboBox fx:id="comboAndMFName" layoutX="450.0" layoutY="186.0" prefHeight="25.0" prefWidth="246.0" />
-      <ComboBox fx:id="comboThenVarName" layoutX="813.0" layoutY="147.0" prefHeight="25.0" prefWidth="246.0" />
-      <ComboBox fx:id="comboThenMFName" layoutX="813.0" layoutY="186.0" prefHeight="25.0" prefWidth="246.0" />
-      <Button layoutX="547.0" layoutY="238.0" mnemonicParsing="false" text="Button" />
-      <TableView layoutX="429.0" layoutY="286.0" prefHeight="363.0" prefWidth="289.0">
+      <ComboBox fx:id="comboIFVarName" layoutX="103.0" layoutY="69.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
+      <ComboBox fx:id="comboIFMFName" layoutX="103.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
+      <ComboBox fx:id="comboAndVarName" layoutX="469.0" layoutY="69.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
+      <ComboBox fx:id="comboAndMFName" layoutX="469.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
+      <ComboBox fx:id="comboThenVarName" layoutX="832.0" layoutY="69.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
+      <ComboBox fx:id="comboThenMFName" layoutX="832.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
+      <Button fx:id="addRuleList" layoutX="566.0" layoutY="160.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+      <TableView layoutX="407.0" layoutY="205.0" prefHeight="380.0" prefWidth="396.0">
         <columns>
           <TableColumn prefWidth="75.0" text="C1" />
           <TableColumn prefWidth="75.0" text="C2" />
         </columns>
       </TableView>
+      <ToolBar layoutX="14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <Button minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" />
+        </items>
+      </ToolBar>
+      <Button layoutX="988.0" layoutY="633.0" mnemonicParsing="false" text="Button" />
+      <Button layoutX="1061.0" layoutY="633.0" mnemonicParsing="false" text="Button" />
    </children>
 </AnchorPane>

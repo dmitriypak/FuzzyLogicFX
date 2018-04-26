@@ -48,7 +48,6 @@ public class RulesController {
       root.getChildren().add(variable);
     }
 
-
     treeViewRules.setRoot(root);
     treeViewRules.getCheckModel().getCheckedItems().addListener(new ListChangeListener<TreeItem<String>>() {
       public void onChanged(ListChangeListener.Change<? extends TreeItem<String>> c) {
@@ -68,7 +67,7 @@ public class RulesController {
     Button clickedButton = (Button) source;
 
     switch (clickedButton.getId()) {
-      case "bntAddRule":
+      case "btnAddRule":
         try {
           Stage stage = new Stage();
           Parent root = FXMLLoader.load(getClass().getResource("../fxml/editRule.fxml"));
@@ -81,7 +80,10 @@ public class RulesController {
           e.printStackTrace();
         }
         break;
-
+      case "btnEditRule":
+        break;
+      case "btnDeleteRule":
+        break;
     }
   }
 }

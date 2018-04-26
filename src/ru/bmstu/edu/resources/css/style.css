@@ -3,6 +3,31 @@
     -fx-font-size: 14px;
     -fx-background-color: #f0f0f0;
 }
+#btnRules{
+    -fx-background-image: url("../../resources/images/chart_organisation.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnAddRule{
+    -fx-background-image: url("../../resources/images/chart_organisation_add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnEditRule{
+    -fx-background-image: url("../../resources/images/chart_organisation.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteRule{
+    -fx-background-image: url("../../resources/images/chart_organisation_delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#addRuleList{
+    -fx-background-image: url("../../resources/images/toggle_expand.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
 
 #btnSaveMF{
     -fx-background-image: url("../../resources/images/Save.png");

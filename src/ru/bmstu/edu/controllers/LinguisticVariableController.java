@@ -103,12 +103,12 @@ public class LinguisticVariableController {
         LinguisticVariable linguisticVariable = new LinguisticVariable();
         linguisticVariable.setId(0);
         editLinguisticVariableController.setLinguisticVariable(linguisticVariable);
-
-        linguisticVariable = editLinguisticVariableController.getVariable();
-        variableList.add(linguisticVariable);
-        //variableList.clear();
-        //fillData();
+//        linguisticVariable = editLinguisticVariableController.getVariable();
+//        variableList.add(linguisticVariable);
         showDialog();
+        variableList.clear();
+        tableViewVariables.getItems().clear();
+        fillData();
         break;
 
       case "btnEditVariable":
@@ -142,7 +142,7 @@ public class LinguisticVariableController {
 
 
   private void fillData(){
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables order by id")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"), rs.getString("value"));
