@@ -40,6 +40,7 @@ public class EditRuleController {
 
 
   ObservableList<String> variablesNameList = FXCollections.observableArrayList();
+  ObservableList<String> variablesNameListRank = FXCollections.observableArrayList();
   ObservableList<Rule> rulesList = FXCollections.observableArrayList();
   //ArrayList <LinguisticVariable> variablesList = DaoUtils.getVariables();
   LinkedHashMap<String,LinguisticVariable>mapVariables = DaoUtils.getMapVariables();
@@ -48,13 +49,14 @@ public class EditRuleController {
   private void initialize(){
     colVariableName.setCellValueFactory(new PropertyValueFactory<Rule,String>("nameVariable"));
     colValueMF.setCellValueFactory(new PropertyValueFactory<EditRuleController,String>("valueMF"));
+    variablesNameListRank.add(mapVariables.get("Ранг").getName());
     if(mapVariables.size()>0){
       for (Map.Entry<String, LinguisticVariable> entry : mapVariables.entrySet()) {
         variablesNameList.add(entry.getKey());
       }
       comboIFVarName.setItems(variablesNameList);
       comboAndVarName.setItems(variablesNameList);
-      comboThenVarName.setItems(variablesNameList);
+      comboThenVarName.setItems(variablesNameListRank);
     }
   }
 
@@ -80,6 +82,7 @@ public class EditRuleController {
       switch (comboBox.getId()) {
         case "comboIFVarName":
           comboIFMFName.setItems(mfNameList);
+          //mfNameList.remove(comboBox.getSelectionModel().getSelectedIndex());
           break;
         case "comboAndVarName":
           comboAndMFName.setItems(mfNameList);
