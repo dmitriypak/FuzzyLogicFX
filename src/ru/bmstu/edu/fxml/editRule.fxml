@@ -32,11 +32,11 @@
       <ComboBox fx:id="comboAndMFName" layoutX="469.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
       <ComboBox fx:id="comboThenVarName" layoutX="832.0" layoutY="69.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
       <ComboBox fx:id="comboThenMFName" layoutX="832.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
-      <Button fx:id="addRuleList" layoutX="566.0" layoutY="160.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
-      <TableView layoutX="407.0" layoutY="205.0" prefHeight="380.0" prefWidth="396.0">
+      <Button fx:id="addRuleList" layoutX="566.0" layoutY="160.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#addRule" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+      <TableView fx:id="tableAnd" layoutX="407.0" layoutY="205.0" prefHeight="380.0" prefWidth="396.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
+          <TableColumn fx:id="colVariableName" prefWidth="200.0" text="Переменная" />
+          <TableColumn fx:id="colValueMF" prefWidth="195.0" text="Значение" />
         </columns>
       </TableView>
       <ToolBar layoutX="14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

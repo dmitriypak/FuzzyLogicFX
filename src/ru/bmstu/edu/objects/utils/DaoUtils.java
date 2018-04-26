@@ -1,7 +1,5 @@
 package ru.bmstu.edu.objects.utils;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -17,8 +15,8 @@ import java.util.LinkedHashMap;
 
 public class DaoUtils {
 
-  public static ObservableList parseJSON(String value){
-    ObservableList list = FXCollections.observableArrayList();
+  public static ArrayList parseJSON(String value){
+    ArrayList list = new ArrayList();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try {
 
