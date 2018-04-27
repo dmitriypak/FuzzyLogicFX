@@ -14,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.CheckTreeView;
 import ru.bmstu.edu.objects.LinguisticVariable;
+import ru.bmstu.edu.objects.Rule;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -34,17 +35,16 @@ public class RulesController {
 
   private void fillData() {
     ArrayList<LinguisticVariable> listVariables = DaoUtils.getVariables();
+
     CheckBoxTreeItem<String> root = new CheckBoxTreeItem<String>("Переменные");
     root.setExpanded(true);
     for(LinguisticVariable linguisticVariable:listVariables){
+      ArrayList<Rule> listRules = DaoUtils.getRulesByVariable(linguisticVariable.getId()) ;
       CheckBoxTreeItem<String> variable = new CheckBoxTreeItem<String>(linguisticVariable.getName());
       variable.setExpanded(true);
-
-      variable.getChildren().addAll(
-          new CheckBoxTreeItem<String>("Jonathan"),
-          new CheckBoxTreeItem<String>("Eugene"),
-          new CheckBoxTreeItem<String>("Henri"),
-          new CheckBoxTreeItem<String>("Samir"));
+      for(Rule r:listRules){
+        variable.getChildren().add(new CheckBoxTreeItem<String>(r.getValue()));
+      }
       root.getChildren().add(variable);
     }
 

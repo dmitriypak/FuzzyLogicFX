@@ -95,4 +95,33 @@ public class DaoUtils {
       pstmt.executeUpdate();
     }
   }
+
+  public static ArrayList<Rule> getRules(){
+    ArrayList<Rule> listRules = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, idvariable, VALUE from cvdata.bmstu.rules")) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"));
+        listRules.add(rule);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listRules;
+  }
+  public static ArrayList<Rule> getRulesByVariable(int idVariable){
+    ArrayList<Rule> listRules = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, idvariable, VALUE from cvdata.bmstu.rules WHERE idvariable" +
+        " = ?")) {
+      statement.setInt(1,idVariable);
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"));
+        listRules.add(rule);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listRules;
+  }
 }
