@@ -1,59 +1,34 @@
 package ru.bmstu.edu.objects;
 
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.util.ArrayList;
+
 public class Rule {
+  private ArrayList<Condition> conditionsList = new ArrayList<>();
+  private SimpleStringProperty value = new SimpleStringProperty();
 
-  private SimpleIntegerProperty idVariable = new SimpleIntegerProperty(0);
-  private SimpleStringProperty nameVariable = new SimpleStringProperty("");
-  private SimpleStringProperty valueMF = new SimpleStringProperty("");
-
-  public int getId() {
-    return idVariable.get();
+  public String getValue() {
+    return value.get();
   }
 
-  public SimpleIntegerProperty idProperty() {
-    return idVariable;
+  public SimpleStringProperty valueProperty() {
+    return value;
   }
 
-  public void setId(int id) {
-    this.idVariable.set(id);
+  public void setValue(String value) {
+    this.value.set(value);
   }
 
-  public String getNameVariable() {
-    return nameVariable.get();
-  }
+  public Rule(ArrayList<Condition> conditionsList) {
 
-  public SimpleStringProperty nameVariableProperty() {
-    return nameVariable;
-  }
-
-  public void setNameVariable(String nameVariable) {
-    this.nameVariable.set(nameVariable);
-  }
-
-  public String getValueMF() {
-    return valueMF.get();
-  }
-
-  public SimpleStringProperty valueMFProperty() {
-    return valueMF;
-  }
-
-  public void setValueMF(String valueMF) {
-    this.valueMF.set(valueMF);
+    this.conditionsList = conditionsList;
   }
 
   public Rule() {
-
   }
 
-  public Rule(int idVariable, String nameVariable,String valueMF) {
-    this.idVariable = new SimpleIntegerProperty(idVariable);
-    this.nameVariable = new SimpleStringProperty(nameVariable);
-    this.valueMF = new SimpleStringProperty(valueMF);
 
-  }
+
 
 }

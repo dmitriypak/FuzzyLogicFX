@@ -11,7 +11,7 @@ public class LinguisticVariable {
   private SimpleStringProperty description = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
   private ArrayList<MembershipFunction> mfList = new ArrayList<>();
-  private ArrayList<Rule> ruleList = new ArrayList<>();
+  private ArrayList<Condition> ruleList = new ArrayList<>();
 
   public ArrayList<MembershipFunction> getMfList() {
     return mfList;

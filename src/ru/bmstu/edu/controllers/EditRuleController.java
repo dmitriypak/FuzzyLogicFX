@@ -9,13 +9,16 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import ru.bmstu.edu.objects.Condition;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Rule;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,13 +46,13 @@ public class EditRuleController {
 
   ObservableList<String> variablesNameList = FXCollections.observableArrayList();
   ObservableList<String> variablesNameListRank = FXCollections.observableArrayList();
-  ObservableList<Rule> rulesList = FXCollections.observableArrayList();
+  ObservableList<Condition> conditionList = FXCollections.observableArrayList();
   //ArrayList <LinguisticVariable> variablesList = DaoUtils.getVariables();
   LinkedHashMap<String,LinguisticVariable>mapVariables = DaoUtils.getMapVariables();
-  Rule rule = new Rule();
+  //Condition condition = new Condition();
   @FXML
   private void initialize(){
-    colVariableName.setCellValueFactory(new PropertyValueFactory<Rule,String>("nameVariable"));
+    colVariableName.setCellValueFactory(new PropertyValueFactory<Condition,String>("nameVariable"));
     colValueMF.setCellValueFactory(new PropertyValueFactory<EditRuleController,String>("valueMF"));
     variablesNameListRank.add(mapVariables.get("Ранг").getName());
     if(mapVariables.size()>0){
@@ -95,14 +98,14 @@ public class EditRuleController {
       }
     }
   }
-  public void addRule(){
+  public void addCondition(){
     LinguisticVariable linguisticVariable = mapVariables.get(comboAndVarName.getValue());
     if(linguisticVariable==null) return;
     String mfName = (String) comboAndMFName.getValue();
     if(mfName.isEmpty()||mfName==null) return;
-    Rule rule = new Rule(linguisticVariable.getId(),linguisticVariable.getName(),mfName);
-    rulesList.add(rule);
-    tableAnd.setItems(rulesList);
+    Condition condition = new Condition(linguisticVariable.getId(),linguisticVariable.getName(),mfName);
+    conditionList.add(condition);
+    tableAnd.setItems(conditionList);
     comboAndVarName.getSelectionModel().clearSelection();
     comboAndMFName.getSelectionModel().clearSelection();
 
@@ -119,22 +122,42 @@ public class EditRuleController {
   }
 
 
-  public void saveRule(){
+  public void saveRule() throws SQLException {
+
     JSONObject obj = new JSONObject();
     JSONArray arAND = new JSONArray();
-    JSONArray arIF = getJSONCondition(mapVariables.get(comboIFVarName.getValue()).getId(),comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString());
+    int idVariableIF = mapVariables.get(comboIFVarName.getValue()).getId();
+    JSONArray arIF = getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString());
     JSONArray arThen = getJSONCondition(mapVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
+    if(conditionList.size()==0) {
+      arAND = getJSONCondition(mapVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString());
+    }else{
+      for(int i = 0;i<conditionList.size();i++){
+        JSONArray array;
+        Condition condition = conditionList.get(i);
+        int idVariable = mapVariables.get(condition.getNameVariable()).getId();
+        array = getJSONCondition(idVariable,condition.getNameVariable(),condition.getValue());
+        arAND.add(array);
+      }
 
-
-    for(int i = 0;i<rulesList.size();i++){
-      JSONObject objMF = new JSONObject();
-      objMF.put("idvariable",rulesList.get(i).getValueMF());
-      arAND.add(objMF);
     }
-    obj.put("IF",arIF);
+
     obj.put("AND",arAND);
+
+    obj.put("IF",arIF);
+
     obj.put("THEN",arThen);
 
+    Rule rule = new Rule();
+    rule.setValue(obj.toString());
+    DaoUtils.insertRule(rule,idVariableIF);
+
     System.out.println(obj.toString());
+  }
+
+  public void actionClose(ActionEvent actionEvent) {
+    Node source = (Node) actionEvent.getSource();
+    Stage stage = (Stage) source.getScene().getWindow();
+    stage.hide();
   }
 }

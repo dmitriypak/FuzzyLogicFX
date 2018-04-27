@@ -3,9 +3,11 @@ package ru.bmstu.edu.objects.utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.Rule;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -79,5 +81,18 @@ public class DaoUtils {
     return mapVariables;
   }
 
-
+  public static void insertRule(Rule rule, int idVariable) throws SQLException {
+    String query = "INSERT INTO cvdata.bmstu.rules "
+        + " (idvariable, value) "
+        + " VALUES (?, ?);";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      int i = 0;
+      pstmt.setInt(++i,idVariable);
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(rule.getValue());
+      pstmt.setObject(++i, jsonObject);
+      pstmt.executeUpdate();
+    }
+  }
 }
