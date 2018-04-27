@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="781.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.cvController">
+   <children>
+      <TableView fx:id="tableCV" layoutX="109.0" layoutY="183.0" prefHeight="674.0" prefWidth="1064.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <columns>
+          <TableColumn fx:id="colPosition" prefWidth="211.0" text="Желаемая должность" />
+          <TableColumn fx:id="colSalary" prefWidth="157.0" text="Размер ЗП" />
+            <TableColumn fx:id="colCity" prefWidth="75.0" text="Город" />
+            <TableColumn fx:id="colAge" prefWidth="75.0" text="Возраст" />
+            <TableColumn fx:id="colExperience" prefWidth="126.0" text="Опыт работы" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

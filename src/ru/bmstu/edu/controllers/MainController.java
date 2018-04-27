@@ -81,8 +81,24 @@ public class MainController {
           e.printStackTrace();
         }
 
-
         break;
+      case "btnCV":
+        try {
+          Stage stage = new Stage();
+          FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxml/cv.fxml"));
+          Parent root = loader.load();
+          stage.setTitle("База резюме");
+          stage.setScene(new Scene(root));
+          stage.initModality(Modality.WINDOW_MODAL);
+          stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
+          stage.showAndWait();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        break;
+
     }
+
+
   }
 }

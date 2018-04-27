@@ -8,6 +8,11 @@
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
+#btnCV{
+    -fx-background-image: url("../../resources/images/users_men_women.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
 #btnAddRule{
     -fx-background-image: url("../../resources/images/chart_organisation_add.png");
     -fx-background-size: stretch;
