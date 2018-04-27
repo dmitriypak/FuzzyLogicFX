@@ -44,7 +44,7 @@
           <Button minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" />
         </items>
       </ToolBar>
-      <Button layoutX="988.0" layoutY="633.0" mnemonicParsing="false" text="Button" />
-      <Button layoutX="1061.0" layoutY="633.0" mnemonicParsing="false" text="Button" />
+      <Button fx:id="btnSaveRule" layoutX="967.0" layoutY="633.0" minWidth="75.0" mnemonicParsing="false" onAction="#saveRule" prefWidth="75.0" text="Сохранить" />
+      <Button layoutX="1061.0" layoutY="633.0" minWidth="75.0" mnemonicParsing="false" prefWidth="75.0" text="Отмена" />
    </children>
 </AnchorPane>

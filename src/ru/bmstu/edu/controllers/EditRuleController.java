@@ -9,6 +9,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Rule;
@@ -104,5 +106,35 @@ public class EditRuleController {
     comboAndVarName.getSelectionModel().clearSelection();
     comboAndMFName.getSelectionModel().clearSelection();
 
+  }
+  public JSONArray getJSONCondition(int id, String nameVar, String nameMF){
+    Map<String,String> map = new LinkedHashMap<>();
+    map.put("idvariable",String.valueOf(id));
+    map.put("nameVariable",nameVar);
+    map.put("nameMF",nameMF);
+    JSONObject obj = new JSONObject(map);
+    JSONArray array = new JSONArray();
+    array.add(obj);
+    return array;
+  }
+
+
+  public void saveRule(){
+    JSONObject obj = new JSONObject();
+    JSONArray arAND = new JSONArray();
+    JSONArray arIF = getJSONCondition(mapVariables.get(comboIFVarName.getValue()).getId(),comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString());
+    JSONArray arThen = getJSONCondition(mapVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
+
+
+    for(int i = 0;i<rulesList.size();i++){
+      JSONObject objMF = new JSONObject();
+      objMF.put("idvariable",rulesList.get(i).getValueMF());
+      arAND.add(objMF);
+    }
+    obj.put("IF",arIF);
+    obj.put("AND",arAND);
+    obj.put("THEN",arThen);
+
+    System.out.println(obj.toString());
   }
 }
