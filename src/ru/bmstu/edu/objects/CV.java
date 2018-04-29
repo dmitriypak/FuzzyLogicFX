@@ -1,300 +1,335 @@
 package ru.bmstu.edu.objects;
 
-import java.sql.Date;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 public class CV {
-  private long id;
-  private Date creationdate;
-  private String candidateid;
-  private String locality;
-  private String positionname;
-  private String idowner;
-  private String drivelicences;
-  private String countryName;
-  private Date publishdate;
-  private String scheduletype;
-  private Integer experience;
-  private Integer salary;
-  private String skills;
-  private String additionalskills;
-  private String busytype;
-  private String relocation;
-  private String businesstrips;
-  private String addcertificates;
-  private String retrainingcapability;
-  private String iduser;
-  private String status;
-  private String visibility;
-  private Date datemodify;
-  private String deleted;
-  private String fullnessrate;
+  private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
+  private SimpleStringProperty creationdate = new SimpleStringProperty("");
+  private SimpleStringProperty candidateid = new SimpleStringProperty("");
+  private SimpleStringProperty locality = new SimpleStringProperty("");
+  private SimpleStringProperty positionname = new SimpleStringProperty("");
+  private SimpleStringProperty idowner = new SimpleStringProperty("");
+  private SimpleStringProperty drivelicences = new SimpleStringProperty("");
+  private SimpleStringProperty countryName = new SimpleStringProperty("");
+  private SimpleStringProperty publishdate = new SimpleStringProperty("");
+  private SimpleStringProperty scheduletype = new SimpleStringProperty("");
+  private SimpleIntegerProperty experience = new SimpleIntegerProperty(0);
+  private SimpleIntegerProperty salary = new SimpleIntegerProperty(0);
+  private SimpleStringProperty skills = new SimpleStringProperty("");
+  private SimpleStringProperty additionalskills = new SimpleStringProperty("");
+  private SimpleStringProperty busytype = new SimpleStringProperty("");
+  private SimpleStringProperty relocation = new SimpleStringProperty("");
+  private SimpleStringProperty businesstrips = new SimpleStringProperty("");
+  private SimpleStringProperty addcertificates = new SimpleStringProperty("");
+  private SimpleStringProperty retrainingcapability = new SimpleStringProperty("");
+  private SimpleStringProperty iduser = new SimpleStringProperty("");
+  private SimpleStringProperty status = new SimpleStringProperty("");
+  private SimpleStringProperty visibility = new SimpleStringProperty("");
+  private SimpleStringProperty datemodify = new SimpleStringProperty("");
+  private SimpleStringProperty deleted = new SimpleStringProperty("");
+  private SimpleStringProperty fullnessrate = new SimpleStringProperty("");
 
-  public long getId() {
+  public CV() {
+  }
+
+  public int getId() {
+    return id.get();
+  }
+
+  public SimpleIntegerProperty idProperty() {
     return id;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setId(int id) {
+    this.id.set(id);
   }
 
-  public Date getCreationdate() {
+  public String getCreationdate() {
+    return creationdate.get();
+  }
+
+  public SimpleStringProperty creationdateProperty() {
     return creationdate;
   }
 
-  public void setCreationdate(Date creationdate) {
-    this.creationdate = creationdate;
+  public void setCreationdate(String creationdate) {
+    this.creationdate.set(creationdate);
   }
 
   public String getCandidateid() {
+    return candidateid.get();
+  }
+
+  public SimpleStringProperty candidateidProperty() {
     return candidateid;
   }
 
   public void setCandidateid(String candidateid) {
-    this.candidateid = candidateid;
+    this.candidateid.set(candidateid);
   }
 
   public String getLocality() {
+    return locality.get();
+  }
+
+  public SimpleStringProperty localityProperty() {
     return locality;
   }
 
   public void setLocality(String locality) {
-    this.locality = locality;
+    this.locality.set(locality);
   }
 
   public String getPositionname() {
+    return positionname.get();
+  }
+
+  public SimpleStringProperty positionnameProperty() {
     return positionname;
   }
 
   public void setPositionname(String positionname) {
-    this.positionname = positionname;
+    this.positionname.set(positionname);
   }
 
   public String getIdowner() {
+    return idowner.get();
+  }
+
+  public SimpleStringProperty idownerProperty() {
     return idowner;
   }
 
   public void setIdowner(String idowner) {
-    this.idowner = idowner;
+    this.idowner.set(idowner);
   }
 
   public String getDrivelicences() {
+    return drivelicences.get();
+  }
+
+  public SimpleStringProperty drivelicencesProperty() {
     return drivelicences;
   }
 
   public void setDrivelicences(String drivelicences) {
-    this.drivelicences = drivelicences;
+    this.drivelicences.set(drivelicences);
   }
 
   public String getCountryName() {
+    return countryName.get();
+  }
+
+  public SimpleStringProperty countryNameProperty() {
     return countryName;
   }
 
   public void setCountryName(String countryName) {
-    this.countryName = countryName;
+    this.countryName.set(countryName);
   }
 
-  public Date getPublishdate() {
+  public String getPublishdate() {
+    return publishdate.get();
+  }
+
+  public SimpleStringProperty publishdateProperty() {
     return publishdate;
   }
 
-  public void setPublishdate(Date publishdate) {
-    this.publishdate = publishdate;
+  public void setPublishdate(String publishdate) {
+    this.publishdate.set(publishdate);
   }
 
   public String getScheduletype() {
+    return scheduletype.get();
+  }
+
+  public SimpleStringProperty scheduletypeProperty() {
     return scheduletype;
   }
 
   public void setScheduletype(String scheduletype) {
-    this.scheduletype = scheduletype;
+    this.scheduletype.set(scheduletype);
   }
 
-  public Integer getExperience() {
+  public int getExperience() {
+    return experience.get();
+  }
+
+  public SimpleIntegerProperty experienceProperty() {
     return experience;
   }
 
-  public void setExperience(Integer experience) {
-    this.experience = experience;
+  public void setExperience(int experience) {
+    this.experience.set(experience);
   }
 
-  public Integer getSalary() {
+  public int getSalary() {
+    return salary.get();
+  }
+
+  public SimpleIntegerProperty salaryProperty() {
     return salary;
   }
 
-  public void setSalary(Integer salary) {
-    this.salary = salary;
+  public void setSalary(int salary) {
+    this.salary.set(salary);
   }
 
   public String getSkills() {
+    return skills.get();
+  }
+
+  public SimpleStringProperty skillsProperty() {
     return skills;
   }
 
   public void setSkills(String skills) {
-    this.skills = skills;
+    this.skills.set(skills);
   }
 
   public String getAdditionalskills() {
+    return additionalskills.get();
+  }
+
+  public SimpleStringProperty additionalskillsProperty() {
     return additionalskills;
   }
 
   public void setAdditionalskills(String additionalskills) {
-    this.additionalskills = additionalskills;
+    this.additionalskills.set(additionalskills);
   }
 
   public String getBusytype() {
+    return busytype.get();
+  }
+
+  public SimpleStringProperty busytypeProperty() {
     return busytype;
   }
 
   public void setBusytype(String busytype) {
-    this.busytype = busytype;
+    this.busytype.set(busytype);
   }
 
   public String getRelocation() {
+    return relocation.get();
+  }
+
+  public SimpleStringProperty relocationProperty() {
     return relocation;
   }
 
   public void setRelocation(String relocation) {
-    this.relocation = relocation;
+    this.relocation.set(relocation);
   }
 
   public String getBusinesstrips() {
+    return businesstrips.get();
+  }
+
+  public SimpleStringProperty businesstripsProperty() {
     return businesstrips;
   }
 
   public void setBusinesstrips(String businesstrips) {
-    this.businesstrips = businesstrips;
+    this.businesstrips.set(businesstrips);
   }
 
   public String getAddcertificates() {
+    return addcertificates.get();
+  }
+
+  public SimpleStringProperty addcertificatesProperty() {
     return addcertificates;
   }
 
   public void setAddcertificates(String addcertificates) {
-    this.addcertificates = addcertificates;
+    this.addcertificates.set(addcertificates);
   }
 
   public String getRetrainingcapability() {
+    return retrainingcapability.get();
+  }
+
+  public SimpleStringProperty retrainingcapabilityProperty() {
     return retrainingcapability;
   }
 
   public void setRetrainingcapability(String retrainingcapability) {
-    this.retrainingcapability = retrainingcapability;
+    this.retrainingcapability.set(retrainingcapability);
   }
 
   public String getIduser() {
+    return iduser.get();
+  }
+
+  public SimpleStringProperty iduserProperty() {
     return iduser;
   }
 
   public void setIduser(String iduser) {
-    this.iduser = iduser;
+    this.iduser.set(iduser);
   }
 
   public String getStatus() {
+    return status.get();
+  }
+
+  public SimpleStringProperty statusProperty() {
     return status;
   }
 
   public void setStatus(String status) {
-    this.status = status;
+    this.status.set(status);
   }
 
   public String getVisibility() {
+    return visibility.get();
+  }
+
+  public SimpleStringProperty visibilityProperty() {
     return visibility;
   }
 
   public void setVisibility(String visibility) {
-    this.visibility = visibility;
+    this.visibility.set(visibility);
   }
 
-  public Date getDatemodify() {
+  public String getDatemodify() {
+    return datemodify.get();
+  }
+
+  public SimpleStringProperty datemodifyProperty() {
     return datemodify;
   }
 
-  public void setDatemodify(Date datemodify) {
-    this.datemodify = datemodify;
+  public void setDatemodify(String datemodify) {
+    this.datemodify.set(datemodify);
   }
 
   public String getDeleted() {
+    return deleted.get();
+  }
+
+  public SimpleStringProperty deletedProperty() {
     return deleted;
   }
 
   public void setDeleted(String deleted) {
-    this.deleted = deleted;
+    this.deleted.set(deleted);
   }
 
   public String getFullnessrate() {
+    return fullnessrate.get();
+  }
+
+  public SimpleStringProperty fullnessrateProperty() {
     return fullnessrate;
   }
 
   public void setFullnessrate(String fullnessrate) {
-    this.fullnessrate = fullnessrate;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    CV cv = (CV) o;
-
-    if (id != cv.id) return false;
-    if (creationdate != null ? !creationdate.equals(cv.creationdate) : cv.creationdate != null) return false;
-    if (candidateid != null ? !candidateid.equals(cv.candidateid) : cv.candidateid != null) return false;
-    if (locality != null ? !locality.equals(cv.locality) : cv.locality != null) return false;
-    if (positionname != null ? !positionname.equals(cv.positionname) : cv.positionname != null) return false;
-    if (idowner != null ? !idowner.equals(cv.idowner) : cv.idowner != null) return false;
-    if (drivelicences != null ? !drivelicences.equals(cv.drivelicences) : cv.drivelicences != null) return false;
-    if (countryName != null ? !countryName.equals(cv.countryName) : cv.countryName != null) return false;
-    if (publishdate != null ? !publishdate.equals(cv.publishdate) : cv.publishdate != null) return false;
-    if (scheduletype != null ? !scheduletype.equals(cv.scheduletype) : cv.scheduletype != null) return false;
-    if (experience != null ? !experience.equals(cv.experience) : cv.experience != null) return false;
-    if (salary != null ? !salary.equals(cv.salary) : cv.salary != null) return false;
-    if (skills != null ? !skills.equals(cv.skills) : cv.skills != null) return false;
-    if (additionalskills != null ? !additionalskills.equals(cv.additionalskills) : cv.additionalskills != null)
-      return false;
-    if (busytype != null ? !busytype.equals(cv.busytype) : cv.busytype != null) return false;
-    if (relocation != null ? !relocation.equals(cv.relocation) : cv.relocation != null) return false;
-    if (businesstrips != null ? !businesstrips.equals(cv.businesstrips) : cv.businesstrips != null) return false;
-    if (addcertificates != null ? !addcertificates.equals(cv.addcertificates) : cv.addcertificates != null)
-      return false;
-    if (retrainingcapability != null ? !retrainingcapability.equals(cv.retrainingcapability) : cv.retrainingcapability != null)
-      return false;
-    if (iduser != null ? !iduser.equals(cv.iduser) : cv.iduser != null) return false;
-    if (status != null ? !status.equals(cv.status) : cv.status != null) return false;
-    if (visibility != null ? !visibility.equals(cv.visibility) : cv.visibility != null) return false;
-    if (datemodify != null ? !datemodify.equals(cv.datemodify) : cv.datemodify != null) return false;
-    if (deleted != null ? !deleted.equals(cv.deleted) : cv.deleted != null) return false;
-    if (fullnessrate != null ? !fullnessrate.equals(cv.fullnessrate) : cv.fullnessrate != null) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = (int) (id ^ (id >>> 32));
-    result = 31 * result + (creationdate != null ? creationdate.hashCode() : 0);
-    result = 31 * result + (candidateid != null ? candidateid.hashCode() : 0);
-    result = 31 * result + (locality != null ? locality.hashCode() : 0);
-    result = 31 * result + (positionname != null ? positionname.hashCode() : 0);
-    result = 31 * result + (idowner != null ? idowner.hashCode() : 0);
-    result = 31 * result + (drivelicences != null ? drivelicences.hashCode() : 0);
-    result = 31 * result + (countryName != null ? countryName.hashCode() : 0);
-    result = 31 * result + (publishdate != null ? publishdate.hashCode() : 0);
-    result = 31 * result + (scheduletype != null ? scheduletype.hashCode() : 0);
-    result = 31 * result + (experience != null ? experience.hashCode() : 0);
-    result = 31 * result + (salary != null ? salary.hashCode() : 0);
-    result = 31 * result + (skills != null ? skills.hashCode() : 0);
-    result = 31 * result + (additionalskills != null ? additionalskills.hashCode() : 0);
-    result = 31 * result + (busytype != null ? busytype.hashCode() : 0);
-    result = 31 * result + (relocation != null ? relocation.hashCode() : 0);
-    result = 31 * result + (businesstrips != null ? businesstrips.hashCode() : 0);
-    result = 31 * result + (addcertificates != null ? addcertificates.hashCode() : 0);
-    result = 31 * result + (retrainingcapability != null ? retrainingcapability.hashCode() : 0);
-    result = 31 * result + (iduser != null ? iduser.hashCode() : 0);
-    result = 31 * result + (status != null ? status.hashCode() : 0);
-    result = 31 * result + (visibility != null ? visibility.hashCode() : 0);
-    result = 31 * result + (datemodify != null ? datemodify.hashCode() : 0);
-    result = 31 * result + (deleted != null ? deleted.hashCode() : 0);
-    result = 31 * result + (fullnessrate != null ? fullnessrate.hashCode() : 0);
-    return result;
+    this.fullnessrate.set(fullnessrate);
   }
 }
