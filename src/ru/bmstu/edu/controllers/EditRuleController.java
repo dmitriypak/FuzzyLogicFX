@@ -45,23 +45,58 @@ public class EditRuleController {
 
 
   ObservableList<String> variablesNameList = FXCollections.observableArrayList();
-  ObservableList<String> variablesNameListRank = FXCollections.observableArrayList();
+  ObservableList<String> variablesNameListOutput = FXCollections.observableArrayList();
   ObservableList<Condition> conditionList = FXCollections.observableArrayList();
   //ArrayList <LinguisticVariable> variablesList = DaoUtils.getVariables();
-  LinkedHashMap<String,LinguisticVariable>mapVariables = DaoUtils.getMapVariables();
+  //Получение карты правил
+  LinkedHashMap<String,LinguisticVariable>mapInputVariables = DaoUtils.getMapInputVariables();
+  LinkedHashMap<String,LinguisticVariable>mapOutputVariables = DaoUtils.getMapOutputVariables();
   //Condition condition = new Condition();
   @FXML
   private void initialize(){
     colVariableName.setCellValueFactory(new PropertyValueFactory<Condition,String>("nameVariable"));
     colValueMF.setCellValueFactory(new PropertyValueFactory<EditRuleController,String>("valueMF"));
-    variablesNameListRank.add(mapVariables.get("Ранг").getName());
-    if(mapVariables.size()>0){
-      for (Map.Entry<String, LinguisticVariable> entry : mapVariables.entrySet()) {
+    if(mapInputVariables.size()>0){
+      for (Map.Entry<String, LinguisticVariable> entry : mapInputVariables.entrySet()) {
         variablesNameList.add(entry.getKey());
       }
       comboIFVarName.setItems(variablesNameList);
       comboAndVarName.setItems(variablesNameList);
-      comboThenVarName.setItems(variablesNameListRank);
+    }
+
+    if(mapOutputVariables.size()>0){
+      for (Map.Entry<String, LinguisticVariable> entry : mapOutputVariables.entrySet()) {
+        variablesNameListOutput.add(entry.getKey());
+      }
+      comboThenVarName.setItems(variablesNameListOutput);
+    }
+
+
+
+  }
+
+  public void selectVarOutputName(ActionEvent actionEvent) {
+    Object source = actionEvent.getSource();
+    if (!(source instanceof ComboBox)) {
+      return;
+    }
+
+    nodesource = (Node) actionEvent.getSource();
+    ComboBox comboBox = (ComboBox) source;
+    System.out.println(comboBox.getValue());
+    LinguisticVariable selectVariable = mapOutputVariables.get(comboBox.getValue());
+    ObservableList<String>mfNameList = FXCollections.observableArrayList();
+    if(selectVariable!=null){
+      ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
+      for(int i = 0;i<mfList.size();i++){
+        MembershipFunction mf = mfList.get(i);
+        mfNameList.add(mf.getMFname());
+      }
+      switch (comboBox.getId()) {
+        case "comboThenVarName":
+          comboThenMFName.setItems(mfNameList);
+          break;
+      }
     }
   }
 
@@ -75,7 +110,7 @@ public class EditRuleController {
     nodesource = (Node) actionEvent.getSource();
     ComboBox comboBox = (ComboBox) source;
     System.out.println(comboBox.getValue());
-    LinguisticVariable selectVariable = mapVariables.get(comboBox.getValue());
+    LinguisticVariable selectVariable = mapInputVariables.get(comboBox.getValue());
     ObservableList<String>mfNameList = FXCollections.observableArrayList();
     System.out.println(comboIFVarName.getValue());
     if(selectVariable!=null){
@@ -92,14 +127,11 @@ public class EditRuleController {
         case "comboAndVarName":
           comboAndMFName.setItems(mfNameList);
           break;
-        case "comboThenVarName":
-          comboThenMFName.setItems(mfNameList);
-          break;
       }
     }
   }
   public void addCondition(){
-    LinguisticVariable linguisticVariable = mapVariables.get(comboAndVarName.getValue());
+    LinguisticVariable linguisticVariable = mapInputVariables.get(comboAndVarName.getValue());
     if(linguisticVariable==null) return;
     String mfName = (String) comboAndMFName.getValue();
     if(mfName.isEmpty()||mfName==null) return;
@@ -126,16 +158,16 @@ public class EditRuleController {
 
     JSONObject obj = new JSONObject();
     JSONArray arAND = new JSONArray();
-    int idVariableIF = mapVariables.get(comboIFVarName.getValue()).getId();
+    int idVariableIF = mapInputVariables.get(comboIFVarName.getValue()).getId();
     JSONArray arIF = getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString());
-    JSONArray arThen = getJSONCondition(mapVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
+    JSONArray arThen = getJSONCondition(mapInputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
     if(conditionList.size()==0) {
-      arAND = getJSONCondition(mapVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString());
+      arAND = getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString());
     }else{
       for(int i = 0;i<conditionList.size();i++){
         JSONArray array;
         Condition condition = conditionList.get(i);
-        int idVariable = mapVariables.get(condition.getNameVariable()).getId();
+        int idVariable = mapInputVariables.get(condition.getNameVariable()).getId();
         array = getJSONCondition(idVariable,condition.getNameVariable(),condition.getValue());
         arAND.add(array);
       }

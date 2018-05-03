@@ -15,8 +15,8 @@
 <AnchorPane prefHeight="725.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditLinguisticVariableController">
    <children>
       <Label layoutX="341.0" layoutY="54.0" text="Наименование переменной:" />
-      <Button fx:id="btnSave" layoutX="550.0" layoutY="647.0" minWidth="75.0" mnemonicParsing="false" onAction="#actionSave" text="Сохранить" AnchorPane.bottomAnchor="10.0" />
-      <Button fx:id="btnClose" layoutX="636.0" layoutY="648.0" minWidth="50.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="75.0" text="Отмена" AnchorPane.bottomAnchor="10.0" />
+      <Button fx:id="btnSave" layoutX="550.0" layoutY="647.0" minWidth="75.0" mnemonicParsing="false" onAction="#actionSave" text="Сохранить" AnchorPane.bottomAnchor="25.0" />
+      <Button fx:id="btnClose" layoutX="636.0" layoutY="648.0" minWidth="50.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="75.0" text="Отмена" AnchorPane.bottomAnchor="25.0" />
       <TableView fx:id="tableMF" layoutX="10.0" layoutY="182.0" prefHeight="145.0" prefWidth="712.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="182.0">
         <columns>
           <TableColumn fx:id="colMFName" prefWidth="175.0" text="Функция принадлежности" />

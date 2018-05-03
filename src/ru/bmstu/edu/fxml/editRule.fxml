@@ -30,7 +30,7 @@
       <ComboBox fx:id="comboIFMFName" layoutX="103.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
       <ComboBox fx:id="comboAndVarName" layoutX="469.0" layoutY="69.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
       <ComboBox fx:id="comboAndMFName" layoutX="469.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
-      <ComboBox fx:id="comboThenVarName" layoutX="832.0" layoutY="69.0" onAction="#selectVarName" prefHeight="25.0" prefWidth="246.0" />
+      <ComboBox fx:id="comboThenVarName" layoutX="832.0" layoutY="69.0" onAction="#selectVarOutputName" prefHeight="25.0" prefWidth="246.0" />
       <ComboBox fx:id="comboThenMFName" layoutX="832.0" layoutY="108.0" prefHeight="25.0" prefWidth="246.0" />
       <Button fx:id="addRuleList" layoutX="566.0" layoutY="160.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#addCondition" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
       <TableView fx:id="tableAnd" layoutX="407.0" layoutY="205.0" prefHeight="401.0" prefWidth="396.0">
