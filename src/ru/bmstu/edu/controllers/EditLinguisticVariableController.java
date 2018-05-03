@@ -1,6 +1,5 @@
 package ru.bmstu.edu.controllers;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,15 +10,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
-import org.controlsfx.control.textfield.TextFields;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.postgresql.util.PGobject;
@@ -28,7 +23,6 @@ import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
-import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -52,6 +46,8 @@ public class EditLinguisticVariableController{
   private AreaChart chart1;
   @FXML
   private Button btnSave;
+  @FXML
+  private ComboBox comboTypeVariable;
 
   private LinguisticVariable linguisticVariable;
 
@@ -64,10 +60,10 @@ public class EditLinguisticVariableController{
 
 
   public void initialize() {
-    setupClearButtonField(txtNameMF);
-    setupClearButtonField(txtParamMF);
-    setupClearButtonField(txtNameVariable);
-
+    DaoUtils.setupClearButtonField(txtNameMF);
+    DaoUtils.setupClearButtonField(txtParamMF);
+    DaoUtils.setupClearButtonField(txtNameVariable);
+    createComboBox();
     colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFname"));
     colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFParamValue"));
     tableMF.setOnMouseClicked( event -> {
@@ -86,15 +82,17 @@ public class EditLinguisticVariableController{
 //      e.printStackTrace();
 //    }
   }
-  public void setupClearButtonField(CustomTextField txtFunction){
-    try {
-      Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
-      m.setAccessible(true);
-      m.invoke(null, txtFunction, txtFunction.rightProperty());
-    }catch (Exception e){
-      e.printStackTrace();
-    }
+
+  private void createComboBox(){
+    ObservableList<String> typeDistribution = FXCollections.observableArrayList(
+        "INPUT",
+        "OUTPUT");
+    comboTypeVariable.setItems(typeDistribution);
+
   }
+
+
+
 
   public void actionButtonPressed(ActionEvent actionEvent) {
     Object source = actionEvent.getSource();
@@ -184,6 +182,7 @@ public class EditLinguisticVariableController{
     System.out.println("Получена переменная id: " + linguisticVariable.getId());
     this.linguisticVariable=linguisticVariable;
     txtNameVariable.setText(linguisticVariable.getName());
+    comboTypeVariable.setValue(linguisticVariable.getType());
     if(linguisticVariable.getId()!=0){
       mfList = FXCollections.observableArrayList(DaoUtils.parseJSON(linguisticVariable.getValue()));
       System.out.println("Получен список " + mfList.size());
@@ -218,7 +217,6 @@ public class EditLinguisticVariableController{
       drawGraphMF();
     }
 
-
   }
 
 
@@ -229,6 +227,14 @@ public class EditLinguisticVariableController{
   }
   public void actionSave(ActionEvent actionEvent) throws SQLException {
     if(mfList.size()==0) return;
+    if(comboTypeVariable.getValue()==null){
+      Alert alert = new Alert(Alert.AlertType.WARNING);
+      alert.setTitle("Ошибка");
+      alert.setHeaderText(null);
+      alert.setContentText("Не указан тип переменной");
+      alert.showAndWait();
+      return;
+    }
     JSONObject obj = new JSONObject();
     JSONArray ar = new JSONArray();
 
@@ -243,6 +249,7 @@ public class EditLinguisticVariableController{
     System.out.println(obj.toString());
     linguisticVariable.setName(txtNameVariable.getText());
     linguisticVariable.setValue(obj.toJSONString());
+    linguisticVariable.setType(comboTypeVariable.getValue().toString());
 
     if(linguisticVariable.getId()!=0){
       updateLinguisticVariable(linguisticVariable);
@@ -256,8 +263,8 @@ public class EditLinguisticVariableController{
 
   private void insertLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
     String query = "INSERT INTO cvdata.bmstu.linguisticvariables "
-        + " (name, value, description) "
-        + " VALUES (?, ?, ?);";
+        + " (name, value, description, type) "
+        + " VALUES (?, ?, ?, ?);";
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
       int i = 0;
       pstmt.setString(++i,linguisticVariable.getName());
@@ -266,13 +273,14 @@ public class EditLinguisticVariableController{
       jsonObject.setValue(linguisticVariable.getValue());
       pstmt.setObject(++i, jsonObject);
       pstmt.setString(++i,"");
+      pstmt.setString(++i,comboTypeVariable.getValue().toString());
       pstmt.executeUpdate();
     }
   }
 
   private void updateLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
     String query = "update cvdata.bmstu.linguisticvariables "
-        + " set name = ?, value = ?, description = ? WHERE id = ?";
+        + " set name = ?, value = ?, description = ?, type = ? WHERE id = ?";
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
       int i = 0;
       pstmt.setString(++i,linguisticVariable.getName());
@@ -282,6 +290,7 @@ public class EditLinguisticVariableController{
       jsonObject.setValue(linguisticVariable.getValue());
       pstmt.setObject(++i, jsonObject);
       pstmt.setString(++i,"");
+      pstmt.setString(++i,comboTypeVariable.getValue().toString());
       pstmt.setInt(++i,linguisticVariable.getId());
 
       pstmt.executeUpdate();

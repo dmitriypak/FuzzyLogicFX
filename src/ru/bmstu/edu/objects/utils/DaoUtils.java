@@ -1,5 +1,9 @@
 package ru.bmstu.edu.objects.utils;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.control.TextField;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -9,6 +13,7 @@ import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Rule;
 
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,10 +59,11 @@ public class DaoUtils {
 
   public static ArrayList<LinguisticVariable> getVariables(){
     ArrayList<LinguisticVariable> listVariables = new ArrayList<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
-        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"), rs.getString("value"));
+        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
+            rs.getString("value"),rs.getString("type"));
         listVariables.add(linguisticVariable);
       }
     } catch (SQLException e) {
@@ -68,10 +74,11 @@ public class DaoUtils {
 
   public static LinkedHashMap<String,LinguisticVariable> getMapVariables(){
     LinkedHashMap<String,LinguisticVariable> mapVariables = new LinkedHashMap<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
-        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"), rs.getString("value"));
+        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
+            rs.getString("value"), rs.getString("type"));
         linguisticVariable.setMfList(DaoUtils.parseJSON(linguisticVariable.getValue()));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }
@@ -123,5 +130,16 @@ public class DaoUtils {
       e.printStackTrace();
     }
     return listRules;
+  }
+
+
+  public static void setupClearButtonField(CustomTextField txtFunction){
+    try {
+      Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+      m.setAccessible(true);
+      m.invoke(null, txtFunction, txtFunction.rightProperty());
+    }catch (Exception e){
+      e.printStackTrace();
+    }
   }
 }

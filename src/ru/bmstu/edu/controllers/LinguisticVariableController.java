@@ -39,7 +39,8 @@ public class LinguisticVariableController {
   private Button btnEditVariable;
   @FXML
   private Button btnDeleteVariable;
-
+  @FXML
+  private TableColumn colTypeVariable;
 
 
 
@@ -54,9 +55,11 @@ public class LinguisticVariableController {
 
 
   public void initialize(){
+
     colIDVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("id"));
     colValueVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("value"));
     colNameVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("name"));
+    colTypeVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariable,String>("type"));
 
     tableViewVariables.setOnMouseClicked( event -> {
       if( event.getClickCount() == 2 ) {
@@ -75,6 +78,7 @@ public class LinguisticVariableController {
 
 
   }
+
 
   private void showDialog() {
     if (editLinguisticVariableStage==null) {
@@ -142,10 +146,12 @@ public class LinguisticVariableController {
 
 
   private void fillData(){
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables order by id")) {
+    variableList.clear();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, type, VALUE from cvdata.bmstu.linguisticvariables order by id")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
-        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"), rs.getString("value"));
+        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
+            rs.getString("value"), rs.getString("type"));
         variableList.add(linguisticVariable);
       }
       tableViewVariables.setItems(variableList.getVariablesList());

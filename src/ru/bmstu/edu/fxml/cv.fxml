@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
 
 <AnchorPane prefHeight="781.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.cvController">
    <children>
@@ -15,5 +17,7 @@
             <TableColumn fx:id="colExperience" prefWidth="126.0" text="Опыт работы" />
         </columns>
       </TableView>
+      <CustomTextField fx:id="txtPositionName" layoutX="51.0" layoutY="37.0" prefHeight="25.0" prefWidth="369.0" />
+      <Button fx:id="btnSearch" layoutX="439.0" layoutY="37.0" mnemonicParsing="false" onAction="#actionButtonPressed" text="Поиск" />
    </children>
 </AnchorPane>

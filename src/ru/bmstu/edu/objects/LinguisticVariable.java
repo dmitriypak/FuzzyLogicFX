@@ -10,6 +10,20 @@ public class LinguisticVariable {
   private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
   private SimpleStringProperty description = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
+  private SimpleStringProperty type = new SimpleStringProperty("");
+
+  public String getType() {
+    return type.get();
+  }
+
+  public SimpleStringProperty typeProperty() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type.set(type);
+  }
+
   private ArrayList<MembershipFunction> mfList = new ArrayList<>();
   private ArrayList<Condition> ruleList = new ArrayList<>();
 
@@ -28,10 +42,11 @@ public class LinguisticVariable {
 
   }
 
-  public LinguisticVariable(int id, String name, String value){
+  public LinguisticVariable(int id, String name, String value, String type){
     this.id = new SimpleIntegerProperty(id);
     this.name = new SimpleStringProperty(name);
     this.value = new SimpleStringProperty(value);
+    this.type = new SimpleStringProperty(type);
   }
 
 
