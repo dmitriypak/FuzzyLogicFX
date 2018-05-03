@@ -3,12 +3,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
 <AnchorPane prefHeight="781.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.cvController">
    <children>
-      <TableView fx:id="tableCV" layoutX="109.0" layoutY="183.0" prefHeight="674.0" prefWidth="1064.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+      <TableView fx:id="tableCV" layoutX="109.0" layoutY="183.0" prefHeight="639.0" prefWidth="1064.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
         <columns>
           <TableColumn fx:id="colPosition" prefWidth="259.0" text="Желаемая должность" />
           <TableColumn fx:id="colSalary" prefWidth="91.0" text="Размер ЗП" />
@@ -17,7 +18,12 @@
             <TableColumn fx:id="colExperience" prefWidth="126.0" text="Опыт работы" />
         </columns>
       </TableView>
-      <CustomTextField fx:id="txtPositionName" layoutX="51.0" layoutY="37.0" prefHeight="25.0" prefWidth="369.0" />
-      <Button fx:id="btnSearch" layoutX="439.0" layoutY="37.0" mnemonicParsing="false" onAction="#actionButtonPressed" text="Поиск" />
+      <CustomTextField fx:id="txtPositionName" layoutX="14.0" layoutY="79.0" prefHeight="25.0" prefWidth="369.0" />
+      <Button fx:id="btnSearch" layoutX="402.0" layoutY="79.0" mnemonicParsing="false" onAction="#actionButtonPressed" text="Поиск" />
+      <ToolBar layoutX="10.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <Button fx:id="btnViewRules" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+        </items>
+      </ToolBar>
    </children>
 </AnchorPane>

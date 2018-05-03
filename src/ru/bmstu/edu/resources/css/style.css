@@ -3,6 +3,11 @@
     -fx-font-size: 14px;
     -fx-background-color: #f0f0f0;
 }
+#btnViewRules{
+    -fx-background-image: url("../../resources/images/chart_line.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
 #btnRules{
     -fx-background-image: url("../../resources/images/chart_organisation.png");
     -fx-background-size: stretch;

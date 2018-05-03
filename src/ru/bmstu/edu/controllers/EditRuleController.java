@@ -160,7 +160,7 @@ public class EditRuleController {
     JSONArray arAND = new JSONArray();
     int idVariableIF = mapInputVariables.get(comboIFVarName.getValue()).getId();
     JSONArray arIF = getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString());
-    JSONArray arThen = getJSONCondition(mapInputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
+    JSONArray arThen = getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
     if(conditionList.size()==0) {
       arAND = getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString());
     }else{
