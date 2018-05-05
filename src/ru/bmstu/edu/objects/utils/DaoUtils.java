@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 
 public class DaoUtils {
 
-  public static ArrayList parseJSON(String value){
+  public static ArrayList getMFList(String value){
     ArrayList list = new ArrayList();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try {
@@ -57,9 +57,10 @@ public class DaoUtils {
 
 
 
-  public static ArrayList<LinguisticVariable> getVariables(){
+  public static ArrayList<LinguisticVariable> getInputVariables(){
     ArrayList<LinguisticVariable> listVariables = new ArrayList<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
+        ("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables WHERE type = 'INPUT'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
@@ -72,6 +73,24 @@ public class DaoUtils {
     return listVariables;
   }
 
+  public static ArrayList<LinguisticVariable> getOutputVariables(){
+    ArrayList<LinguisticVariable> listVariables = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
+        ("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables WHERE TYPE ='OUTPUT'")) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
+            rs.getString("value"),rs.getString("type"));
+        listVariables.add(linguisticVariable);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listVariables;
+  }
+
+
+
   public static LinkedHashMap<String,LinguisticVariable> getMapInputVariables(){
     LinkedHashMap<String,LinguisticVariable> mapVariables = new LinkedHashMap<>();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type" +
@@ -80,7 +99,7 @@ public class DaoUtils {
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"), rs.getString("type"));
-        linguisticVariable.setMfList(DaoUtils.parseJSON(linguisticVariable.getValue()));
+        linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }
     } catch (SQLException e) {
@@ -97,7 +116,7 @@ public class DaoUtils {
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"), rs.getString("type"));
-        linguisticVariable.setMfList(DaoUtils.parseJSON(linguisticVariable.getValue()));
+        linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }
     } catch (SQLException e) {

@@ -34,7 +34,7 @@ public class RulesController {
   }
 
   private void fillData() {
-    ArrayList<LinguisticVariable> listVariables = DaoUtils.getVariables();
+    ArrayList<LinguisticVariable> listVariables = DaoUtils.getInputVariables();
 
     CheckBoxTreeItem<String> root = new CheckBoxTreeItem<String>("Переменные");
     root.setExpanded(true);

@@ -184,7 +184,7 @@ public class EditLinguisticVariableController{
     txtNameVariable.setText(linguisticVariable.getName());
     comboTypeVariable.setValue(linguisticVariable.getType());
     if(linguisticVariable.getId()!=0){
-      mfList = FXCollections.observableArrayList(DaoUtils.parseJSON(linguisticVariable.getValue()));
+      mfList = FXCollections.observableArrayList(DaoUtils.getMFList(linguisticVariable.getValue()));
       System.out.println("Получен список " + mfList.size());
       fillData();
     }else{
