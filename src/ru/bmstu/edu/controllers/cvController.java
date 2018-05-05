@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -78,12 +79,14 @@ public class cvController {
   }
   private LineChart getLineChart(MembershipFunction mf){
     NumberAxis xAxis = new NumberAxis() ;
-    NumberAxis yAxis = new NumberAxis() ;
+    NumberAxis yAxis = new NumberAxis(0,1,0) ;
     LineChart linechart = new LineChart(xAxis, yAxis) ;
     linechart.setTitle(mf.getMFname());
-    linechart.setMaxWidth(100);
-    linechart.setMaxHeight(100);
-
+    linechart.setMaxWidth(200);
+    linechart.setMaxHeight(200);
+    linechart.setMinHeight(100);
+    linechart.setMinWidth(100);
+    linechart.setOpacity(0.5);
     XYChart.Series series = new XYChart.Series();
     String value[] = mf.getMFParamValue().split(" ");
     series.setName(mf.getMFname());
@@ -97,6 +100,41 @@ public class cvController {
 
     return linechart;
   }
+
+
+  private AreaChart getAreaChart(MembershipFunction mf){
+    NumberAxis xAxis = new NumberAxis() ;
+    NumberAxis yAxis = new NumberAxis(0,1,0) ;
+    AreaChart chart = new AreaChart(xAxis, yAxis) ;
+    chart.setTitle(mf.getMFname());
+    chart.setMaxWidth(200);
+    chart.setMaxHeight(200);
+    chart.setMinHeight(100);
+    chart.setMinWidth(100);
+    chart.setCreateSymbols(false);
+    chart.getXAxis().setTickMarkVisible(false);
+    chart.getYAxis().setTickMarkVisible(false);
+    chart.getXAxis().setTickLabelsVisible(false);
+    chart.getXAxis().setTickLength(0);
+    chart.getYAxis().setTickLabelsVisible(false);
+    chart.setVerticalGridLinesVisible(false);
+
+    XYChart.Series series = new XYChart.Series();
+    XYChart.Series series1 = new XYChart.Series();
+    String value[] = mf.getMFParamValue().split(" ");
+    series.setName(mf.getMFname());
+    System.out.println("MFname:" + mf.getMFname());
+    for(int i =0;i<value.length;i++){
+      series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
+      //series.getData().add(new XYChart.Data(1,19));
+      System.out.println(value[i]);
+    }
+    series1.getData().add(new XYChart.Data(5,0));
+    series1.getData().add(new XYChart.Data(5,1));
+    chart.getData().addAll(series,series1);
+    return chart;
+  }
+
 
   private Label getLabel(String name){
     Label label = new Label(name);
@@ -124,20 +162,23 @@ public class cvController {
         for(int i = 0;i<listInputVariables.size();i++){
           LinguisticVariable linguisticVariable = listInputVariables.get(i);
           Label label = getLabel(linguisticVariable.getName());
-          ArrayList<LineChart> listCharts = drawMFGraph(linguisticVariable);
-          System.out.println("Получен список графиков: " + listCharts.size());
+          ArrayList<LineChart> listLineCharts = drawMFLineGraph(linguisticVariable);
+          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable);
+          System.out.println("Получен список графиков: " + listAreaCharts.size());
           root.add(label,i,0);
 
-          if(listCharts.size()>0){
-            for(int k = 0;k<listCharts.size();k++){
-              try{
-                root.add(listCharts.get(k),i,k+1);
-              }catch (Exception ex){
-                ex.printStackTrace();
-              }
-
+          if(listAreaCharts.size()>0){
+            for(int k = 0;k<listAreaCharts.size();k++){
+              root.add(listAreaCharts.get(k),i,k+1);
             }
           }
+//          if(listAreaCharts.size()>0){
+//            for(int k = 0;k<listLineCharts.size();k++){
+//              root.add(listLineCharts.get(k),i,k+1);
+//            }
+//          }
+
+
           j = i+1;
         }
 
@@ -155,6 +196,7 @@ public class cvController {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         Scene scene = new Scene(scrollPane);
+        scene.getStylesheets().add("ru/bmstu/edu/resources/css/chart.css");
 
         viewRulesStage.setScene(scene);
       }
@@ -165,7 +207,7 @@ public class cvController {
     viewRulesStage.showAndWait();
   }
 
-  private ArrayList<LineChart> drawMFGraph(LinguisticVariable linguisticVariable) {
+  private ArrayList<LineChart> drawMFLineGraph(LinguisticVariable linguisticVariable) {
     ArrayList<LineChart> listCharts = new ArrayList<>();
     ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
     System.out.println("Список MF: " + listMF.size());
@@ -181,8 +223,23 @@ public class cvController {
     return listCharts;
   }
 
+  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable) {
+    ArrayList<AreaChart> listCharts = new ArrayList<>();
+    ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
+    System.out.println("Список MF: " + listMF.size());
+    System.out.println("Переменная: " + linguisticVariable.getName());
 
+    if(listMF.size()>0){
+      for(MembershipFunction mf:listMF){
+        AreaChart chart = getAreaChart(mf);
+        listCharts.add(chart);
+      }
+
+    }
+    return listCharts;
+  }
   private void fillData(){
+    CVList.clear();
     StringBuilder query = new StringBuilder("select id, positionname, salary, experience from cvdata.bmstu.CV");
     StringBuilder where = new StringBuilder("");
     if(!txtPositionName.getText().isEmpty()){
