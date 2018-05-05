@@ -15,10 +15,6 @@ public class ViewRulesController {
   @FXML
   private void initialize(){
 
-    viewRulesStage = new Stage();
-    viewRulesStage.setTitle("sdfsf");
-
-    System.out.println("test");
   }
 
   public void setStage(Stage stage){

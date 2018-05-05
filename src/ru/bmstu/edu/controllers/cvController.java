@@ -9,8 +9,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
@@ -24,6 +25,7 @@ import org.controlsfx.control.textfield.CustomTextField;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
+import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -57,7 +59,7 @@ public class cvController {
   private Stage viewRulesStage;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
-
+  private GridPane root = new GridPane();
   @FXML
   private void initialize(){
     DaoUtils.setupClearButtonField(txtPositionName);
@@ -74,12 +76,25 @@ public class cvController {
     }
 
   }
-  private LineChart getLineChart(){
-    CategoryAxis xAxis = new CategoryAxis() ;
-    CategoryAxis yAxis = new CategoryAxis() ;
+  private LineChart getLineChart(MembershipFunction mf){
+    NumberAxis xAxis = new NumberAxis() ;
+    NumberAxis yAxis = new NumberAxis() ;
     LineChart linechart = new LineChart(xAxis, yAxis) ;
+    linechart.setTitle(mf.getMFname());
     linechart.setMaxWidth(100);
     linechart.setMaxHeight(100);
+
+    XYChart.Series series = new XYChart.Series();
+    String value[] = mf.getMFParamValue().split(" ");
+    series.setName(mf.getMFname());
+    System.out.println("MFname:" + mf.getMFname());
+    for(int i =0;i<value.length;i++){
+      series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
+      //series.getData().add(new XYChart.Data(1,19));
+      System.out.println(value[i]);
+    }
+    linechart.getData().add(series);
+
     return linechart;
   }
 
@@ -99,37 +114,39 @@ public class cvController {
       viewRulesStage.setMinWidth(800);
       viewRulesStage.setResizable(true);
       //FlowPane root = new FlowPane();
-      GridPane root = new GridPane();
+
       ScrollPane scrollPane = new ScrollPane();
 
       if(cv.getId()!=0){
-        //Выходные переменные
+        //Входные переменные
+
         int j = 0;
         for(int i = 0;i<listInputVariables.size();i++){
-          Label label = getLabel(listInputVariables.get(i).getName());
-          LineChart lineChart1 = getLineChart();
-          LineChart lineChart2 = getLineChart();
-          LineChart lineChart3 = getLineChart();
-
+          LinguisticVariable linguisticVariable = listInputVariables.get(i);
+          Label label = getLabel(linguisticVariable.getName());
+          ArrayList<LineChart> listCharts = drawMFGraph(linguisticVariable);
+          System.out.println("Получен список графиков: " + listCharts.size());
           root.add(label,i,0);
-          root.add(lineChart1,i,1);
-          root.add(lineChart2,i,2);
-          root.add(lineChart3,i,3);
-          //root.getChildren().add(label);
+
+          if(listCharts.size()>0){
+            for(int k = 0;k<listCharts.size();k++){
+              try{
+                root.add(listCharts.get(k),i,k+1);
+              }catch (Exception ex){
+                ex.printStackTrace();
+              }
+
+            }
+          }
           j = i+1;
         }
 
-        //Входные переменные
+        //Выходные переменные
         for(int i = 0;i<listOutputVariables.size();i++){
           Label label = getLabel(listOutputVariables.get(i).getName());
-          LineChart lineChart1 = getLineChart();
-          LineChart lineChart2 = getLineChart();
-          LineChart lineChart3 = getLineChart();
 
           root.add(label,i+j,0);
-          root.add(lineChart1,i+j,1);
-          root.add(lineChart2,i+j,2);
-          root.add(lineChart3,i+j,3);
+         // root.add(lineChart1,i+j,1);
           //root.getChildren().add(label);
         }
 
@@ -146,6 +163,22 @@ public class cvController {
       viewRulesStage.initOwner((Stage) nodesource.getScene().getWindow());
     }
     viewRulesStage.showAndWait();
+  }
+
+  private ArrayList<LineChart> drawMFGraph(LinguisticVariable linguisticVariable) {
+    ArrayList<LineChart> listCharts = new ArrayList<>();
+    ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
+    System.out.println("Список MF: " + listMF.size());
+    System.out.println("Переменная: " + linguisticVariable.getName());
+
+    if(listMF.size()>0){
+      for(MembershipFunction mf:listMF){
+        LineChart lineChart = getLineChart(mf);
+        listCharts.add(lineChart);
+      }
+
+    }
+    return listCharts;
   }
 
 

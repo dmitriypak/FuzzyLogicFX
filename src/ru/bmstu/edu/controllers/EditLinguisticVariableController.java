@@ -136,8 +136,8 @@ public class EditLinguisticVariableController{
     for (MembershipFunction mf : mfList) {
       XYChart.Series series = new XYChart.Series();
       String value[] = mf.getMFParamValue().split(" ");
+      series.setName(mf.getMFname());
       for(int i =0;i<value.length;i++){
-        series.setName(mf.getMFname());
         series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
         //series.getData().add(new XYChart.Data(1,19));
         System.out.println(value[i]);

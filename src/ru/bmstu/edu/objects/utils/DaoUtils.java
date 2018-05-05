@@ -65,6 +65,7 @@ public class DaoUtils {
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"),rs.getString("type"));
+        linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         listVariables.add(linguisticVariable);
       }
     } catch (SQLException e) {
@@ -81,6 +82,7 @@ public class DaoUtils {
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"),rs.getString("type"));
+        linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         listVariables.add(linguisticVariable);
       }
     } catch (SQLException e) {
