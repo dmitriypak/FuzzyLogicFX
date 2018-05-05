@@ -1,17 +1,24 @@
 package ru.bmstu.edu.controllers;
 
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.interfaces.CollectionImpl.LinguisticVariableList;
 import ru.bmstu.edu.interfaces.Collections.LinguisticVariableCollection;
@@ -41,7 +48,8 @@ public class LinguisticVariableController {
   private Button btnDeleteVariable;
   @FXML
   private TableColumn colTypeVariable;
-
+  @FXML
+  private TableColumn colState;
 
 
   private LinguisticVariableCollection variableList = new LinguisticVariableList();
@@ -60,6 +68,35 @@ public class LinguisticVariableController {
     colValueVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("value"));
     colNameVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("name"));
     colTypeVariable.setCellValueFactory(new PropertyValueFactory<LinguisticVariable,String>("type"));
+    colState.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<LinguisticVariable, Boolean>, ObservableValue<Boolean>>() {
+
+      @Override
+      public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<LinguisticVariable, Boolean> param) {
+        LinguisticVariable linguisticVariable = param.getValue();
+        SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(linguisticVariable.getIsactive());
+        booleanProp.addListener(new ChangeListener<Boolean>() {
+
+          @Override
+          public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+                              Boolean newValue) {
+            linguisticVariable.setIsactive(newValue);
+          }
+        });
+        return booleanProp;
+      }
+    });
+
+    colState.setCellFactory(new Callback<TableColumn<LinguisticVariable, Boolean>, //
+        TableCell<LinguisticVariable, Boolean>>() {
+      @Override
+      public TableCell<LinguisticVariable, Boolean> call(TableColumn<LinguisticVariable, Boolean> p) {
+        CheckBoxTableCell<LinguisticVariable, Boolean> cell = new CheckBoxTableCell<LinguisticVariable, Boolean>();
+        cell.setAlignment(Pos.CENTER);
+        return cell;
+      }
+    });
+
+
 
     tableViewVariables.setOnMouseClicked( event -> {
       if( event.getClickCount() == 2 ) {
@@ -147,11 +184,11 @@ public class LinguisticVariableController {
 
   private void fillData(){
     variableList.clear();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, type, VALUE from cvdata.bmstu.linguisticvariables order by id")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, type, VALUE, isactive from cvdata.bmstu.linguisticvariables order by id")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
-            rs.getString("value"), rs.getString("type"));
+            rs.getString("value"), rs.getString("type"),rs.getBoolean("isactive"));
         variableList.add(linguisticVariable);
       }
       tableViewVariables.setItems(variableList.getVariablesList());

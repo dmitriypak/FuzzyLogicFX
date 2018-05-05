@@ -49,6 +49,8 @@ public class EditLinguisticVariableController{
   @FXML
   private ComboBox comboTypeVariable;
 
+
+
   private LinguisticVariable linguisticVariable;
 
   private ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList();
@@ -66,6 +68,7 @@ public class EditLinguisticVariableController{
     createComboBox();
     colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFname"));
     colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFParamValue"));
+
     tableMF.setOnMouseClicked( event -> {
       if( event.getClickCount() == 1 ) {
         MembershipFunction mf = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();

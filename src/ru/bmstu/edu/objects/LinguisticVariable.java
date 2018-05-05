@@ -11,6 +11,10 @@ public class LinguisticVariable {
   private SimpleStringProperty description = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleStringProperty type = new SimpleStringProperty("");
+  private Boolean isactive;
+
+
+
 
   public String getType() {
     return type.get();
@@ -42,11 +46,22 @@ public class LinguisticVariable {
 
   }
 
-  public LinguisticVariable(int id, String name, String value, String type){
+  public Boolean getIsactive() {
+    return isactive;
+  }
+
+  public void setIsactive(Boolean isactive) {
+    this.isactive = isactive;
+  }
+
+  public LinguisticVariable(int id, String name, String value, String type, Boolean state){
     this.id = new SimpleIntegerProperty(id);
     this.name = new SimpleStringProperty(name);
     this.value = new SimpleStringProperty(value);
     this.type = new SimpleStringProperty(type);
+    this.isactive = new Boolean(state);
+
+
   }
 
 

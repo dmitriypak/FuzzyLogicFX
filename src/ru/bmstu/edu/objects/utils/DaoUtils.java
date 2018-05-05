@@ -64,7 +64,7 @@ public class DaoUtils {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
-            rs.getString("value"),rs.getString("type"));
+            rs.getString("value"),rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         listVariables.add(linguisticVariable);
       }
@@ -81,7 +81,7 @@ public class DaoUtils {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
-            rs.getString("value"),rs.getString("type"));
+            rs.getString("value"),rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         listVariables.add(linguisticVariable);
       }
@@ -100,7 +100,7 @@ public class DaoUtils {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
-            rs.getString("value"), rs.getString("type"));
+            rs.getString("value"), rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }
@@ -117,7 +117,7 @@ public class DaoUtils {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
-            rs.getString("value"), rs.getString("type"));
+            rs.getString("value"), rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }

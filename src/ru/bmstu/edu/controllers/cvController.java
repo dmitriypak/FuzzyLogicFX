@@ -27,6 +27,7 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.TriangleMF;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -162,8 +163,8 @@ public class cvController {
         for(int i = 0;i<listInputVariables.size();i++){
           LinguisticVariable linguisticVariable = listInputVariables.get(i);
           Label label = getLabel(linguisticVariable.getName());
-          ArrayList<LineChart> listLineCharts = drawMFLineGraph(linguisticVariable);
-          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable);
+          //ArrayList<LineChart> listLineCharts = drawMFLineGraph(linguisticVariable);
+          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, cv);
           System.out.println("Получен список графиков: " + listAreaCharts.size());
           root.add(label,i,0);
 
@@ -172,11 +173,15 @@ public class cvController {
               root.add(listAreaCharts.get(k),i,k+1);
             }
           }
-//          if(listAreaCharts.size()>0){
-//            for(int k = 0;k<listLineCharts.size();k++){
-//              root.add(listLineCharts.get(k),i,k+1);
-//            }
-//          }
+
+
+          if(linguisticVariable.getName().equalsIgnoreCase("Стаж работы")){
+            System.out.println("Стаж работы:" + cv.getExperience());
+            TriangleMF.getMF(linguisticVariable.getMfList(),new Double(cv.getExperience()));
+          }
+
+
+
 
 
           j = i+1;
@@ -184,12 +189,20 @@ public class cvController {
 
         //Выходные переменные
         for(int i = 0;i<listOutputVariables.size();i++){
-          Label label = getLabel(listOutputVariables.get(i).getName());
-
+          LinguisticVariable linguisticVariable = listOutputVariables.get(i);
+          Label label = getLabel(linguisticVariable.getName());
+          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,cv);
           root.add(label,i+j,0);
-         // root.add(lineChart1,i+j,1);
-          //root.getChildren().add(label);
+
+          if(listAreaCharts.size()>0){
+            for(int k = 0;k<listAreaCharts.size();k++){
+              root.add(listAreaCharts.get(k),i+j,k+1);
+            }
+          }
         }
+
+
+
 
         scrollPane.setContent(root);
         scrollPane.setPannable(true);
@@ -223,7 +236,7 @@ public class cvController {
     return listCharts;
   }
 
-  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable) {
+  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, CV cv) {
     ArrayList<AreaChart> listCharts = new ArrayList<>();
     ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
     System.out.println("Список MF: " + listMF.size());
