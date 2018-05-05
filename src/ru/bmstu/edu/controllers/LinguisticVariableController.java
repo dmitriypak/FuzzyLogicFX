@@ -80,6 +80,11 @@ public class LinguisticVariableController {
           public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
                               Boolean newValue) {
             linguisticVariable.setIsactive(newValue);
+            try {
+              updateVariable(linguisticVariable);
+            } catch (SQLException e) {
+              e.printStackTrace();
+            }
           }
         });
         return booleanProp;
@@ -165,11 +170,30 @@ public class LinguisticVariableController {
         variableList.delete(delVariable);
         deleteVariable(delVariable);
         break;
-
-        //webViewCV( "https://eclipse.org");
+//      case "btnSaveVariable":
+//        String query = "UPDATE INTO cvdata.bmstu.linguisticvariables set isactive = ? where id = ?";
+//        try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+//          int i = 0;
+//          pstmt.setObject(++i,);
+//          pstmt.setObject(++i, jsonObject);
+//
+//          pstmt.executeUpdate();
+//        }
+//        break;
     }
 
+
   }
+  private void updateVariable(LinguisticVariable linguisticVariable) throws SQLException {
+    String query = "UPDATE cvdata.bmstu.linguisticvariables set isactive = ? where id = ?";
+      try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+        int i = 0;
+        pstmt.setObject(++i,linguisticVariable.getIsactive());
+        pstmt.setObject(++i, linguisticVariable.getId());
+        pstmt.executeUpdate();
+      }
+  }
+
 
   private void deleteVariable(LinguisticVariable delVariable) throws SQLException {
     String query = "delete from cvdata.bmstu.linguisticvariables WHERE id = ?";

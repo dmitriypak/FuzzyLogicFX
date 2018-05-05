@@ -60,7 +60,7 @@ public class DaoUtils {
   public static ArrayList<LinguisticVariable> getInputVariables(){
     ArrayList<LinguisticVariable> listVariables = new ArrayList<>();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
-        ("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables WHERE type = 'INPUT'")) {
+        ("select id, name, VALUE, type, isactive from cvdata.bmstu.linguisticvariables WHERE type = 'INPUT' and isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
@@ -77,7 +77,7 @@ public class DaoUtils {
   public static ArrayList<LinguisticVariable> getOutputVariables(){
     ArrayList<LinguisticVariable> listVariables = new ArrayList<>();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
-        ("select id, name, VALUE, type from cvdata.bmstu.linguisticvariables WHERE TYPE ='OUTPUT'")) {
+        ("select id, name, VALUE, type, isactive from cvdata.bmstu.linguisticvariables WHERE TYPE ='OUTPUT'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
