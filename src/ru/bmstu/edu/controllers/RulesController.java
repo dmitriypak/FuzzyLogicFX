@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.CheckTreeView;
+import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.objects.Rule;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
@@ -27,6 +28,8 @@ public class RulesController {
   private TableView tableRules;
   @FXML
   private TableColumn colRule;
+  @FXML
+  private Button btnEditRule;
 
 
   private Node nodesource;
@@ -40,7 +43,7 @@ public class RulesController {
   private ObservableList<Rule> rulesList;
 
   @FXML
-  private void initialize(){
+  private void initialize() throws ParseException {
     colRule.setCellValueFactory(new PropertyValueFactory<Rule, String>("value"));
 
     try {
@@ -50,12 +53,18 @@ public class RulesController {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    tableRules.setOnMouseClicked( event -> {
+      if( event.getClickCount() == 2 ) {
+        btnEditRule.fire();
+      }});
+
+
 
     fillData();
   }
 
 
-  private void fillData(){
+  private void fillData() throws ParseException {
     rulesList = FXCollections.observableArrayList(DaoUtils.getRules());
     if(rulesList.size()>0){
       tableRules.setItems(rulesList);
@@ -155,6 +164,7 @@ public class RulesController {
         Rule delRule;
         delRule = (Rule)tableRules.getSelectionModel().getSelectedItem();
         DaoUtils.deleteRule(delRule.getIdRule());
+        rulesList.remove(delRule);
         break;
     }
   }

@@ -83,6 +83,10 @@ public class EditRuleController {
     this.rule = rule;
     System.out.println("Получено правило id: " + rule.getIdRule());
 
+    comboIFVarName.setValue(rule.getVariableName());
+
+
+
   }
 
   public void selectVarOutputName(ActionEvent actionEvent) {

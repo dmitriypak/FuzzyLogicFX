@@ -152,6 +152,7 @@ public class cvController {
     return chart;
   }
 
+
   private double getX(double y, double x1, double x2, double y1, double y2){
     double x = 0;
     x = (-y*(x2-x1)-(x1*y2-x2*y1))/(y1-y2);
@@ -163,8 +164,6 @@ public class cvController {
     y = (-(x1*y2-x2*y1)-x*(y1-y2))/(x2-x1);
     return y;
   }
-
-
 
   private Label getLabel(String name){
     Label label = new Label(name);
@@ -226,19 +225,19 @@ public class cvController {
         }
 
         //Выходные переменные
-//        for(int i = 0;i<listOutputVariables.size();i++){
-//          double param = 0;
-//          LinguisticVariable linguisticVariable = listOutputVariables.get(i);
-//          Label label = getLabel(linguisticVariable.getName());
-//          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
-//          root.add(label,i+j,0);
-//
-//          if(listAreaCharts.size()>0){
-//            for(int k = 0;k<listAreaCharts.size();k++){
-//              root.add(listAreaCharts.get(k),i+j,k+1);
-//            }
-//          }
-//        }
+        for(int i = 0;i<listOutputVariables.size();i++){
+          double param = 0;
+          LinguisticVariable linguisticVariable = listOutputVariables.get(i);
+          Label label = getLabel(linguisticVariable.getName());
+          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
+          root.add(label,i+j,0);
+
+          if(listAreaCharts.size()>0){
+            for(int k = 0;k<listAreaCharts.size();k++){
+              root.add(listAreaCharts.get(k),i+j,k+2);
+            }
+          }
+        }
 
 
         scrollPane.setContent(root);

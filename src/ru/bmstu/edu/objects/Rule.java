@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 public class Rule {
   private SimpleIntegerProperty idRule = new SimpleIntegerProperty(0);
-  private ArrayList<Condition> conditionsList = new ArrayList<>();
+
+  private ArrayList<Condition> conditionsList;
+
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleStringProperty variableName = new SimpleStringProperty("");
   private Boolean isactive;
@@ -66,10 +68,6 @@ public class Rule {
     this.value.set(value);
   }
 
-  public Rule(ArrayList<Condition> conditionsList) {
-
-    this.conditionsList = conditionsList;
-  }
 
   public Rule() {
   }

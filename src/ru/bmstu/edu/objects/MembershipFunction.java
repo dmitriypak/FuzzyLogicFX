@@ -14,6 +14,11 @@ public class MembershipFunction {
     this.MFname = new SimpleStringProperty(MFname);
     this.MFParamValue = new SimpleStringProperty(MFParamValue);
   }
+  public MembershipFunction(String MFname) {
+    this.MFname = new SimpleStringProperty(MFname);
+  }
+
+
 
   public String getMFname() {
 

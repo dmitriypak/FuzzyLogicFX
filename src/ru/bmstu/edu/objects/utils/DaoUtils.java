@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class DaoUtils {
 
@@ -143,13 +144,41 @@ public class DaoUtils {
     }
   }
 
-  public static ArrayList<Rule> getRules(){
+  public static ArrayList<Rule> getRules() throws ParseException {
     ArrayList<Rule> listRules = new ArrayList<>();
+
+    Map<String,MembershipFunction> ifMap = new LinkedHashMap<>();
+    Map<String,MembershipFunction> andMap = new LinkedHashMap<>();
+    Map<String,MembershipFunction>thenMap = new LinkedHashMap<>();
+
+    org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
         ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         Rule rule = new Rule(rs.getInt("id"), rs.getString("value"),rs.getBoolean("isactive"));
+
+        //Парсинг JSON
+        Object obj = parser.parse(rule.getValue());
+        JSONObject jsonObject = (JSONObject) obj;
+        System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+        //IF
+        JSONArray IFarray = (JSONArray) jsonObject.get("IF");
+        System.out.println("IF: " + IFarray);
+        for(int i =0;i<IFarray.size();i++){
+          JSONObject ifParam =  (JSONObject) IFarray.get(i);
+          String idVariable = ifParam.get("idvariable").toString();
+          String nameMF = ifParam.get("nameMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF);
+          String nameVariable = ifParam.get("nameVariable").toString();
+          ifMap.put(nameVariable,mf);
+        }
+
+
+
+
+
+
         listRules.add(rule);
       }
     } catch (SQLException e) {
