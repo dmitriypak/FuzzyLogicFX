@@ -27,7 +27,6 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
-import ru.bmstu.edu.objects.TriangleMF;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -58,10 +57,9 @@ public class cvController {
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private ViewRulesController viewRulesController;
-  private Stage viewRulesStage;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
-  private GridPane root = new GridPane();
+
   @FXML
   private void initialize(){
     DaoUtils.setupClearButtonField(txtPositionName);
@@ -103,7 +101,7 @@ public class cvController {
   }
 
 
-  private AreaChart getAreaChart(MembershipFunction mf){
+  private AreaChart getAreaChart(MembershipFunction mf, double param){
     NumberAxis xAxis = new NumberAxis() ;
     NumberAxis yAxis = new NumberAxis(0,1,0) ;
     AreaChart chart = new AreaChart(xAxis, yAxis) ;
@@ -113,28 +111,60 @@ public class cvController {
     chart.setMinHeight(100);
     chart.setMinWidth(100);
     chart.setCreateSymbols(false);
-    chart.getXAxis().setTickMarkVisible(false);
-    chart.getYAxis().setTickMarkVisible(false);
-    chart.getXAxis().setTickLabelsVisible(false);
-    chart.getXAxis().setTickLength(0);
-    chart.getYAxis().setTickLabelsVisible(false);
-    chart.setVerticalGridLinesVisible(false);
-
+//    chart.getXAxis().setTickMarkVisible(false);
+//    chart.getYAxis().setTickMarkVisible(false);
+//    chart.getXAxis().setTickLabelsVisible(false);
+//    chart.getXAxis().setTickLength(0);
+//    chart.getYAxis().setTickLabelsVisible(false);
+//    chart.setVerticalGridLinesVisible(false);
     XYChart.Series series = new XYChart.Series();
     XYChart.Series series1 = new XYChart.Series();
+    XYChart.Series series2 = new XYChart.Series();
     String value[] = mf.getMFParamValue().split(" ");
     series.setName(mf.getMFname());
     System.out.println("MFname:" + mf.getMFname());
     for(int i =0;i<value.length;i++){
       series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
-      //series.getData().add(new XYChart.Data(1,19));
-      System.out.println(value[i]);
     }
-    series1.getData().add(new XYChart.Data(5,0));
-    series1.getData().add(new XYChart.Data(5,1));
-    chart.getData().addAll(series,series1);
+    series1.getData().add(new XYChart.Data(param,0));
+    series1.getData().add(new XYChart.Data(param,1));
+
+
+    if(param>=Double.valueOf(value[0]) && param<=Double.valueOf(value[1])){
+      series2.getData().add(new XYChart.Data(Double.valueOf(value[0]),0));
+      double y = getY(param,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+      series2.getData().add(new XYChart.Data(param,y));
+      double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+      series2.getData().add(new XYChart.Data(x,y));
+      series2.getData().add(new XYChart.Data(Double.valueOf(value[2]),0));
+    }else{
+      if(param>=Double.valueOf(value[1]) && param<=Double.valueOf(value[2])){
+        series2.getData().add(new XYChart.Data(Double.valueOf(value[2]),0));
+        double y = getY(param,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+        series2.getData().add(new XYChart.Data(param,y));
+        double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+        series2.getData().add(new XYChart.Data(x,y));
+        series2.getData().add(new XYChart.Data(Double.valueOf(value[0]),0));
+      }
+
+    }
+
+    chart.getData().addAll(series,series2,series1);
     return chart;
   }
+
+  private double getX(double y, double x1, double x2, double y1, double y2){
+    double x = 0;
+    x = (-y*(x2-x1)-(x1*y2-x2*y1))/(y1-y2);
+    return x;
+  }
+
+  private double getY(double x, double x1, double x2, double y1, double y2){
+    double y = 0;
+    y = (-(x1*y2-x2*y1)-x*(y1-y2))/(x2-x1);
+    return y;
+  }
+
 
 
   private Label getLabel(String name){
@@ -143,17 +173,21 @@ public class cvController {
     label.setTextAlignment(TextAlignment.CENTER);
     label.setTextFill(Paint.valueOf(String.valueOf(Color.BLUE)));
     label.setPadding(new Insets(25));
+    //label.setMaxWidth(100);
     return label;
   }
   private void showDialog(CV cv) {
-    if (viewRulesStage==null) {
-      viewRulesStage = new Stage();
+
+    if (cv!=null) {
+      Stage viewRulesStage = new Stage();
+      GridPane root = new GridPane();
       viewRulesStage.setTitle("Мамдани");
       viewRulesStage.setMinHeight(600);
       viewRulesStage.setMinWidth(800);
       viewRulesStage.setResizable(true);
       //FlowPane root = new FlowPane();
-
+//      root.setMaxHeight(500);
+      root.setMinWidth(300);
       ScrollPane scrollPane = new ScrollPane();
 
       if(cv.getId()!=0){
@@ -162,46 +196,50 @@ public class cvController {
         int j = 0;
         for(int i = 0;i<listInputVariables.size();i++){
           LinguisticVariable linguisticVariable = listInputVariables.get(i);
-          Label label = getLabel(linguisticVariable.getName());
-          //ArrayList<LineChart> listLineCharts = drawMFLineGraph(linguisticVariable);
-          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, cv);
+          //Название переменной
+          StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
+
+          double param = 0;
+
+          switch (nameVariable.toString()) {
+            case "Стаж работы":
+              param = cv.getExperience();
+              break;
+            case "Размер заработной платы":
+              param = cv.getSalary();
+              break;
+
+          }
+          nameVariable.append("\n").append(param);
+          Label label = getLabel(nameVariable.toString());
+          Label label1 = getLabel(String.valueOf(param));
+          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, param);
           System.out.println("Получен список графиков: " + listAreaCharts.size());
           root.add(label,i,0);
 
           if(listAreaCharts.size()>0){
             for(int k = 0;k<listAreaCharts.size();k++){
-              root.add(listAreaCharts.get(k),i,k+1);
+              root.add(listAreaCharts.get(k),i,k+2);
             }
           }
-
-
-          if(linguisticVariable.getName().equalsIgnoreCase("Стаж работы")){
-            System.out.println("Стаж работы:" + cv.getExperience());
-            TriangleMF.getMF(linguisticVariable.getMfList(),new Double(cv.getExperience()));
-          }
-
-
-
-
 
           j = i+1;
         }
 
         //Выходные переменные
-        for(int i = 0;i<listOutputVariables.size();i++){
-          LinguisticVariable linguisticVariable = listOutputVariables.get(i);
-          Label label = getLabel(linguisticVariable.getName());
-          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,cv);
-          root.add(label,i+j,0);
-
-          if(listAreaCharts.size()>0){
-            for(int k = 0;k<listAreaCharts.size();k++){
-              root.add(listAreaCharts.get(k),i+j,k+1);
-            }
-          }
-        }
-
-
+//        for(int i = 0;i<listOutputVariables.size();i++){
+//          double param = 0;
+//          LinguisticVariable linguisticVariable = listOutputVariables.get(i);
+//          Label label = getLabel(linguisticVariable.getName());
+//          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
+//          root.add(label,i+j,0);
+//
+//          if(listAreaCharts.size()>0){
+//            for(int k = 0;k<listAreaCharts.size();k++){
+//              root.add(listAreaCharts.get(k),i+j,k+1);
+//            }
+//          }
+//        }
 
 
         scrollPane.setContent(root);
@@ -216,8 +254,9 @@ public class cvController {
 
       viewRulesStage.initModality(Modality.WINDOW_MODAL);
       viewRulesStage.initOwner((Stage) nodesource.getScene().getWindow());
+      viewRulesStage.showAndWait();
     }
-    viewRulesStage.showAndWait();
+
   }
 
   private ArrayList<LineChart> drawMFLineGraph(LinguisticVariable linguisticVariable) {
@@ -236,7 +275,7 @@ public class cvController {
     return listCharts;
   }
 
-  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, CV cv) {
+  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, double param) {
     ArrayList<AreaChart> listCharts = new ArrayList<>();
     ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
     System.out.println("Список MF: " + listMF.size());
@@ -244,7 +283,9 @@ public class cvController {
 
     if(listMF.size()>0){
       for(MembershipFunction mf:listMF){
-        AreaChart chart = getAreaChart(mf);
+        //Определение принадлежности
+        String nameVariable = linguisticVariable.getName();
+        AreaChart chart = getAreaChart(mf,param);
         listCharts.add(chart);
       }
 
