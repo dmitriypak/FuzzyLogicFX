@@ -95,8 +95,8 @@ public class DaoUtils {
 
   public static LinkedHashMap<String,LinguisticVariable> getMapInputVariables(){
     LinkedHashMap<String,LinguisticVariable> mapVariables = new LinkedHashMap<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type" +
-        " from cvdata.bmstu.linguisticvariables WHERE TYPE = 'INPUT'")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type, isactive" +
+        " from cvdata.bmstu.linguisticvariables WHERE TYPE = 'INPUT' and isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
@@ -112,8 +112,8 @@ public class DaoUtils {
 
   public static LinkedHashMap<String,LinguisticVariable> getMapOutputVariables(){
     LinkedHashMap<String,LinguisticVariable> mapVariables = new LinkedHashMap<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type" +
-        " from cvdata.bmstu.linguisticvariables WHERE TYPE = 'OUTPUT'")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE, type, isactive " +
+        " from cvdata.bmstu.linguisticvariables WHERE TYPE = 'OUTPUT' and isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
@@ -145,10 +145,11 @@ public class DaoUtils {
 
   public static ArrayList<Rule> getRules(){
     ArrayList<Rule> listRules = new ArrayList<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, idvariable, VALUE from cvdata.bmstu.rules")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
+        ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
-        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"));
+        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"),rs.getBoolean("isactive"));
         listRules.add(rule);
       }
     } catch (SQLException e) {
@@ -156,6 +157,8 @@ public class DaoUtils {
     }
     return listRules;
   }
+
+
   public static ArrayList<Rule> getRulesByVariable(int idVariable){
     ArrayList<Rule> listRules = new ArrayList<>();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, idvariable, VALUE from cvdata.bmstu.rules WHERE idvariable" +
@@ -163,7 +166,7 @@ public class DaoUtils {
       statement.setInt(1,idVariable);
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
-        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"));
+        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"),rs.getBoolean("isactive"));
         listRules.add(rule);
       }
     } catch (SQLException e) {
@@ -182,4 +185,15 @@ public class DaoUtils {
       e.printStackTrace();
     }
   }
+
+  public static void deleteRule(int id) throws SQLException {
+    String query = "DELETE FROM cvdata.bmstu.rules WHERE id = ?";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      int i = 0;
+      pstmt.setInt(++i,id);
+      pstmt.executeUpdate();
+    }
+  }
+
+
 }

@@ -116,6 +116,7 @@ public class EditLinguisticVariableController{
 
       case "btnSaveMF":
         MembershipFunction saveMF = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
+        if(saveMF==null) return;
         saveMF.setMFname(txtNameMF.getText());
         saveMF.setMFParamValue(txtParamMF.getText());
         mfList.set(tableMF.getSelectionModel().getSelectedIndex(),saveMF);

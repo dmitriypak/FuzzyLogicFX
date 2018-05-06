@@ -1,3 +1,8 @@
+#tableRules{
+    -fx-font-family: Verdana, sans-serif;
+    -fx-font-size: 14px;
+}
+
 #tableViewVariables{
     -fx-font-family: Arial, sans-serif;
     -fx-font-size: 14px;

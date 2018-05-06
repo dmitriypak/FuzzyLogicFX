@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -42,7 +43,10 @@ public class EditRuleController {
   private TableColumn colValueMF;
   @FXML
   private TableView tableAnd;
+  @FXML
+  private Button btnCancel;
 
+  private Rule rule;
 
   ObservableList<String> variablesNameList = FXCollections.observableArrayList();
   ObservableList<String> variablesNameListOutput = FXCollections.observableArrayList();
@@ -70,8 +74,14 @@ public class EditRuleController {
       }
       comboThenVarName.setItems(variablesNameListOutput);
     }
+  }
 
 
+
+  public void setRule(Rule rule){
+    if(rule==null) return;
+    this.rule = rule;
+    System.out.println("Получено правило id: " + rule.getIdRule());
 
   }
 
@@ -185,6 +195,7 @@ public class EditRuleController {
     DaoUtils.insertRule(rule,idVariableIF);
 
     System.out.println(obj.toString());
+    btnCancel.fire();
   }
 
   public void actionClose(ActionEvent actionEvent) {

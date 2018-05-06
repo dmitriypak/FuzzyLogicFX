@@ -8,7 +8,37 @@ import java.util.ArrayList;
 public class Rule {
   private SimpleIntegerProperty idRule = new SimpleIntegerProperty(0);
   private ArrayList<Condition> conditionsList = new ArrayList<>();
-  private SimpleStringProperty value = new SimpleStringProperty();
+  private SimpleStringProperty value = new SimpleStringProperty("");
+  private SimpleStringProperty variableName = new SimpleStringProperty("");
+  private Boolean isactive;
+
+  public Boolean getIsactive() {
+    return isactive;
+  }
+
+  public void setIsactive(Boolean isactive) {
+    this.isactive = isactive;
+  }
+
+  public String getVariableName() {
+    return variableName.get();
+  }
+
+  public SimpleStringProperty variableNameProperty() {
+    return variableName;
+  }
+
+  public void setVariableName(String variableName) {
+    this.variableName.set(variableName);
+  }
+
+  public Rule(String variableName) {
+    this.variableName = new SimpleStringProperty(variableName);
+  }
+
+
+
+
 
   public int getIdRule() {
     return idRule.get();
@@ -44,8 +74,9 @@ public class Rule {
   public Rule() {
   }
 
-  public Rule(int idRule, String value) {
+  public Rule(int idRule, String value, Boolean state) {
     this.idRule = new SimpleIntegerProperty(idRule);
     this.value = new SimpleStringProperty(value);
+    this.isactive = state;
   }
 }

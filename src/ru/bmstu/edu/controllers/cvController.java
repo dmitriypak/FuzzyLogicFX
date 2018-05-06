@@ -146,7 +146,6 @@ public class cvController {
         series2.getData().add(new XYChart.Data(x,y));
         series2.getData().add(new XYChart.Data(Double.valueOf(value[0]),0));
       }
-
     }
 
     chart.getData().addAll(series,series2,series1);
