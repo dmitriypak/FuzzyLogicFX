@@ -12,6 +12,7 @@ public class LinguisticVariable {
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleStringProperty type = new SimpleStringProperty("");
   private Boolean isactive;
+  private Variable variable;
 
 
 

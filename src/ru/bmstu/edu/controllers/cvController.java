@@ -27,6 +27,7 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.Variable;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -198,12 +199,12 @@ public class cvController {
           StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
 
           double param = 0;
-
-          switch (nameVariable.toString()) {
-            case "Стаж работы":
+          Variable variable = Variable.getVariableByName(nameVariable.toString());
+          switch (variable) {
+            case WORK_EXPERIENCE:
               param = cv.getExperience();
               break;
-            case "Размер заработной платы":
+            case SALARY:
               param = cv.getSalary();
               break;
 
