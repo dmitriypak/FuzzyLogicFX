@@ -1,4 +1,4 @@
-package ru.bmstu.edu.objects;
+package ru.bmstu.edu.objects.enums;
 
 public enum Variable {
 

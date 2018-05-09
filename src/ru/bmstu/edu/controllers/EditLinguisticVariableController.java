@@ -21,6 +21,7 @@ import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.enums.MFname;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.sql.PreparedStatement;
@@ -48,8 +49,10 @@ public class EditLinguisticVariableController{
   private Button btnSave;
   @FXML
   private ComboBox comboTypeVariable;
-
-
+  @FXML
+  private ComboBox comboCode;
+  @FXML
+  private TableColumn columnCodeMF;
 
   private LinguisticVariable linguisticVariable;
 
@@ -65,15 +68,18 @@ public class EditLinguisticVariableController{
     DaoUtils.setupClearButtonField(txtNameMF);
     DaoUtils.setupClearButtonField(txtParamMF);
     DaoUtils.setupClearButtonField(txtNameVariable);
+
     createComboBox();
-    colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFname"));
-    colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("MFParamValue"));
+    colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("nameMF"));
+    colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("paramValueMF"));
+    columnCodeMF.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("codeMF"));
 
     tableMF.setOnMouseClicked( event -> {
       if( event.getClickCount() == 1 ) {
         MembershipFunction mf = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
-        txtParamMF.setText(mf.getMFParamValue());
-        txtNameMF.setText(mf.getMFname());
+        txtParamMF.setText(mf.getParamValueMF());
+        txtNameMF.setText(mf.getNameMF());
+        comboCode.setValue(mf.getmFname());
 
       }});
 
@@ -92,9 +98,15 @@ public class EditLinguisticVariableController{
         "OUTPUT");
     comboTypeVariable.setItems(typeDistribution);
 
+
+    //Заполнение комбобокса comboCode
+    ObservableList<MFname> codeVariablesList = FXCollections.observableArrayList();
+    for(MFname mf:MFname.values()){
+      codeVariablesList.add(mf);
+    }
+    comboCode.setItems(codeVariablesList);
+
   }
-
-
 
 
   public void actionButtonPressed(ActionEvent actionEvent) {
@@ -117,8 +129,9 @@ public class EditLinguisticVariableController{
       case "btnSaveMF":
         MembershipFunction saveMF = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
         if(saveMF==null) return;
-        saveMF.setMFname(txtNameMF.getText());
-        saveMF.setMFParamValue(txtParamMF.getText());
+        saveMF.setNameMF(txtNameMF.getText());
+        saveMF.setParamValueMF(txtParamMF.getText());
+        saveMF.setmFname((MFname) comboCode.getSelectionModel().getSelectedItem());
         mfList.set(tableMF.getSelectionModel().getSelectedIndex(),saveMF);
         drawGraphMF();
 //        editMembershipFunctionController.setMF((MembershipFunction)tableMF.getSelectionModel().getSelectedItem());
@@ -139,8 +152,8 @@ public class EditLinguisticVariableController{
     chart1.setTitle(linguisticVariable.getName());
     for (MembershipFunction mf : mfList) {
       XYChart.Series series = new XYChart.Series();
-      String value[] = mf.getMFParamValue().split(" ");
-      series.setName(mf.getMFname());
+      String value[] = mf.getParamValueMF().split(" ");
+      series.setName(mf.getNameMF());
       for(int i =0;i<value.length;i++){
         series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
         //series.getData().add(new XYChart.Data(1,19));
@@ -167,8 +180,9 @@ public class EditLinguisticVariableController{
   public void addMFParam(){
     String nameMF = txtNameMF.getText();
     String paramMF = txtParamMF.getText();
+    MFname codeMF = (MFname)comboCode.getSelectionModel().getSelectedItem();
     if(!nameMF.isEmpty() && !paramMF.isEmpty()){
-      MembershipFunction mf = new MembershipFunction(nameMF,paramMF);
+      MembershipFunction mf = new MembershipFunction(nameMF,paramMF,codeMF.getCode());
       mfList.add(mf);
       ObservableList<MembershipFunction> mfList2 = FXCollections.observableArrayList(mfList);
       tableMF.setItems(mfList2);
@@ -186,15 +200,18 @@ public class EditLinguisticVariableController{
     System.out.println("Получена переменная id: " + linguisticVariable.getId());
     this.linguisticVariable=linguisticVariable;
     txtNameVariable.setText(linguisticVariable.getName());
+    txtNameMF.clear();
+    txtParamMF.clear();
+    comboCode.setValue("");
     comboTypeVariable.setValue(linguisticVariable.getType());
     if(linguisticVariable.getId()!=0){
       mfList = FXCollections.observableArrayList(DaoUtils.getMFList(linguisticVariable.getValue()));
       System.out.println("Получен список " + mfList.size());
       fillData();
     }else{
-      txtNameVariable.setText("");
-      txtNameMF.setText("");
-      txtParamMF.setText("");
+      txtNameVariable.clear();
+      txtNameMF.clear();
+      txtParamMF.clear();
       mfList.clear();
       chart1.getData().clear();
       chart1.setTitle("");
@@ -229,9 +246,12 @@ public class EditLinguisticVariableController{
     Stage stage = (Stage) source.getScene().getWindow();
     stage.hide();
   }
+
+
+
   public void actionSave(ActionEvent actionEvent) throws SQLException {
     if(mfList.size()==0) return;
-    if(comboTypeVariable.getValue()==null){
+    if(comboTypeVariable.getValue()==null || comboCode.getValue()==null){
       Alert alert = new Alert(Alert.AlertType.WARNING);
       alert.setTitle("Ошибка");
       alert.setHeaderText(null);
@@ -244,8 +264,10 @@ public class EditLinguisticVariableController{
 
     for(int i = 0;i<mfList.size();i++){
       JSONObject objMF = new JSONObject();
-      objMF.put("MFParamName",mfList.get(i).getMFname());
-      objMF.put("MFParamValue",mfList.get(i).getMFParamValue());
+      MFname mFname = (MFname)comboCode.getSelectionModel().getSelectedItem();
+      objMF.put("MFParamName",mfList.get(i).getNameMF());
+      objMF.put("MFParamValue",mfList.get(i).getParamValueMF());
+      objMF.put("MFCode",mfList.get(i).getCodeMF());
       ar.add(objMF);
     }
     obj.put("MFParams",ar);

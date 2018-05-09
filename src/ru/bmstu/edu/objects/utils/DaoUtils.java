@@ -41,7 +41,9 @@ public class DaoUtils {
         System.out.println(mfParam);
         String mfParamValue =  mfParamName.get("MFParamValue").toString();
         System.out.println(mfParamValue);
-        MembershipFunction membershipFunction = new MembershipFunction(mfParam, mfParamValue);
+        String mfCode =  mfParamName.get("MFCode").toString();
+        System.out.println(mfCode);
+        MembershipFunction membershipFunction = new MembershipFunction(mfParam, mfParamValue,mfCode);
         list.add(membershipFunction);
       }
 //      Iterator<JSONArray> iterator = mf.iterator();

@@ -27,7 +27,7 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
-import ru.bmstu.edu.objects.Variable;
+import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -81,16 +81,16 @@ public class cvController {
     NumberAxis xAxis = new NumberAxis() ;
     NumberAxis yAxis = new NumberAxis(0,1,0) ;
     LineChart linechart = new LineChart(xAxis, yAxis) ;
-    linechart.setTitle(mf.getMFname());
+    linechart.setTitle(mf.getNameMF());
     linechart.setMaxWidth(200);
     linechart.setMaxHeight(200);
     linechart.setMinHeight(100);
     linechart.setMinWidth(100);
     linechart.setOpacity(0.5);
     XYChart.Series series = new XYChart.Series();
-    String value[] = mf.getMFParamValue().split(" ");
-    series.setName(mf.getMFname());
-    System.out.println("MFname:" + mf.getMFname());
+    String value[] = mf.getParamValueMF().split(" ");
+    series.setName(mf.getNameMF());
+    System.out.println("MFname:" + mf.getNameMF());
     for(int i =0;i<value.length;i++){
       series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
       //series.getData().add(new XYChart.Data(1,19));
@@ -106,7 +106,7 @@ public class cvController {
     NumberAxis xAxis = new NumberAxis() ;
     NumberAxis yAxis = new NumberAxis(0,1,0) ;
     AreaChart chart = new AreaChart(xAxis, yAxis) ;
-    chart.setTitle(mf.getMFname());
+    chart.setTitle(mf.getNameMF());
     chart.setMaxWidth(200);
     chart.setMaxHeight(200);
     chart.setMinHeight(100);
@@ -121,9 +121,9 @@ public class cvController {
     XYChart.Series series = new XYChart.Series();
     XYChart.Series series1 = new XYChart.Series();
     XYChart.Series series2 = new XYChart.Series();
-    String value[] = mf.getMFParamValue().split(" ");
-    series.setName(mf.getMFname());
-    System.out.println("MFname:" + mf.getMFname());
+    String value[] = mf.getParamValueMF().split(" ");
+    series.setName(mf.getNameMF());
+    System.out.println("MFname:" + mf.getNameMF());
     for(int i =0;i<value.length;i++){
       series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
     }
@@ -212,6 +212,7 @@ public class cvController {
           nameVariable.append("\n").append(param);
           Label label = getLabel(nameVariable.toString());
           Label label1 = getLabel(String.valueOf(param));
+          //Построение графиков
           ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, param);
           System.out.println("Получен список графиков: " + listAreaCharts.size());
           root.add(label,i,0);

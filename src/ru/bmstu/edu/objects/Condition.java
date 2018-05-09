@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Condition {
 
-  private MembershipFunction IFmf;
+  private Map<String,MembershipFunction> IFmfList;
   private Map<String,MembershipFunction> ANDmfList;
   private Map<String,MembershipFunction> THENmfList;
 
@@ -17,16 +17,6 @@ public class Condition {
   private SimpleStringProperty type = new SimpleStringProperty("");
 
   /////////////////////////
-
-
-  public MembershipFunction getIFmf() {
-    return IFmf;
-  }
-
-  public void setIFmf(MembershipFunction IFmf) {
-    this.IFmf = IFmf;
-  }
-
 
   public int getId() {
     return idVariable.get();

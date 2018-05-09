@@ -2,6 +2,7 @@ package ru.bmstu.edu.objects;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ru.bmstu.edu.objects.enums.Variable;
 
 import java.util.ArrayList;
 

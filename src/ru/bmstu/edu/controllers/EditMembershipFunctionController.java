@@ -46,8 +46,8 @@ public class EditMembershipFunctionController {
       return;
     }
     this.membershipFunction=membershipFunction;
-    txtNameMF.setText(membershipFunction.getMFname());
-    txtParamMF.setText(membershipFunction.getMFParamValue());
+    txtNameMF.setText(membershipFunction.getNameMF());
+    txtParamMF.setText(membershipFunction.getParamValueMF());
   }
 
   public MembershipFunction getMF(){
@@ -61,8 +61,8 @@ public class EditMembershipFunctionController {
   }
 
   public void actionSave(ActionEvent actionEvent) {
-    membershipFunction.setMFname(txtNameMF.getText());
-    membershipFunction.setMFParamValue(txtParamMF.getText());
+    membershipFunction.setNameMF(txtNameMF.getText());
+    membershipFunction.setParamValueMF(txtParamMF.getText());
 
     actionClose(actionEvent);
   }

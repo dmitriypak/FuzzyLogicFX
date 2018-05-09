@@ -10,7 +10,7 @@ public class TriangleMF {
     double VAL1 = 0;
     double VAL2 = 0;
     for(MembershipFunction m:listMF){
-      String values[] = m.getMFParamValue().split(" ");
+      String values[] = m.getParamValueMF().split(" ");
 
       double val1 = Double.valueOf(values[0]);
       double val2 = Double.valueOf(values[1]);

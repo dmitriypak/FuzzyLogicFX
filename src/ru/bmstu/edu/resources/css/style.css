@@ -1,9 +1,10 @@
-#tableRules{
-    -fx-font-family: Verdana, sans-serif;
+.table-view{
+    -fx-font-family: Arial, sans-serif;
     -fx-font-size: 14px;
+    -fx-background-color: #f0f0f0;
 }
 
-#tableViewVariables{
+.label{
     -fx-font-family: Arial, sans-serif;
     -fx-font-size: 14px;
     -fx-background-color: #f0f0f0;

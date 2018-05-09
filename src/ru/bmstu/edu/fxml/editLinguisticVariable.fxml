@@ -14,20 +14,21 @@
 
 <AnchorPane prefHeight="725.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditLinguisticVariableController">
    <children>
-      <Label layoutX="341.0" layoutY="54.0" text="Наименование переменной:" />
+      <Label layoutX="350.0" layoutY="48.0" text="Наименование переменной:" AnchorPane.leftAnchor="350.0" />
       <Button fx:id="btnSave" layoutX="550.0" layoutY="647.0" minWidth="75.0" mnemonicParsing="false" onAction="#actionSave" text="Сохранить" AnchorPane.bottomAnchor="25.0" />
       <Button fx:id="btnClose" layoutX="636.0" layoutY="648.0" minWidth="50.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="75.0" text="Отмена" AnchorPane.bottomAnchor="25.0" />
-      <TableView fx:id="tableMF" layoutX="10.0" layoutY="182.0" prefHeight="145.0" prefWidth="712.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="182.0">
+      <TableView fx:id="tableMF" layoutX="10.0" layoutY="217.0" prefHeight="117.0" prefWidth="712.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="217.0">
         <columns>
-          <TableColumn fx:id="colMFName" prefWidth="175.0" text="Функция принадлежности" />
-          <TableColumn fx:id="colMFParamValue" prefWidth="536.0" text="Параметры" />
+          <TableColumn fx:id="colMFName" prefWidth="110.0" text="Наименование" />
+          <TableColumn fx:id="colMFParamValue" prefWidth="495.0" text="Параметры" />
+            <TableColumn fx:id="columnCodeMF" prefWidth="106.0" text="Код" />
         </columns>
       </TableView>
-      <CustomTextField fx:id="txtNameVariable" layoutX="341.0" layoutY="80.0" prefHeight="25.0" prefWidth="381.0" AnchorPane.rightAnchor="10.0" />
-      <Label layoutX="17.0" layoutY="117.0" text="Наименование функции принадлежности:" />
-      <CustomTextField fx:id="txtNameMF" layoutX="10.0" layoutY="140.0" prefHeight="25.0" prefWidth="303.0" AnchorPane.leftAnchor="10.0" />
-      <Label layoutX="341.0" layoutY="117.0" text="Параметры:" />
-      <CustomTextField fx:id="txtParamMF" layoutX="341.0" layoutY="140.0" prefHeight="25.0" prefWidth="381.0" />
+      <CustomTextField fx:id="txtNameVariable" layoutX="350.0" layoutY="72.0" prefHeight="25.0" prefWidth="381.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="10.0" />
+      <Label layoutX="10.0" layoutY="106.0" text="Наименование функции принадлежности:" AnchorPane.leftAnchor="10.0" />
+      <CustomTextField fx:id="txtNameMF" layoutX="10.0" layoutY="129.0" prefHeight="25.0" prefWidth="303.0" AnchorPane.leftAnchor="10.0" />
+      <Label layoutX="350.0" layoutY="106.0" text="Параметры:" AnchorPane.leftAnchor="350.0" />
+      <CustomTextField fx:id="txtParamMF" layoutX="350.0" layoutY="129.0" prefHeight="25.0" prefWidth="381.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="10.0" />
       <AreaChart fx:id="chart1" layoutX="17.0" layoutY="293.0" prefHeight="341.0" prefWidth="712.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
         <xAxis>
           <NumberAxis side="BOTTOM" />
@@ -36,8 +37,8 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </AreaChart>
-      <ComboBox fx:id="comboTypeVariable" layoutX="9.0" layoutY="80.0" prefHeight="25.0" prefWidth="303.0" />
-      <Label layoutX="10.0" layoutY="54.0" text="Тип переменной" />
+      <ComboBox fx:id="comboTypeVariable" layoutX="10.0" layoutY="72.0" prefHeight="25.0" prefWidth="303.0" AnchorPane.leftAnchor="10.0" />
+      <Label layoutX="10.0" layoutY="47.0" text="Тип переменной" />
       <ToolBar layoutX="-67.0" layoutY="6.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
             <Button fx:id="btnAddMF" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css">
@@ -53,5 +54,7 @@
             </Button>
         </items>
       </ToolBar>
+      <ComboBox fx:id="comboCode" layoutX="10.0" layoutY="181.0" prefHeight="25.0" prefWidth="303.0" AnchorPane.leftAnchor="10.0" />
+      <Label layoutX="12.0" layoutY="160.0" text="Обозначение функции принадлежности:" />
    </children>
 </AnchorPane>

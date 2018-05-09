@@ -104,7 +104,7 @@ public class EditRuleController {
       ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
       for(int i = 0;i<mfList.size();i++){
         MembershipFunction mf = mfList.get(i);
-        mfNameList.add(mf.getMFname());
+        mfNameList.add(mf.getNameMF());
       }
       switch (comboBox.getId()) {
         case "comboThenVarName":
@@ -131,7 +131,7 @@ public class EditRuleController {
       ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
       for(int i = 0;i<mfList.size();i++){
         MembershipFunction mf = mfList.get(i);
-        mfNameList.add(mf.getMFname());
+        mfNameList.add(mf.getNameMF());
       }
       switch (comboBox.getId()) {
         case "comboIFVarName":
