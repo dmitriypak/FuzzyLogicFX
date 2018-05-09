@@ -9,6 +9,18 @@
     -fx-font-size: 14px;
     -fx-background-color: #f0f0f0;
 }
+
+#btnSaveProject{
+    -fx-background-image: url("../../resources/images/save.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#btnProjects{
+    -fx-background-image: url("../../resources/images/outlook_calendar_shedule_view.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
 #btnSaveVariable{
     -fx-background-image: url("../../resources/images/save.png");
     -fx-background-size: stretch;
@@ -149,19 +161,19 @@
 }
 
 
-#btnAddUser{
-    -fx-background-image: url("../resources/images/User-Add.png");
+#btnAddVacancy{
+    -fx-background-image: url("../../resources/images/User-Add.png");
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
 
-#btnEditUser{
-    -fx-background-image: url("../resources/images/User-Edit.png");
+#btnEditVacancy{
+    -fx-background-image: url("../../resources/images/User-Edit.png");
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
-#btnDeleteUser{
-    -fx-background-image: url("../resources/images/User-Delete.png");
+#btnDeleteVacancy{
+    -fx-background-image: url("../../resources/images/User-Delete.png");
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }

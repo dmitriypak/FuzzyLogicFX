@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="477.0" prefWidth="989.0" stylesheets="@../resources/css/style.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.ProjectController">
+   <children>
+      <TableView fx:id="tableProjects" layoutX="27.0" layoutY="60.0" prefHeight="325.0" prefWidth="495.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="42.0">
+        <columns>
+          <TableColumn fx:id="colProjectName" prefWidth="240.0" text="Наименование" />
+          <TableColumn fx:id="colProjectDescr" prefWidth="536.0" text="Описание" />
+            <TableColumn fx:id="colVacancyList" prefWidth="75.0" text="Вакансии" />
+            <TableColumn fx:id="colProjectId" prefWidth="93.0" text="ID" visible="false" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <Button fx:id="btnAddProject" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+      <Button fx:id="btnEditProject" layoutX="37.0" layoutY="9.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" AnchorPane.leftAnchor="47.0" AnchorPane.topAnchor="5.0" />
+      <Button fx:id="btnDeleteProject" layoutX="95.0" layoutY="9.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" AnchorPane.leftAnchor="89.0" AnchorPane.topAnchor="5.0" />
+   </children>
+</AnchorPane>

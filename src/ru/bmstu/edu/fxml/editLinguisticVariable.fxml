@@ -19,9 +19,9 @@
       <Button fx:id="btnClose" layoutX="636.0" layoutY="648.0" minWidth="50.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="75.0" text="Отмена" AnchorPane.bottomAnchor="25.0" />
       <TableView fx:id="tableMF" layoutX="10.0" layoutY="217.0" prefHeight="117.0" prefWidth="712.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="217.0">
         <columns>
-          <TableColumn fx:id="colMFName" prefWidth="110.0" text="Наименование" />
+          <TableColumn fx:id="colMFName" minWidth="120.0" prefWidth="120.0" text="Наименование" />
           <TableColumn fx:id="colMFParamValue" prefWidth="495.0" text="Параметры" />
-            <TableColumn fx:id="columnCodeMF" prefWidth="106.0" text="Код" />
+            <TableColumn fx:id="columnCodeMF" minWidth="100.0" prefWidth="-1.0" text="Код" />
         </columns>
       </TableView>
       <CustomTextField fx:id="txtNameVariable" layoutX="350.0" layoutY="72.0" prefHeight="25.0" prefWidth="381.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="10.0" />

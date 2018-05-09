@@ -27,6 +27,16 @@ public class MainController {
 
   }
 
+  private Stage getStage(String url, String title) throws IOException {
+    Stage stage = new Stage();
+    Parent root = FXMLLoader.load(getClass().getResource(url));
+    stage.setTitle(title);
+    stage.setScene(new Scene(root));
+    stage.initModality(Modality.WINDOW_MODAL);
+    return stage;
+  }
+
+
   public void actionButtonPressed(ActionEvent actionEvent) throws SQLException {
     Object source = actionEvent.getSource();
     if (!(source instanceof Button)) {
@@ -38,11 +48,7 @@ public class MainController {
     switch (clickedButton.getId()) {
       case "btnLinguisticVariables":
         try{
-          Stage stage = new Stage();
-          Parent root = FXMLLoader.load(getClass().getResource("../fxml/linguisticVariables.fxml"));
-          stage.setTitle("Лингвистические переменные");
-          stage.setScene(new Scene(root));
-          stage.initModality(Modality.WINDOW_MODAL);
+          Stage stage = getStage("../fxml/linguisticVariables.fxml","Лингвистические переменные");
           stage.initOwner(((Node)actionEvent.getSource()).getScene().getWindow());
           stage.show();
         }catch (IOException e){
@@ -69,12 +75,7 @@ public class MainController {
         break;
       case "btnRules":
         try {
-          Stage stage = new Stage();
-          FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxml/rules.fxml"));
-          Parent root = loader.load();
-          stage.setTitle("Правила");
-          stage.setScene(new Scene(root));
-          stage.initModality(Modality.WINDOW_MODAL);
+          Stage stage = getStage("../fxml/rules.fxml","Правила");
           stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
           stage.showAndWait();
         } catch (IOException e) {
@@ -84,12 +85,16 @@ public class MainController {
         break;
       case "btnCV":
         try {
-          Stage stage = new Stage();
-          FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxml/cv.fxml"));
-          Parent root = loader.load();
-          stage.setTitle("База резюме");
-          stage.setScene(new Scene(root));
-          stage.initModality(Modality.WINDOW_MODAL);
+          Stage stage =getStage("../fxml/cv.fxml","База резюме");
+          stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
+          stage.showAndWait();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        break;
+      case "btnProjects":
+        try{
+          Stage stage = getStage("../fxml/projects.fxml","Список проектов");
           stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
           stage.showAndWait();
         } catch (IOException e) {

@@ -11,6 +11,7 @@ import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.Project;
 import ru.bmstu.edu.objects.Rule;
 
 import java.lang.reflect.Method;
@@ -226,5 +227,17 @@ public class DaoUtils {
     }
   }
 
-
+  public static ArrayList<Project> getProjectsList(){
+    ArrayList<Project> listProjects = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, descr from cvdata.bmstu.projects")) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        Project project = new Project(rs.getInt("id"), rs.getString("name"),rs.getString("descr"));
+        listProjects.add(project);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listProjects;
+  }
 }

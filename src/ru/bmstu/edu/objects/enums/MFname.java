@@ -1,7 +1,7 @@
 package ru.bmstu.edu.objects.enums;
 
 public enum MFname {
-  Z("Z","Zero","Положительное близкое к нулю"),
+  Z("Z","Zero","Нуль, близкое к нулю"),
   PS ("PS","Positive Small","Положительное малое"),
   PM("PM","Positive Middle","Положительное среднее"),
   PB("PB","Positive Big", "Положительное большое");

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="559.0" prefWidth="987.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditProjectController">
+   <children>
+      <Label layoutX="14.0" layoutY="67.0" text="Наименование:" />
+      <Label layoutX="15.0" layoutY="108.0" text="Описание:" />
+      <TextField fx:id="txtProjectName" layoutX="119.0" layoutY="63.0" prefHeight="25.0" prefWidth="314.0" />
+      <TextField fx:id="txtProjectDescr" layoutX="119.0" layoutY="104.0" prefHeight="25.0" prefWidth="314.0" />
+      <Button fx:id="btnSave" layoutX="644.0" layoutY="510.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefWidth="75.0" text="Сохранить" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="100.0" />
+      <Button fx:id="btnClose" layoutX="733.0" layoutY="510.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefWidth="75.0" text="Отмена" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="10.0" />
+      <TableView fx:id="tableVacancy" layoutX="28.0" layoutY="149.0" prefHeight="350.0" prefWidth="812.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <columns>
+          <TableColumn minWidth="150.0" prefWidth="588.0" text="Вакансия" />
+          <TableColumn minWidth="247.0" prefWidth="247.0" text="Категория" />
+            <TableColumn fx:id="colVacancyList" prefWidth="131.0" text="Количество" />
+        </columns>
+      </TableView>
+      <ToolBar layoutY="14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <Button fx:id="btnSaveProject" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+            <Button fx:id="btnAddVacancy" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+            <Button fx:id="btnEditVacancy" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+            <Button fx:id="btnDeleteVacancy" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
+        </items>
+      </ToolBar>
+   </children>
+</AnchorPane>
