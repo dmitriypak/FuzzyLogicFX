@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="595.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.CategoryController">
+   <children>
+      <ToolBar layoutX="38.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <Button fx:id="btnEditCategory" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" />
+        </items>
+      </ToolBar>
+      <TableView fx:id="tableCategory" layoutX="14.0" layoutY="62.0" prefHeight="464.0" prefWidth="775.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <columns>
+          <TableColumn fx:id="colNameCategory" prefWidth="179.0" text="Категория" />
+          <TableColumn fx:id="colValueCategory" prefWidth="396.0" text="Значение" />
+        </columns>
+      </TableView>
+      <Button layoutX="645.0" layoutY="539.0" minWidth="75.0" mnemonicParsing="false" text="Сохранить" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="100.0" />
+      <Button layoutX="729.0" layoutY="539.0" minWidth="75.0" mnemonicParsing="false" text="Отмена" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="10.0" />
+   </children>
+</AnchorPane>

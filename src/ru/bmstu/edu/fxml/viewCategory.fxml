@@ -8,7 +8,6 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ru.bmstu.edu.controllers.CategoryGroupController"
             prefHeight="400.0" prefWidth="600.0">
 
 </AnchorPane>

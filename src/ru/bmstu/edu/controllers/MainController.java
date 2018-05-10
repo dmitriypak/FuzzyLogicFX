@@ -110,7 +110,7 @@ public class MainController {
         break;
       case "btnGroup":
         try{
-          Stage stage = getStage("../fxml/categoryGroup.fxml","Категории работников");
+          Stage stage = getStage("../fxml/category.fxml","Категории работников");
           stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
           stage.showAndWait();
         } catch (IOException e) {

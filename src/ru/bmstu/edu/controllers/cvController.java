@@ -69,7 +69,7 @@ public class cvController {
     colExperience.setCellValueFactory(new PropertyValueFactory<CV,String>("experience"));
 
     try {
-      fxmlLoader.setLocation(getClass().getResource("../fxml/ViewRules.fxml"));
+      fxmlLoader.setLocation(getClass().getResource("../fxml/viewRules.fxml"));
       fxmlEdit = fxmlLoader.load();
       viewRulesController = fxmlLoader.getController();
     } catch (IOException e) {
