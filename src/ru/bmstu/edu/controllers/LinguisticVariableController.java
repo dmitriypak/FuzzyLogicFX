@@ -149,8 +149,8 @@ public class LinguisticVariableController {
         LinguisticVariable linguisticVariable = new LinguisticVariable();
         linguisticVariable.setId(0);
         editLinguisticVariableController.setLinguisticVariable(linguisticVariable);
-//        linguisticVariable = editLinguisticVariableController.getVariable();
-//        variableList.add(linguisticVariable);
+        linguisticVariable = editLinguisticVariableController.getVariable();
+        variableList.add(linguisticVariable);
         showDialog();
         variableList.clear();
         tableViewVariables.getItems().clear();

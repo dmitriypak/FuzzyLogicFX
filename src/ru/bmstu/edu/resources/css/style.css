@@ -177,3 +177,8 @@
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
+#btnGroup{
+    -fx-background-image: url("../../resources/images/Group-Gear.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}

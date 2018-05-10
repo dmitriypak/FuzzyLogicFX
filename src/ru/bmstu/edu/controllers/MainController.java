@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -19,12 +20,18 @@ public class MainController {
   private Button btnLinguisticVariables;
   @FXML
   private Button btnCVWebView;
+  @FXML
+  private Button btnRules;
+  @FXML
+  private Button btnGroup;
 
   private Node nodesource;
   private CvWebViewController cvWebViewController = new CvWebViewController();
 
   public void initialize(){
-
+    btnLinguisticVariables.setTooltip(new Tooltip("Лингвистические переменные"));
+    btnRules.setTooltip(new Tooltip("Список правил"));
+    btnGroup.setTooltip(new Tooltip("Настройка категорий работников"));
   }
 
   private Stage getStage(String url, String title) throws IOException {
@@ -95,6 +102,15 @@ public class MainController {
       case "btnProjects":
         try{
           Stage stage = getStage("../fxml/projects.fxml","Список проектов");
+          stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
+          stage.showAndWait();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        break;
+      case "btnGroup":
+        try{
+          Stage stage = getStage("../fxml/categoryGroup.fxml","Категории работников");
           stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
           stage.showAndWait();
         } catch (IOException e) {

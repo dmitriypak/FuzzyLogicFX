@@ -88,6 +88,7 @@ public void actionButtonPressed(ActionEvent actionEvent) {
     switch (clickedButton.getId()) {
         case "btnAddProject":
           Project project = new Project();
+          project.setId(0);
           editProjectController.setProject(project);
           project = editProjectController.getProject();
           projectsList.add(project);
@@ -95,8 +96,9 @@ public void actionButtonPressed(ActionEvent actionEvent) {
           showDialog();
           break;
         case "btnEditProject":
-          showDialog();
-          break;
+            editProjectController.setProject((Project)tableProjects.getSelectionModel().getSelectedItem());
+           showDialog();
+           break;
         case "btnDeleteProject":
             break;
 

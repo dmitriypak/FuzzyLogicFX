@@ -1,14 +1,23 @@
 package ru.bmstu.edu.controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Project;
+import ru.bmstu.edu.objects.Vacancy;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -22,13 +31,30 @@ public class EditProjectController {
   private Button btnClose;
   @FXML
   private Button btnAddVacancy;
+  @FXML
+  private TableView tableVacancy;
 
   private Node nodesource;
-
   private Project project;
+  private Parent fxmlEdit;
+  private FXMLLoader fxmlLoader = new FXMLLoader();
+  private Stage editVacancyStage;
+  private EditVacancyController editVacancyController;
+  private ObservableList<Vacancy> vacancyList = FXCollections.observableArrayList();
+
 
   @FXML
   public void initialize(){
+    initLoader();
+  }
+  private void initLoader(){
+    try {
+      fxmlLoader.setLocation(getClass().getResource("../fxml/editVacancy.fxml"));
+      fxmlEdit = fxmlLoader.load();
+      editVacancyController = fxmlLoader.getController();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
   }
 
@@ -45,6 +71,21 @@ public class EditProjectController {
   public Project getProject(){
     return project;
   }
+
+  private void showDialog() {
+    if (editVacancyStage==null) {
+      editVacancyStage = new Stage();
+      editVacancyStage.setTitle("Редактирование вакансии");
+      editVacancyStage.setMinHeight(150);
+      editVacancyStage.setMinWidth(300);
+      editVacancyStage.setResizable(false);
+      editVacancyStage.setScene(new Scene(fxmlEdit));
+      editVacancyStage.initModality(Modality.WINDOW_MODAL);
+      editVacancyStage.initOwner((Stage) nodesource.getScene().getWindow());
+    }
+    editVacancyStage.showAndWait();
+  }
+
 
 
   public void actionButtonPressed(ActionEvent actionEvent) throws SQLException {
@@ -73,8 +114,16 @@ public class EditProjectController {
         break;
 
       case "btnAddVacancy":
+        Vacancy vacancy = new Vacancy();
+        vacancy.setId(0);
+        editVacancyController.setVacancy(vacancy);
+        vacancy = editVacancyController.getVacancy();
+        vacancyList.add(vacancy);
+        showDialog();
         break;
       case "btnEditVacancy":
+        editVacancyController.setVacancy((Vacancy)tableVacancy.getSelectionModel().getSelectedItem());
+        showDialog();
         break;
       case "btnDeleteVacancy":
         break;
