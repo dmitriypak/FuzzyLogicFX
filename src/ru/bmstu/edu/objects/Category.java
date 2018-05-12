@@ -3,10 +3,22 @@ package ru.bmstu.edu.objects;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.util.Map;
+
 public class Category {
   private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
   private SimpleStringProperty name = new SimpleStringProperty("");
-  private SimpleStringProperty value = new SimpleStringProperty("");
+
+  public Map<LinguisticVariable, String> getLinguisticVariableStringMap() {
+    return linguisticVariableStringMap;
+  }
+
+  public void setLinguisticVariableStringMap(Map<LinguisticVariable, String> linguisticVariableStringMap) {
+    this.linguisticVariableStringMap = linguisticVariableStringMap;
+  }
+
+  private Map<LinguisticVariable,String> linguisticVariableStringMap;
+
 
   public Category() {
 
@@ -14,7 +26,6 @@ public class Category {
 
   public Category(SimpleStringProperty name, SimpleStringProperty value) {
     this.name = name;
-    this.value = value;
   }
 
 
@@ -42,15 +53,5 @@ public class Category {
     this.name.set(name);
   }
 
-  public String getValue() {
-    return value.get();
-  }
 
-  public SimpleStringProperty valueProperty() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value.set(value);
-  }
 }

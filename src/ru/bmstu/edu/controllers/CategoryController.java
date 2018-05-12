@@ -19,13 +19,18 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.RangeSlider;
 import org.controlsfx.control.textfield.CustomTextField;
+import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Category;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class CategoryController {
   @FXML
@@ -36,7 +41,9 @@ public class CategoryController {
   private EditCategoryController editCategoryController;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
+  private Map<LinguisticVariable,String> mapVariables = new LinkedHashMap<>();
 
+  private Scene scene;
   @FXML
   private void initialize(){
     try {
@@ -48,7 +55,7 @@ public class CategoryController {
     }
   }
 
-  Region createHorizontalSlider(int min, int max, int minValue, int maxValue) {
+  private Region createHorizontalSlider(int min, int max, int minValue, int maxValue, String idVariable) {
     final TextField minField = new TextField();
     minField.setPrefColumnCount(5);
     final TextField maxField = new TextField();
@@ -112,8 +119,9 @@ public class CategoryController {
 //    });
 
 
-
+    minField.setId("MinValue"+idVariable);
     minField.setText("" + hSlider.getLowValue());
+    maxField.setId("MaxValue"+idVariable);
     maxField.setText("" + hSlider.getHighValue());
 
     minField.setEditable(false);
@@ -129,7 +137,6 @@ public class CategoryController {
     box.getChildren().addAll(minField, hSlider, maxField);
     box.setPadding(new Insets(20,0,0,20));
     box.setFillHeight(false);
-
     return box;
   }
 
@@ -175,7 +182,11 @@ public class CategoryController {
     //Кнопка Сохранить
     Button buttonSave = getButton("Сохранить");
     buttonSave.setOnAction(e -> {
-      actionSave(category);
+      try {
+        actionSave(category);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
     });
 
     //Кнопка Отмена
@@ -191,6 +202,7 @@ public class CategoryController {
     Label nameCategory = getLabel("Наименование");
     //nameCategory.setPadding(new Insets(0,0,0,25));
     CustomTextField textFieldCategory = new CustomTextField();
+    textFieldCategory.setId("txtCategoryName");
     root.add(nameCategory,0,lastRow);
     root.add(textFieldCategory,1,lastRow);
     lastRow +=1;
@@ -199,6 +211,7 @@ public class CategoryController {
 
     for(int i = 0;i<listInputVariables.size();i++){
       LinguisticVariable linguisticVariable = listInputVariables.get(i);
+
       ArrayList<MembershipFunction>mfList = linguisticVariable.getMfList();
       int minValue = 0;
       int maxValue = 0;
@@ -228,17 +241,21 @@ public class CategoryController {
       StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
       Label label = getLabel(nameVariable.toString());
 
-      Region slider = createHorizontalSlider(min, max, minValue, maxValue);
+      //Слайдер
+      Region slider = createHorizontalSlider(min, max, minValue, maxValue, String.valueOf(linguisticVariable.getId()));
+      slider.setId("Slider"+i);
+
       lastRow +=i;
       root.add(label,0,lastRow);
       root.add(slider,1,lastRow);
+
+      category.setLinguisticVariableStringMap(mapVariables);
     }
 
     root.add(buttonSave,2,lastRow+5);
     //root.add(buttonCancel,2,lastRow+5);
 
-
-    Scene scene = new Scene(scrollPane);
+    scene = new Scene(scrollPane);
 
     viewCategoryStage.setScene(scene);
     viewCategoryStage.initModality(Modality.WINDOW_MODAL);
@@ -248,17 +265,46 @@ public class CategoryController {
 
 
   //Сохранение изменений
-  private void actionSave(Category category){
+  private void actionSave(Category category) throws SQLException {
     if(category ==null) return;
+    TextField categoryName = (TextField) scene.lookup("#txtCategoryName");
+    category.setName(categoryName.getText());
+
     int idCategory = category.getId();
     if(idCategory==0){
-      insertCategory();
+      for(LinguisticVariable linguisticVariable:listInputVariables){
+        TextField minTextField = (TextField) scene.lookup("#MinValue"+String.valueOf(linguisticVariable.getId()));
+        System.out.println("#MinValue"+linguisticVariable.getId());
+        TextField maxTextField = (TextField) scene.lookup("#MaxValue"+String.valueOf(linguisticVariable.getId()));
+        StringBuilder stringBuilder = new StringBuilder(minTextField.getText().replace(",","."));
+        stringBuilder.append(" ").append(maxTextField.getText().replace(",","."));
+        if(stringBuilder.toString()==null) return;
+        mapVariables.put(linguisticVariable,stringBuilder.toString());
+      }
+
+      category.setLinguisticVariableStringMap(mapVariables);
+      insertCategory(category);
+
     }else{
       updateCategory(idCategory);
     }
   }
 
-  private void insertCategory(){
+  private void insertCategory(Category category) throws SQLException {
+    Map<LinguisticVariable,String> map= category.getLinguisticVariableStringMap();
+    for (Map.Entry<LinguisticVariable,String> entry : map.entrySet()) {
+      String query = "INSERT INTO cvdata.bmstu.categories "
+          + " (name, idvariable, value) "
+          + " VALUES (?, ?, ?)";
+      try(PreparedStatement st = PostgreSQLConnection.getConnection().prepareStatement(query)){
+        int i=0;
+        st.setString(++i,category.getName());
+        st.setInt(++i,entry.getKey().getId());
+        st.setString(++i,entry.getValue());
+        st.executeUpdate();
+      }
+    }
+
 
   }
 
