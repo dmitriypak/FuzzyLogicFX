@@ -32,4 +32,10 @@ public class EditVacancyController {
     }
 
   }
+  public void actionSave(){
+
+  }
+  public void actionClose(){
+
+  }
 }

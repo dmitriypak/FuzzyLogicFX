@@ -29,6 +29,7 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Category;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -53,7 +54,10 @@ public class CategoryController {
   private EditCategoryController editCategoryController;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
-  private Map<LinguisticVariable,String> mapVariables = new LinkedHashMap<>();
+  private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
+  private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
+
+  private Map<Variable,String> mapVariables = new LinkedHashMap<>();
 
   private Scene scene;
   @FXML
@@ -232,7 +236,7 @@ public class CategoryController {
     lastRow +=1;
 
 
-
+    Map<Variable,String>categoriesMap = category.getLinguisticVariableStringMap();
     for(int i = 0;i<listInputVariables.size();i++){
       LinguisticVariable linguisticVariable = listInputVariables.get(i);
 
@@ -241,31 +245,42 @@ public class CategoryController {
       int maxValue = 0;
       int min = 0;
       int max = 0;
+      if(category.getId()!=0){
+        for (Map.Entry<Variable,String> entry : categoriesMap.entrySet()) {
+          Variable variable = entry.getKey();
+        }
+        String values = categoriesMap.get(linguisticVariable);
+        System.out.println(values);
 
-      for(int j = 0;j<mfList.size();j++){
-        MembershipFunction mf = mfList.get(j);
-        String[] params = mf.getParamValueMF().split(" ");
 
-        for(int k = 0;k<params.length;k++){
-          int paramValue = Integer.valueOf(params[k]);
-          System.out.println("Params " + paramValue);
+      }else{
+        for(int j = 0;j<mfList.size();j++){
+          MembershipFunction mf = mfList.get(j);
+          String[] params = mf.getParamValueMF().split(" ");
 
-          if(paramValue < minValue){
-            min =paramValue;
-            minValue = paramValue;
-          }
-          if(paramValue > maxValue){
-            max = paramValue;
-            maxValue = paramValue;
+          for(int k = 0;k<params.length;k++){
+            int paramValue = Integer.valueOf(params[k]);
+            System.out.println("Params " + paramValue);
+
+            if(paramValue < minValue){
+              min =paramValue;
+              minValue = paramValue;
+            }
+            if(paramValue > maxValue){
+              max = paramValue;
+              maxValue = paramValue;
+            }
           }
         }
       }
+
 
       //Название переменной
       StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
       Label label = getLabel(nameVariable.toString());
 
       //Слайдер
+
       Region slider = createHorizontalSlider(min, max, minValue, maxValue, String.valueOf(linguisticVariable.getId()));
       slider.setId("Slider"+i);
 
@@ -303,7 +318,8 @@ public class CategoryController {
         StringBuilder stringBuilder = new StringBuilder(minTextField.getText().replace(",","."));
         stringBuilder.append(" ").append(maxTextField.getText().replace(",","."));
         if(stringBuilder.toString()==null) return;
-        mapVariables.put(linguisticVariable,stringBuilder.toString());
+        Variable variable = linguisticVariable.getVariable();
+        mapVariables.put(variable,stringBuilder.toString());
       }
 
       category.setLinguisticVariableStringMap(mapVariables);
@@ -315,13 +331,13 @@ public class CategoryController {
   }
 
   private void insertCategory(Category category) throws SQLException {
-    Map<LinguisticVariable,String> map= category.getLinguisticVariableStringMap();
+    Map<Variable,String> map= category.getLinguisticVariableStringMap();
     JSONObject obj = new JSONObject();
     JSONArray array = new JSONArray();
-    for (Map.Entry<LinguisticVariable,String> entry : map.entrySet()) {
+    for (Map.Entry<Variable,String> entry : map.entrySet()) {
       JSONObject obj1 = new JSONObject();
       String[]values = entry.getValue().split(" ");
-      obj1.put("idVariable",entry.getKey().getId());
+     // obj1.put("idVariable",mapInputVariables entry.getKey());
       obj1.put("minValue",values[0]);
       obj1.put("maxValue",values[1]);
       array.add(obj1);
@@ -344,20 +360,12 @@ public class CategoryController {
   }
 
   private void updateCategory(Category category) throws SQLException {
-    Map<LinguisticVariable,String> map= category.getLinguisticVariableStringMap();
-    JSONObject obj = new JSONObject();
-    for (Map.Entry<LinguisticVariable,String> entry : map.entrySet()) {
-      String[]values = entry.getValue().split(" ");
-      obj.put("idVariable",entry.getKey().getId());
-      obj.put("minValue",values[0]);
-      obj.put("maxValue",values[1]);
-    }
     String query = "UPDATE cvdata.bmstu.categories SET"
         + " name = ?, value = ? WHERE id = ? ";
     try(PreparedStatement st = PostgreSQLConnection.getConnection().prepareStatement(query)){
       int i=0;
       st.setString(++i,category.getName());
-      st.setString(++i,obj.toString());
+     // st.setString(++i,obj.toString());
       st.setInt(++i,category.getId());
       st.executeUpdate();
     }

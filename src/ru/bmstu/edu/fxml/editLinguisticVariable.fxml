@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<AnchorPane prefHeight="725.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditLinguisticVariableController">
+<AnchorPane fx:id="root" prefHeight="725.0" prefWidth="732.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.EditLinguisticVariableController">
    <children>
       <Label layoutX="350.0" layoutY="48.0" text="Наименование переменной:" AnchorPane.leftAnchor="350.0" />
       <Button fx:id="btnSave" layoutX="550.0" layoutY="647.0" minWidth="75.0" mnemonicParsing="false" onAction="#actionSave" text="Сохранить" AnchorPane.bottomAnchor="25.0" />
@@ -29,7 +29,7 @@
       <CustomTextField fx:id="txtNameMF" layoutX="10.0" layoutY="129.0" prefHeight="25.0" prefWidth="303.0" AnchorPane.leftAnchor="10.0" />
       <Label layoutX="350.0" layoutY="106.0" text="Параметры:" AnchorPane.leftAnchor="350.0" />
       <CustomTextField fx:id="txtParamMF" layoutX="350.0" layoutY="129.0" prefHeight="25.0" prefWidth="381.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="10.0" />
-      <AreaChart fx:id="chart1" layoutX="17.0" layoutY="293.0" prefHeight="341.0" prefWidth="712.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+      <AreaChart fx:id="chart1" alternativeColumnFillVisible="true" layoutX="17.0" layoutY="293.0" prefHeight="335.0" prefWidth="712.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
         <xAxis>
           <NumberAxis side="BOTTOM" />
         </xAxis>

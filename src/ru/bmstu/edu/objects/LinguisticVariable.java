@@ -15,8 +15,13 @@ public class LinguisticVariable {
   private Boolean isactive;
   private Variable variable;
 
+  public Variable getVariable() {
+    return variable;
+  }
 
-
+  public void setVariable(Variable variable) {
+    this.variable = variable;
+  }
 
   public String getType() {
     return type.get();

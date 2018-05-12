@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Project;
 import ru.bmstu.edu.objects.Vacancy;
+import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -40,12 +41,12 @@ public class EditProjectController {
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private Stage editVacancyStage;
   private EditVacancyController editVacancyController;
-  private ObservableList<Vacancy> vacancyList = FXCollections.observableArrayList();
-
+  private ObservableList<Vacancy> vacancyList = FXCollections.observableArrayList(DaoUtils.getVacanciesList(project.getId()));
 
   @FXML
   public void initialize(){
     initLoader();
+    fillData();
   }
   private void initLoader(){
     try {
@@ -119,6 +120,7 @@ public class EditProjectController {
         editVacancyController.setVacancy(vacancy);
         vacancy = editVacancyController.getVacancy();
         vacancyList.add(vacancy);
+        tableVacancy.setItems(vacancyList);
         showDialog();
         break;
       case "btnEditVacancy":
@@ -131,38 +133,17 @@ public class EditProjectController {
 
   }
 
-//    public void actionSave(ActionEvent actionEvent) {
-//      project.setName(txtProjectName.getText());
-//      project.setDescr(txtProjectDescr.getText());
-//      project.setStartDate(String.valueOf(txtStartDate.getValue()));
-//      project.setEndDate(String.valueOf(txtEndDate.getValue()));
-//      System.out.println(project.getId());
-//      if(project.getId()!=""){
-//        updateProject(project);
-//      }
-//      else{
-//        insertProject(project);
-//
-//        PreparedStatement call = null;
-//        try {
-//          call = MSSQLConnection.getConnection().prepareStatement("select id from projects where name = ?");
-//          call.setString(1,project.getName());
-//          ResultSet rs = call.executeQuery();
-//
-//          while (rs.next()){
-//            project.setId(rs.getString(1));
-//          }
-//        } catch (SQLException e) {
-//          e.printStackTrace();
-//        }
-//        projectArrayList.add(project);
-//        comboProjectArrayList.add(project.getName());
-//      }
-//
-//      actionClose(actionEvent);
-//    }
-//
-//
+    public void actionSave(ActionEvent actionEvent) {
+
+    }
+
+
+  private void fillData(){
+    if(vacancyList.size()>0){
+      tableVacancy.setItems(vacancyList);
+    }
+  }
+
   private void updateProject(Project project) throws SQLException {
     String query = "update cvdata.bmstu.linguisticvariables "
         + " set name = ?, value = ?, description = ?, type = ? WHERE id = ?";

@@ -2,6 +2,7 @@ package ru.bmstu.edu.objects;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ru.bmstu.edu.objects.enums.Variable;
 
 import java.util.Map;
 
@@ -9,6 +10,7 @@ public class Category {
   private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
   private SimpleStringProperty name = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
+  private Map<Variable,String> linguisticVariableStringMap;
 
   public String getValue() {
     return value.get();
@@ -22,15 +24,15 @@ public class Category {
     this.value.set(value);
   }
 
-  public Map<LinguisticVariable, String> getLinguisticVariableStringMap() {
+  public Map<Variable, String> getLinguisticVariableStringMap() {
     return linguisticVariableStringMap;
   }
 
-  public void setLinguisticVariableStringMap(Map<LinguisticVariable, String> linguisticVariableStringMap) {
+  public void setLinguisticVariableStringMap(Map<Variable, String> linguisticVariableStringMap) {
     this.linguisticVariableStringMap = linguisticVariableStringMap;
   }
 
-  private Map<LinguisticVariable,String> linguisticVariableStringMap;
+
 
 
   public Category() {

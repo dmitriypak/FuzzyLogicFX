@@ -182,3 +182,18 @@
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
+#btnAddCategory{
+    -fx-background-image: url("../../resources/images/folder_add.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnEditCategory{
+    -fx-background-image: url("../../resources/images/folder_edit.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnDeleteCategory{
+    -fx-background-image: url("../../resources/images/folder_delete.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}

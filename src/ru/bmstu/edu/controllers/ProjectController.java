@@ -46,19 +46,15 @@ public class ProjectController {
     private EditProjectController editProjectController;
     private Stage editProjectStage;
     private Node nodesource;
-    private ObservableList<Project> projectsList;
+    private ObservableList<Project> projectsList = FXCollections.observableArrayList(DaoUtils.getProjectsList());
 
     @FXML
     public void initialize() {
 
-      initLoader();
-      tableProjects.setOnMouseClicked( event -> {
-        if( event.getClickCount() == 2 ) {
-          btnEditProject.fire();
-        }});
-    }
+        colProjectName.setCellValueFactory(new PropertyValueFactory<Project,String>("name"));
+        colProjectDescr.setCellValueFactory(new PropertyValueFactory<Project,String>("descr"));
 
-    private void initLoader(){
+
         try {
             fxmlLoader.setLocation(getClass().getResource("../fxml/editProject.fxml"));
             fxmlEdit = fxmlLoader.load();
@@ -66,74 +62,47 @@ public class ProjectController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        colProjectName.setCellValueFactory(new PropertyValueFactory<Project,String>("name"));
-        colProjectDescr.setCellValueFactory(new PropertyValueFactory<Project,String>("descr"));
-
         fillData();
 
+          tableProjects.setOnMouseClicked( event -> {
+              if( event.getClickCount() == 2 ) {
+              btnEditProject.fire();
+              }});
     }
 
 
-public void actionButtonPressed(ActionEvent actionEvent) {
 
 
-    Object source = actionEvent.getSource();
-    if (!(source instanceof Button)) {
-        return;
+
+
+
+    public void actionButtonPressed(ActionEvent actionEvent) {
+        Object source = actionEvent.getSource();
+        if (!(source instanceof Button)) {
+            return;
+        }
+        nodesource = (Node) actionEvent.getSource();
+        Button clickedButton = (Button) source;
+
+        switch (clickedButton.getId()) {
+            case "btnAddProject":
+              Project project = new Project();
+              project.setId(0);
+              editProjectController.setProject(project);
+              project = editProjectController.getProject();
+              projectsList.add(project);
+
+              showDialog();
+              break;
+            case "btnEditProject":
+                editProjectController.setProject((Project)tableProjects.getSelectionModel().getSelectedItem());
+               showDialog();
+               break;
+            case "btnDeleteProject":
+                break;
+
+        }
     }
-    nodesource = (Node) actionEvent.getSource();
-    Button clickedButton = (Button) source;
-
-    switch (clickedButton.getId()) {
-        case "btnAddProject":
-          Project project = new Project();
-          project.setId(0);
-          editProjectController.setProject(project);
-          project = editProjectController.getProject();
-          projectsList.add(project);
-
-          showDialog();
-          break;
-        case "btnEditProject":
-            editProjectController.setProject((Project)tableProjects.getSelectionModel().getSelectedItem());
-           showDialog();
-           break;
-        case "btnDeleteProject":
-            break;
-
-    }
-}
-
-//        Object source = actionEvent.getSource();
-//        if (!(source instanceof Button)) {
-//            return;
-//        }
-//        nodesource = (Node) actionEvent.getSource();
-//        Button clickedButton = (Button) source;
-//
-//        switch (clickedButton.getId()) {
-//            case "btnAddProject":
-
-//                showDialog();
-//                break;
-//
-//            case "btnEditProject":
-//                editProjectController.setProject((Project) tableProjects.getSelectionModel().getSelectedItem());
-//                showDialog();
-//                break;
-//
-//            case "btnDeleteProject":
-//                Project delproject;
-//                delproject = (Project) tableProjects.getSelectionModel().getSelectedItem();
-//                comboProjectArrayList.remove(tableProjects.getSelectionModel().getSelectedIndex());
-//                projectArrayList.remove(delproject);
-//                projectsListImpl.delete(delproject);
-//                deleteProject(delproject);
-//                break;
-//        }
-//
-
 
     private void showDialog() {
         if (editProjectStage==null) {
@@ -159,9 +128,10 @@ public void actionButtonPressed(ActionEvent actionEvent) {
 //        }
 //    }
     private void fillData(){
-//      projectsList.clear();
-      projectsList = FXCollections.observableArrayList(DaoUtils.getProjectsList());
-      tableProjects.setItems(projectsList);
+      if(projectsList.size()>0){
+          tableProjects.setItems(projectsList);
+      }
+
     }
 
 }

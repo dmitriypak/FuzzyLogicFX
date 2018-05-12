@@ -12,6 +12,7 @@ import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -53,6 +54,8 @@ public class EditLinguisticVariableController{
   private ComboBox comboCode;
   @FXML
   private TableColumn columnCodeMF;
+  @FXML
+  private AnchorPane root;
 
   private LinguisticVariable linguisticVariable;
 
@@ -142,24 +145,52 @@ public class EditLinguisticVariableController{
         MembershipFunction delMF;
         delMF = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
         mfList.remove(delMF);
+        drawGraphMF();
         break;
     }
 
   }
 
   private void drawGraphMF() {
+
     chart1.getData().clear();
     chart1.setTitle(linguisticVariable.getName());
-    for (MembershipFunction mf : mfList) {
+
+    for (int j = 0; j<mfList.size();j++) {
+      MembershipFunction mf = mfList.get(j);
+
+      double maxValue = 0;
       XYChart.Series series = new XYChart.Series();
       String value[] = mf.getParamValueMF().split(" ");
       series.setName(mf.getNameMF());
-      for(int i =0;i<value.length;i++){
-        series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
-        //series.getData().add(new XYChart.Data(1,19));
-        System.out.println(value[i]);
+      switch (value.length){
+        case 3:
+          for(int i=0;i<value.length;i++){
+            double val = Double.valueOf(value[i]);
+            series.getData().add(new XYChart.Data(val,i%2));
+          }
+          break;
+        case 4:
+          for(int i=0;i<value.length;i++){
+            double val = Double.valueOf(value[i]);
+            if(i==0 || i==3){
+              series.getData().add(new XYChart.Data(val,0));
+            }else{
+              series.getData().add(new XYChart.Data(val,1));
+            }
+            if(val>maxValue){
+              maxValue = val;
+            }
+          }
       }
+//      NumberAxis xAxis = new NumberAxis(0,maxValue,0);
+//      NumberAxis yAxis = new NumberAxis();
+//      AreaChart chart = new AreaChart(xAxis,yAxis);
+
+
       chart1.getData().add(series);
+
+
     }
   }
 

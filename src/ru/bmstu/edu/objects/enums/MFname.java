@@ -2,9 +2,13 @@ package ru.bmstu.edu.objects.enums;
 
 public enum MFname {
   Z("Z","Zero","Нуль, близкое к нулю"),
+  PLS("PLS","Positive Lower Small", "Положительное меньше малого"),
   PS ("PS","Positive Small","Положительное малое"),
+  PLM("PLM","Positive Lower Middle", "Положительное меньше среднего"),
   PM("PM","Positive Middle","Положительное среднее"),
+  PLB("PLB","Positive Lower Big", "Положительное меньше большего"),
   PB("PB","Positive Big", "Положительное большое");
+
   private String code;
   private String nameEng;
   private String name;

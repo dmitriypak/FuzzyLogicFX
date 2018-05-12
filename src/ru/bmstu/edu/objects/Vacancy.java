@@ -5,7 +5,9 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Vacancy {
   private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
+  private SimpleIntegerProperty idProject = new SimpleIntegerProperty(0);
   private SimpleStringProperty name = new SimpleStringProperty("");
+  private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleIntegerProperty wages = new SimpleIntegerProperty(0);
 
   /////////////
@@ -13,10 +15,40 @@ public class Vacancy {
   public Vacancy() {
 
   }
-  public Vacancy(SimpleStringProperty name, SimpleIntegerProperty wages) {
-    this.name = name;
-    this.wages = wages;
+  public Vacancy(int id, int idProject, String name, int wages, String value) {
+    this.id = new SimpleIntegerProperty(id);
+    this.idProject = new SimpleIntegerProperty(idProject);
+    this.name = new SimpleStringProperty(name);
+    this.wages = new SimpleIntegerProperty(wages);
+    this.value = new SimpleStringProperty(value);
   }
+
+
+  public int getIdProject() {
+    return idProject.get();
+  }
+
+  public SimpleIntegerProperty idProjectProperty() {
+    return idProject;
+  }
+
+  public void setIdProject(int idProject) {
+    this.idProject.set(idProject);
+  }
+
+  public String getValue() {
+    return value.get();
+  }
+
+  public SimpleStringProperty valueProperty() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value.set(value);
+  }
+
+
 
   public int getId() {
     return id.get();

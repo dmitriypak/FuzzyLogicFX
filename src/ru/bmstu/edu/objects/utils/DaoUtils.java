@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.*;
+import ru.bmstu.edu.objects.enums.Variable;
 
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
@@ -67,6 +68,7 @@ public class DaoUtils {
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"),rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
+        linguisticVariable.setVariable(Variable.getVariableByName(rs.getString("name")));
         listVariables.add(linguisticVariable);
       }
     } catch (SQLException e) {
@@ -84,6 +86,7 @@ public class DaoUtils {
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"),rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
+        linguisticVariable.setVariable(Variable.getVariableByName(rs.getString("name")));
         listVariables.add(linguisticVariable);
       }
     } catch (SQLException e) {
@@ -103,6 +106,7 @@ public class DaoUtils {
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"), rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
+        linguisticVariable.setVariable(Variable.getVariableByName(rs.getString("name")));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }
     } catch (SQLException e) {
@@ -120,6 +124,7 @@ public class DaoUtils {
         LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
             rs.getString("value"), rs.getString("type"), rs.getBoolean("isactive"));
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
+        linguisticVariable.setVariable(Variable.getVariableByName(rs.getString("name")));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
       }
     } catch (SQLException e) {
@@ -250,6 +255,24 @@ public class DaoUtils {
       e.printStackTrace();
     }
     return listCategories;
+  }
+
+  public static ArrayList<Vacancy> getVacanciesList(int idProject){
+    ArrayList<Vacancy> listVacancies = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name,idproject, " +
+        " VALUE from cvdata.bmstu.vacancies WHERE idproject = ?")) {
+      statement.setInt(1,idProject);
+      ResultSet rs = statement.executeQuery();
+
+      while (rs.next()){
+        Vacancy vacancy = new Vacancy(rs.getInt("id"),idProject,  rs.getString("name"),rs.getInt("wages"),
+            rs.getString("value"));
+        listVacancies.add(vacancy);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listVacancies;
   }
 
 
