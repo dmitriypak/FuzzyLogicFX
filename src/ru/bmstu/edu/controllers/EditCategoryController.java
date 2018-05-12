@@ -3,6 +3,10 @@ package ru.bmstu.edu.controllers;
 import javafx.fxml.FXML;
 import org.controlsfx.control.textfield.CustomTextField;
 import ru.bmstu.edu.objects.Category;
+import ru.bmstu.edu.objects.LinguisticVariable;
+import ru.bmstu.edu.objects.utils.DaoUtils;
+
+import java.util.ArrayList;
 
 public class EditCategoryController {
 
@@ -10,6 +14,8 @@ public class EditCategoryController {
   private CustomTextField txtNameCategory;
 
   private Category category;
+
+
 
   public Category getCategory(){
     return category;

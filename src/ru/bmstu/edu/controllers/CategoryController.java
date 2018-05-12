@@ -7,20 +7,25 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import org.controlsfx.control.RangeSlider;
+import org.controlsfx.control.textfield.CustomTextField;
 import ru.bmstu.edu.objects.Category;
+import ru.bmstu.edu.objects.LinguisticVariable;
+import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CategoryController {
   @FXML
@@ -29,7 +34,8 @@ public class CategoryController {
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private Node nodesource;
   private EditCategoryController editCategoryController;
-
+  private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
+  private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
 
   @FXML
   private void initialize(){
@@ -42,42 +48,68 @@ public class CategoryController {
     }
   }
 
-  Region createHorizontalSlider() {
+  Region createHorizontalSlider(int min, int max, int minValue, int maxValue) {
     final TextField minField = new TextField();
     minField.setPrefColumnCount(5);
     final TextField maxField = new TextField();
     maxField.setPrefColumnCount(5);
+    double increment = 0;
 
-    final RangeSlider hSlider = new RangeSlider(0, 100, 10, 90);
+    if (max==1){
+      increment = 0.1;
+    }
+    if(max<=100){
+      increment = 10;
+    }
+
+    if(max<=1000){
+      increment = 100;
+    }
+
+    if(max<=10000){
+      increment = 1000;
+    }
+
+    if(max<=100000){
+      increment = 10000;
+    }
+
+    if(max<=1000000){
+      increment = 100000;
+    }
+
+    final RangeSlider hSlider = new RangeSlider(min, max, minValue, maxValue);
     hSlider.setShowTickMarks(true);
     hSlider.setShowTickLabels(true);
-    hSlider.setBlockIncrement(10);
+    hSlider.setBlockIncrement(increment);
+    hSlider.setMajorTickUnit(increment);
+    hSlider.setMinorTickCount(100);
     hSlider.setPrefWidth(200);
 
-    hSlider.setLabelFormatter(new StringConverter<Number>() {
-
-      @Override
-      public String toString(Number object) {
-        switch (object.intValue()) {
-          case 0:
-            return "very low";
-          case 25:
-            return "low";
-          case 50:
-            return "middle";
-          case 75:
-            return "high";
-          case 100:
-            return "very high";
-        }
-        return object.toString();
-      }
-
-      @Override
-      public Number fromString(String string) {
-        return Double.valueOf(string);
-      }
-    });
+//    hSlider.setLabelFormatter(new StringConverter<Number>() {
+//
+//      @Override
+//      public String toString(Number object) {
+//        switch (object.intValue()) {
+//          case 0:
+//            return "very low";
+//          case 1:
+//            return "low";
+//          case 2:
+//            return "middle";
+//          case 3:
+//            return "high";
+//          case 10:
+//            return "very high";
+//        }
+//        return object.toString();
+//      }
+//
+//      @Override
+//      public Number fromString(String string) {
+//        return Double.valueOf(string);
+//      }
+//    });
 
 
 
@@ -101,74 +133,109 @@ public class CategoryController {
     return box;
   }
 
+  private Button getButton(String nameButton){
+    Button button = new Button(nameButton);
+    button.setMinWidth(75);
 
-
-  Region createLabelSlider() {
-    final RangeSlider hSlider = new RangeSlider(0, 100, 10, 90);
-    hSlider.setShowTickMarks(true);
-    hSlider.setShowTickLabels(true);
-    hSlider.setLabelFormatter(new StringConverter<Number>() {
-
-      @Override
-      public String toString(Number object) {
-        switch (object.intValue()) {
-          case 0:
-            return "very low";
-          case 25:
-            return "low";
-          case 50:
-            return "middle";
-          case 75:
-            return "high";
-          case 100:
-            return "very high";
-        }
-        return object.toString();
-      }
-
-      @Override
-      public Number fromString(String string) {
-        return Double.valueOf(string);
-      }
-    });
-    hSlider.setBlockIncrement(10);
-    hSlider.setPrefWidth(300);
-
-    HBox box = new HBox(10);
-    box.getChildren().addAll(hSlider);
-    box.setPadding(new Insets(20,0,0,20));
-    box.setFillHeight(false);
-
-    return box;
+    return button;
   }
 
-
-
+  private Label getLabel(String name){
+    Label label = new Label(name);
+    label.setFont(new Font("Verdana", 14));
+    label.setTextAlignment(TextAlignment.CENTER);
+    label.setTextFill(Paint.valueOf(String.valueOf(Color.BLUE)));
+    label.setPadding(new Insets(25));
+    //label.setMaxWidth(100);
+    return label;
+  }
 
   private void showDialog(Category category) {
+    int lastRow = 1;
 
     if (category == null) return;
     Stage viewCategoryStage = new Stage();
     GridPane root = new GridPane();
-    root.setHgap(50);
+    root.setPadding(new Insets(25,0,0,0));
+    root.setHgap(10);
     viewCategoryStage.setTitle("Редактирование категорий");
-    viewCategoryStage.setMinHeight(600);
-    viewCategoryStage.setMinWidth(800);
+    viewCategoryStage.setMinHeight(300);
+    viewCategoryStage.setMinWidth(400);
     viewCategoryStage.setResizable(true);
     root.setMinWidth(300);
+
     ScrollPane scrollPane = new ScrollPane();
-
-    Region slider = createHorizontalSlider();
-
-    root.add(slider,1,1);
-
-
 
     scrollPane.setContent(root);
     scrollPane.setPannable(true);
     scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
     scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
+
+    //Кнопка Сохранить
+    Button buttonSave = getButton("Сохранить");
+    buttonSave.setOnAction(e -> {
+      actionSave(category);
+    });
+
+    //Кнопка Отмена
+//    Button buttonCancel = getButton("Отмена");
+//    buttonCancel.setOnAction(e -> {
+//      Node source = (Node) e.getSource();
+//      Stage stage = (Stage) source.getScene().getWindow();
+//      stage.hide();
+//    });
+
+
+    //Название категории
+    Label nameCategory = getLabel("Наименование");
+    //nameCategory.setPadding(new Insets(0,0,0,25));
+    CustomTextField textFieldCategory = new CustomTextField();
+    root.add(nameCategory,0,lastRow);
+    root.add(textFieldCategory,1,lastRow);
+    lastRow +=1;
+
+
+
+    for(int i = 0;i<listInputVariables.size();i++){
+      LinguisticVariable linguisticVariable = listInputVariables.get(i);
+      ArrayList<MembershipFunction>mfList = linguisticVariable.getMfList();
+      int minValue = 0;
+      int maxValue = 0;
+      int min = 0;
+      int max = 0;
+
+      for(int j = 0;j<mfList.size();j++){
+        MembershipFunction mf = mfList.get(j);
+        String[] params = mf.getParamValueMF().split(" ");
+
+        for(int k = 0;k<params.length;k++){
+          int paramValue = Integer.valueOf(params[k]);
+          System.out.println("Params " + paramValue);
+
+          if(paramValue < minValue){
+            min =paramValue;
+            minValue = paramValue;
+          }
+          if(paramValue > maxValue){
+            max = paramValue;
+            maxValue = paramValue;
+          }
+        }
+      }
+
+      //Название переменной
+      StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
+      Label label = getLabel(nameVariable.toString());
+
+      Region slider = createHorizontalSlider(min, max, minValue, maxValue);
+      lastRow +=i;
+      root.add(label,0,lastRow);
+      root.add(slider,1,lastRow);
+    }
+
+    root.add(buttonSave,2,lastRow+5);
+    //root.add(buttonCancel,2,lastRow+5);
 
 
     Scene scene = new Scene(scrollPane);
@@ -177,6 +244,26 @@ public class CategoryController {
     viewCategoryStage.initModality(Modality.WINDOW_MODAL);
     viewCategoryStage.initOwner((Stage) nodesource.getScene().getWindow());
     viewCategoryStage.showAndWait();
+  }
+
+
+  //Сохранение изменений
+  private void actionSave(Category category){
+    if(category ==null) return;
+    int idCategory = category.getId();
+    if(idCategory==0){
+      insertCategory();
+    }else{
+      updateCategory(idCategory);
+    }
+  }
+
+  private void insertCategory(){
+
+  }
+
+  private void updateCategory(int idCategory){
+
   }
 
   public void actionButtonPressed(ActionEvent actionEvent) {
