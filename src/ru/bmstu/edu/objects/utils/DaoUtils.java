@@ -9,10 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
-import ru.bmstu.edu.objects.LinguisticVariable;
-import ru.bmstu.edu.objects.MembershipFunction;
-import ru.bmstu.edu.objects.Project;
-import ru.bmstu.edu.objects.Rule;
+import ru.bmstu.edu.objects.*;
 
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
@@ -240,4 +237,24 @@ public class DaoUtils {
     }
     return listProjects;
   }
+
+  public static ArrayList<Category> getCategoriesList(){
+    ArrayList<Category> listCategories = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.categories")) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        Category category = new Category(rs.getInt("id"), rs.getString("name"),rs.getString("value"));
+        listCategories.add(category);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listCategories;
+  }
+
+
 }
+
+
+
+

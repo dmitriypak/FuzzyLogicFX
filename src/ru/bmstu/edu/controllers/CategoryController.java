@@ -1,5 +1,7 @@
 package ru.bmstu.edu.controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -19,6 +22,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.RangeSlider;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Category;
 import ru.bmstu.edu.objects.LinguisticVariable;
@@ -35,6 +41,12 @@ import java.util.Map;
 public class CategoryController {
   @FXML
   private TableView tableCategory;
+  @FXML
+  private TableColumn colNameCategory;
+  @FXML
+  private TableColumn colValueCategory;
+
+
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private Node nodesource;
@@ -50,6 +62,11 @@ public class CategoryController {
       fxmlLoader.setLocation(getClass().getResource("../fxml/editCategory.fxml"));
       fxmlEdit = fxmlLoader.load();
       editCategoryController = fxmlLoader.getController();
+
+      colNameCategory.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("name"));
+      colValueCategory.setCellValueFactory(new PropertyValueFactory<LinguisticVariableController,String>("value"));
+
+      fillData();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -155,6 +172,13 @@ public class CategoryController {
     label.setPadding(new Insets(25));
     //label.setMaxWidth(100);
     return label;
+  }
+
+  private void fillData(){
+    ObservableList<Category> categoriesList = FXCollections.observableArrayList(DaoUtils.getCategoriesList());
+    if(categoriesList.size()>0){
+      tableCategory.setItems(categoriesList);
+    }
   }
 
   private void showDialog(Category category) {
@@ -286,30 +310,57 @@ public class CategoryController {
       insertCategory(category);
 
     }else{
-      updateCategory(idCategory);
+      updateCategory(category);
     }
   }
 
   private void insertCategory(Category category) throws SQLException {
     Map<LinguisticVariable,String> map= category.getLinguisticVariableStringMap();
+    JSONObject obj = new JSONObject();
+    JSONArray array = new JSONArray();
     for (Map.Entry<LinguisticVariable,String> entry : map.entrySet()) {
-      String query = "INSERT INTO cvdata.bmstu.categories "
-          + " (name, idvariable, value) "
-          + " VALUES (?, ?, ?)";
-      try(PreparedStatement st = PostgreSQLConnection.getConnection().prepareStatement(query)){
-        int i=0;
-        st.setString(++i,category.getName());
-        st.setInt(++i,entry.getKey().getId());
-        st.setString(++i,entry.getValue());
-        st.executeUpdate();
-      }
+      JSONObject obj1 = new JSONObject();
+      String[]values = entry.getValue().split(" ");
+      obj1.put("idVariable",entry.getKey().getId());
+      obj1.put("minValue",values[0]);
+      obj1.put("maxValue",values[1]);
+      array.add(obj1);
     }
+    obj.put("values",array);
 
 
+    String query = "INSERT INTO cvdata.bmstu.categories "
+        + " (name, value) "
+        + " VALUES (?, ?)";
+    try(PreparedStatement st = PostgreSQLConnection.getConnection().prepareStatement(query)){
+      int i=0;
+      st.setString(++i,category.getName());
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(obj.toString());
+      st.setObject(++i,jsonObject);
+      st.executeUpdate();
+    }
   }
 
-  private void updateCategory(int idCategory){
-
+  private void updateCategory(Category category) throws SQLException {
+    Map<LinguisticVariable,String> map= category.getLinguisticVariableStringMap();
+    JSONObject obj = new JSONObject();
+    for (Map.Entry<LinguisticVariable,String> entry : map.entrySet()) {
+      String[]values = entry.getValue().split(" ");
+      obj.put("idVariable",entry.getKey().getId());
+      obj.put("minValue",values[0]);
+      obj.put("maxValue",values[1]);
+    }
+    String query = "UPDATE cvdata.bmstu.categories SET"
+        + " name = ?, value = ? WHERE id = ? ";
+    try(PreparedStatement st = PostgreSQLConnection.getConnection().prepareStatement(query)){
+      int i=0;
+      st.setString(++i,category.getName());
+      st.setString(++i,obj.toString());
+      st.setInt(++i,category.getId());
+      st.executeUpdate();
+    }
   }
 
   public void actionButtonPressed(ActionEvent actionEvent) {

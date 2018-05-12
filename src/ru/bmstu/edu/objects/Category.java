@@ -8,6 +8,19 @@ import java.util.Map;
 public class Category {
   private SimpleIntegerProperty id = new SimpleIntegerProperty(0);
   private SimpleStringProperty name = new SimpleStringProperty("");
+  private SimpleStringProperty value = new SimpleStringProperty("");
+
+  public String getValue() {
+    return value.get();
+  }
+
+  public SimpleStringProperty valueProperty() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value.set(value);
+  }
 
   public Map<LinguisticVariable, String> getLinguisticVariableStringMap() {
     return linguisticVariableStringMap;
@@ -24,8 +37,10 @@ public class Category {
 
   }
 
-  public Category(SimpleStringProperty name, SimpleStringProperty value) {
-    this.name = name;
+  public Category(int id, String name, String value) {
+    this.id = new SimpleIntegerProperty(id);
+    this.name = new SimpleStringProperty(name);
+    this.value = new SimpleStringProperty(value);
   }
 
 
