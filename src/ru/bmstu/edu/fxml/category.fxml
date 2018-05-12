@@ -10,7 +10,9 @@
    <children>
       <ToolBar layoutX="38.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-          <Button fx:id="btnEditCategory" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" />
+            <Button fx:id="btnAddCategory" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" />
+          <Button fx:id="btnEditCategory" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" />
+            <Button fx:id="btnDeleteCategory" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" />
         </items>
       </ToolBar>
       <TableView fx:id="tableCategory" layoutX="14.0" layoutY="62.0" prefHeight="464.0" prefWidth="775.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
