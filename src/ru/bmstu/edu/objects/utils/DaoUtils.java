@@ -259,14 +259,14 @@ public class DaoUtils {
 
   public static ArrayList<Vacancy> getVacanciesList(int idProject){
     ArrayList<Vacancy> listVacancies = new ArrayList<>();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name,idproject, " +
-        " VALUE from cvdata.bmstu.vacancies WHERE idproject = ?")) {
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, wages, value, " +
+        " freeamount, totalamount from cvdata.bmstu.vacancies WHERE idproject = ?;")) {
       statement.setInt(1,idProject);
       ResultSet rs = statement.executeQuery();
 
       while (rs.next()){
-        Vacancy vacancy = new Vacancy(rs.getInt("id"),idProject,  rs.getString("name"),rs.getInt("wages"),
-            rs.getString("value"));
+        Vacancy vacancy = new Vacancy(rs.getInt("id"), idProject,  rs.getString("name"),rs.getInt("wages"),
+            rs.getString("value"),  rs.getInt("totalamount"),rs.getInt("freeamount"));
         listVacancies.add(vacancy);
       }
     } catch (SQLException e) {

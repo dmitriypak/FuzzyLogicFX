@@ -9,11 +9,14 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
+import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Project;
 import ru.bmstu.edu.objects.Vacancy;
 import ru.bmstu.edu.objects.utils.DaoUtils;
@@ -21,6 +24,7 @@ import ru.bmstu.edu.objects.utils.DaoUtils;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class EditProjectController {
 
@@ -34,6 +38,15 @@ public class EditProjectController {
   private Button btnAddVacancy;
   @FXML
   private TableView tableVacancy;
+  @FXML
+  private TableColumn colVacancyName;
+  @FXML
+  private TableColumn colVacancyWages;
+  @FXML
+  private TableColumn colAmountFree;
+  @FXML
+  private TableColumn colAmountTotal;
+
 
   private Node nodesource;
   private Project project;
@@ -41,14 +54,17 @@ public class EditProjectController {
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private Stage editVacancyStage;
   private EditVacancyController editVacancyController;
-  private ObservableList<Vacancy> vacancyList = FXCollections.observableArrayList(DaoUtils.getVacanciesList(project.getId()));
+  private ObservableList<Vacancy> vacancyList = FXCollections.observableArrayList();
 
   @FXML
   public void initialize(){
-    initLoader();
-    fillData();
-  }
-  private void initLoader(){
+    colVacancyName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("name"));
+    colVacancyWages.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("wages"));
+    colAmountFree.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("amountFree"));
+    colAmountTotal.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("amountTotal"));
+
+
+
     try {
       fxmlLoader.setLocation(getClass().getResource("../fxml/editVacancy.fxml"));
       fxmlEdit = fxmlLoader.load();
@@ -56,7 +72,6 @@ public class EditProjectController {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   public void setProject(Project project){
@@ -67,6 +82,12 @@ public class EditProjectController {
     txtProjectName.setText(project.getName());
     txtProjectDescr.setText(project.getDescr());
     System.out.println("Получен проект: " + project.getId());
+
+    if(project.getId()!=0){
+      fillData();
+    }else{
+      vacancyList.clear();
+    }
   }
 
   public Project getProject(){
@@ -117,11 +138,12 @@ public class EditProjectController {
       case "btnAddVacancy":
         Vacancy vacancy = new Vacancy();
         vacancy.setId(0);
+        vacancy.setIdProject(project.getId());
         editVacancyController.setVacancy(vacancy);
+        showDialog();
         vacancy = editVacancyController.getVacancy();
         vacancyList.add(vacancy);
-        tableVacancy.setItems(vacancyList);
-        showDialog();
+        //tableVacancy.setItems(vacancyList);
         break;
       case "btnEditVacancy":
         editVacancyController.setVacancy((Vacancy)tableVacancy.getSelectionModel().getSelectedItem());
@@ -139,7 +161,10 @@ public class EditProjectController {
 
 
   private void fillData(){
-    if(vacancyList.size()>0){
+    if(project==null) return;
+    ArrayList<Vacancy> list = DaoUtils.getVacanciesList(project.getId());
+    if(list!=null || list.size()>0 ){
+      vacancyList = FXCollections.observableArrayList(list);
       tableVacancy.setItems(vacancyList);
     }
   }

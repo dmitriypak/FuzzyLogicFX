@@ -53,7 +53,6 @@ public class LinguisticVariableController {
 
 
   private LinguisticVariableCollection variableList = new LinguisticVariableList();
-  private CvWebViewController cvWebViewController = new CvWebViewController();
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private EditLinguisticVariableController editLinguisticVariableController;

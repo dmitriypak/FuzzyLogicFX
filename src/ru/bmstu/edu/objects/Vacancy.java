@@ -9,18 +9,51 @@ public class Vacancy {
   private SimpleStringProperty name = new SimpleStringProperty("");
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleIntegerProperty wages = new SimpleIntegerProperty(0);
+  private SimpleIntegerProperty amountFree = new SimpleIntegerProperty(0);
+  private SimpleIntegerProperty amountTotal = new SimpleIntegerProperty(0);
+  private SimpleIntegerProperty amountBusy = new SimpleIntegerProperty(0);
 
   /////////////
 
+  public int getAmountFree() {
+    return amountFree.get();
+  }
+
+  public SimpleIntegerProperty amountFreeProperty() {
+    return amountFree;
+  }
+
+  public void setAmountFree(int amountFree) {
+    this.amountFree.set(amountFree);
+  }
+
+  public int getAmountTotal() {
+    return amountTotal.get();
+  }
+
+  public SimpleIntegerProperty amountTotalProperty() {
+    return amountTotal;
+  }
+
+  public void setAmountTotal(int amountTotal) {
+    this.amountTotal.set(amountTotal);
+  }
+
   public Vacancy() {
 
+
   }
-  public Vacancy(int id, int idProject, String name, int wages, String value) {
+  public Vacancy(int id, int idProject, String name, int wages, String value, int amountTotal, int amountFree) {
     this.id = new SimpleIntegerProperty(id);
     this.idProject = new SimpleIntegerProperty(idProject);
     this.name = new SimpleStringProperty(name);
     this.wages = new SimpleIntegerProperty(wages);
     this.value = new SimpleStringProperty(value);
+    this.amountTotal = new SimpleIntegerProperty(amountTotal);
+    this.amountFree = new SimpleIntegerProperty(amountFree);
+    int diff = amountTotal-amountFree;
+    this.amountBusy = new SimpleIntegerProperty(diff);
+
   }
 
 

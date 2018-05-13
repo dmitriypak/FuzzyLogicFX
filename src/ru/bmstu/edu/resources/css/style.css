@@ -1,7 +1,23 @@
 .table-view{
-    -fx-font-family: Arial, sans-serif;
+    -fx-font-family: Verdana;
     -fx-font-size: 14px;
     -fx-background-color: #f0f0f0;
+
+}
+#btnSave1{
+    -fx-background-image: url("../../resources/images/save.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+#colAmountFree{
+    -fx-alignment: center;
+}
+#colAmountTotal{
+    -fx-alignment: center;
+}
+#colVacancyWages{
+    -fx-alignment: center;
 }
 
 .label{

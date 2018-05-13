@@ -64,10 +64,11 @@ public class ProjectController {
         }
         fillData();
 
-          tableProjects.setOnMouseClicked( event -> {
-              if( event.getClickCount() == 2 ) {
-              btnEditProject.fire();
-              }});
+        tableProjects.setOnMouseClicked(event -> {
+          if( event.getClickCount() == 2 ) {
+            btnEditProject.fire();
+          }
+        });
     }
 
 
