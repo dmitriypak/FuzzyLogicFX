@@ -32,9 +32,6 @@ public class Category {
     this.linguisticVariableStringMap = linguisticVariableStringMap;
   }
 
-
-
-
   public Category() {
 
   }

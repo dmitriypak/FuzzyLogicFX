@@ -24,6 +24,7 @@ import org.controlsfx.control.RangeSlider;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Category;
@@ -52,16 +53,14 @@ public class CategoryController {
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private Node nodesource;
   private EditCategoryController editCategoryController;
-  private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
-  private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
 
   private Map<Variable,String> mapVariables = new LinkedHashMap<>();
 
   private Scene scene;
   @FXML
-  private void initialize(){
+  private void initialize() throws ParseException {
     try {
       fxmlLoader.setLocation(getClass().getResource("../fxml/editCategory.fxml"));
       fxmlEdit = fxmlLoader.load();
@@ -178,7 +177,7 @@ public class CategoryController {
     return label;
   }
 
-  private void fillData(){
+  private void fillData() throws ParseException {
     ObservableList<Category> categoriesList = FXCollections.observableArrayList(DaoUtils.getCategoriesList());
     if(categoriesList.size()>0){
       tableCategory.setItems(categoriesList);
@@ -237,8 +236,9 @@ public class CategoryController {
 
 
     Map<Variable,String>categoriesMap = category.getLinguisticVariableStringMap();
-    for(int i = 0;i<listInputVariables.size();i++){
-      LinguisticVariable linguisticVariable = listInputVariables.get(i);
+
+    for(int i = 0;i<listOutputVariables.size();i++){
+      LinguisticVariable linguisticVariable = listOutputVariables.get(i);
 
       ArrayList<MembershipFunction>mfList = linguisticVariable.getMfList();
       int minValue = 0;
@@ -311,7 +311,7 @@ public class CategoryController {
 
     int idCategory = category.getId();
     if(idCategory==0){
-      for(LinguisticVariable linguisticVariable:listInputVariables){
+      for(LinguisticVariable linguisticVariable:listOutputVariables){
         TextField minTextField = (TextField) scene.lookup("#MinValue"+String.valueOf(linguisticVariable.getId()));
         System.out.println("#MinValue"+linguisticVariable.getId());
         TextField maxTextField = (TextField) scene.lookup("#MaxValue"+String.valueOf(linguisticVariable.getId()));

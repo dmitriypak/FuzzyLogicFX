@@ -36,6 +36,16 @@ public enum MFname {
     return null;
   }
 
+  public static MFname getMFnameByName(String name) {
+    for (MFname mFname : MFname.values()) {
+      if (mFname.name.equalsIgnoreCase(name)) {
+        return mFname;
+      }
+    }
+    return null;
+  }
+
+
   @Override
   public String toString()  {
     return this.name;

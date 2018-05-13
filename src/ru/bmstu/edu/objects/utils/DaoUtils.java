@@ -178,12 +178,6 @@ public class DaoUtils {
           String nameVariable = ifParam.get("nameVariable").toString();
           ifMap.put(nameVariable,mf);
         }
-
-
-
-
-
-
         listRules.add(rule);
       }
     } catch (SQLException e) {
@@ -243,30 +237,59 @@ public class DaoUtils {
     return listProjects;
   }
 
-  public static ArrayList<Category> getCategoriesList(){
+  public static ArrayList<Category> getCategoriesList() throws ParseException {
     ArrayList<Category> listCategories = new ArrayList<>();
+    org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
+    Map<Variable,String> map = new LinkedHashMap<>();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.categories")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         Category category = new Category(rs.getInt("id"), rs.getString("name"),rs.getString("value"));
         listCategories.add(category);
+
+        //Парсинг JSON
+        Object obj = parser.parse(category.getValue());
+        JSONObject jsonObject = (JSONObject) obj;
+        System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+
+        JSONArray array = (JSONArray) jsonObject.get("values");
+        System.out.println("values: " + array);
+        for(int i =0;i<array.size();i++){
+          JSONObject param =  (JSONObject) array.get(i);
+          String idVariable = param.get("idvariable").toString();
+          String minValue = param.get("minValue").toString();
+          String maxValue = param.get("maxValue").toString();
+          //map.put(Variable.getVariableByName())
+
+        }
       }
     } catch (SQLException e) {
       e.printStackTrace();
     }
+
+
+
     return listCategories;
   }
 
-  public static ArrayList<Vacancy> getVacanciesList(int idProject){
+  public static ArrayList<Vacancy> getVacanciesList(int idProject) throws ParseException {
     ArrayList<Vacancy> listVacancies = new ArrayList<>();
+    org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, wages, value, " +
-        " freeamount, totalamount from cvdata.bmstu.vacancies WHERE idproject = ?;")) {
+        " freeamount as busyamount, totalamount from cvdata.bmstu.vacancies WHERE idproject = ?;")) {
       statement.setInt(1,idProject);
       ResultSet rs = statement.executeQuery();
 
       while (rs.next()){
         Vacancy vacancy = new Vacancy(rs.getInt("id"), idProject,  rs.getString("name"),rs.getInt("wages"),
-            rs.getString("value"),  rs.getInt("totalamount"),rs.getInt("freeamount"));
+            rs.getString("value"),  rs.getInt("totalamount"),rs.getInt("busyamount"));
+
+        //Парсинг JSON
+        Object obj = parser.parse(vacancy.getValue());
+        JSONObject jsonObject = (JSONObject) obj;
+        System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+        vacancy.setNameCategory(jsonObject.get("nameCategory").toString());
+
         listVacancies.add(vacancy);
       }
     } catch (SQLException e) {

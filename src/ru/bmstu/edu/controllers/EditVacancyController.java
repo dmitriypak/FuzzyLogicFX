@@ -1,15 +1,25 @@
 package ru.bmstu.edu.controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.postgresql.util.PGobject;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
+import ru.bmstu.edu.objects.LinguisticVariable;
+import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Vacancy;
+import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class EditVacancyController {
 
@@ -19,13 +29,39 @@ public class EditVacancyController {
   private CustomTextField txtWages;
   @FXML
   private CustomTextField txtTotalAmount;
+  @FXML
+  private ComboBox comboCategory;
 
   private Vacancy vacancy;
+  private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
+  private ArrayList<MembershipFunction> mfList;
+  private LinguisticVariable outputVariable;
+
+  @FXML
+  private void initialize(){
+    if(listOutputVariables.size()>0){
+      outputVariable = listOutputVariables.get(0);
+      mfList = outputVariable.getMfList();
+    }
+    createComboBox();
+
+  }
+
+  private void createComboBox(){
+    //Заполнение комбобокса
+
+    ObservableList<String> fnamesList = FXCollections.observableArrayList();
+    for(MembershipFunction mf:mfList){
+      fnamesList.add(mf.getNameMF());
+    }
+    comboCategory.setItems(fnamesList);
+
+  }
 
   public Vacancy getVacancy(){
     return vacancy;
   }
-  public void setVacancy(Vacancy vacancy){
+  public void setVacancy(Vacancy vacancy) throws ParseException {
     if(vacancy==null){
       return;
     }
@@ -36,9 +72,18 @@ public class EditVacancyController {
       txtVacancyName.setText(vacancy.getName());
       txtWages.setText(String.valueOf(vacancy.getWages()));
       txtTotalAmount.setText(String.valueOf(vacancy.getAmountTotal()));
+      org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
+      //Парсинг JSON
+      Object obj = parser.parse(vacancy.getValue());
+      JSONObject jsonObject = (JSONObject) obj;
+      comboCategory.setValue(jsonObject.get("nameCategory").toString());
+
+
     }else{
       txtWages.clear();
       txtVacancyName.clear();
+      txtTotalAmount.clear();
+      comboCategory.getItems().clear();
     }
 
   }
@@ -57,6 +102,21 @@ public class EditVacancyController {
     vacancy.setName(txtVacancyName.getText());
     vacancy.setWages(Integer.valueOf(txtWages.getText()));
     vacancy.setAmountTotal(Integer.valueOf(txtTotalAmount.getText()));
+
+    String nameCategory = comboCategory.getValue().toString();
+    vacancy.setNameCategory(nameCategory);
+    String codeCategory = "";
+    for(MembershipFunction membershipFunction:mfList){
+      if (membershipFunction.getNameMF().equals(nameCategory)) {
+        codeCategory = membershipFunction.getCodeMF();
+      }
+    }
+
+    JSONObject obj = new JSONObject();
+    obj.put("idvariable",outputVariable.getId());
+    obj.put("nameCategory",nameCategory);
+    obj.put("codeCategory",codeCategory);
+
     String query = "UPDATE cvdata.bmstu.vacancies "
         + " set name = ?, idproject = ?, wages = ?, VALUE = ?,totalamount = ?  "
         + " WHERE id = ?;";
@@ -65,7 +125,12 @@ public class EditVacancyController {
       pstmt.setString(++i,vacancy.getName());
       pstmt.setObject(++i, vacancy.getIdProject());
       pstmt.setObject(++i, vacancy.getWages());
-      pstmt.setObject(++i, vacancy.getValue());
+
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(obj.toString());
+
+      pstmt.setObject(++i, jsonObject);
       pstmt.setObject(++i, vacancy.getAmountTotal());
       pstmt.setObject(++i, vacancy.getId());
       pstmt.executeUpdate();
@@ -77,6 +142,22 @@ public class EditVacancyController {
     vacancy.setName(txtVacancyName.getText());
     vacancy.setWages(Integer.valueOf(txtWages.getText()));
     vacancy.setAmountTotal(Integer.valueOf(txtTotalAmount.getText()));
+    vacancy.setAmountFree(Integer.valueOf(txtTotalAmount.getText()));
+    String nameCategory = comboCategory.getValue().toString();
+    String codeCategory = "";
+    for(MembershipFunction membershipFunction:mfList){
+      if (membershipFunction.getNameMF().equals(nameCategory)) {
+        codeCategory = membershipFunction.getCodeMF();
+      }
+    }
+
+    JSONObject obj = new JSONObject();
+    obj.put("idvariable",outputVariable.getId());
+    obj.put("nameCategory",nameCategory);
+    obj.put("codeCategory",codeCategory);
+
+    vacancy.setNameCategory(nameCategory);
+
     String query = "INSERT INTO cvdata.bmstu.vacancies "
         + " (name, idproject, wages, VALUE,totalamount ) "
         + " VALUES (?, ?, ?, ?, ? );";
@@ -85,7 +166,12 @@ public class EditVacancyController {
       pstmt.setString(++i,vacancy.getName());
       pstmt.setObject(++i, vacancy.getIdProject());
       pstmt.setObject(++i, vacancy.getWages());
-      pstmt.setObject(++i, vacancy.getValue());
+
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(obj.toString());
+
+      pstmt.setObject(++i, jsonObject);
       pstmt.setObject(++i, vacancy.getAmountTotal());
 
       pstmt.executeUpdate();

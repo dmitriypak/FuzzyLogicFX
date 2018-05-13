@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Project;
@@ -35,7 +36,7 @@ public class EditProjectController {
   @FXML
   private Button btnClose;
   @FXML
-  private Button btnAddVacancy;
+  private Button btnEditVacancy;
   @FXML
   private TableView tableVacancy;
   @FXML
@@ -46,6 +47,8 @@ public class EditProjectController {
   private TableColumn colAmountFree;
   @FXML
   private TableColumn colAmountTotal;
+  @FXML
+  private TableColumn colCategory;
 
 
   private Node nodesource;
@@ -62,7 +65,12 @@ public class EditProjectController {
     colVacancyWages.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("wages"));
     colAmountFree.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("amountFree"));
     colAmountTotal.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("amountTotal"));
+    colCategory.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("nameCategory"));
 
+    tableVacancy.setOnMouseClicked( event -> {
+      if( event.getClickCount() == 2 ) {
+        btnEditVacancy.fire();
+      }});
 
 
     try {
@@ -74,7 +82,7 @@ public class EditProjectController {
     }
   }
 
-  public void setProject(Project project){
+  public void setProject(Project project) throws ParseException {
     if(project==null){
       return;
     }
@@ -110,7 +118,7 @@ public class EditProjectController {
 
 
 
-  public void actionButtonPressed(ActionEvent actionEvent) throws SQLException {
+  public void actionButtonPressed(ActionEvent actionEvent) throws SQLException, ParseException {
     Object source = actionEvent.getSource();
     if (!(source instanceof Button)) {
       return;
@@ -155,12 +163,12 @@ public class EditProjectController {
 
   }
 
-    public void actionSave(ActionEvent actionEvent) {
+  public void actionSave(ActionEvent actionEvent) {
 
-    }
+  }
 
 
-  private void fillData(){
+  private void fillData() throws ParseException {
     if(project==null) return;
     ArrayList<Vacancy> list = DaoUtils.getVacanciesList(project.getId());
     if(list!=null || list.size()>0 ){
