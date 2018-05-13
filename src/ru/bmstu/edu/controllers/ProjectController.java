@@ -15,10 +15,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
+import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.Project;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Created by HP on 21.05.2017.
@@ -78,7 +81,7 @@ public class ProjectController {
 
 
 
-    public void actionButtonPressed(ActionEvent actionEvent) throws ParseException {
+    public void actionButtonPressed(ActionEvent actionEvent) throws ParseException, SQLException {
         Object source = actionEvent.getSource();
         if (!(source instanceof Button)) {
             return;
@@ -101,8 +104,19 @@ public class ProjectController {
                showDialog();
                break;
             case "btnDeleteProject":
+                Project delProject = (Project)tableProjects.getSelectionModel().getSelectedItem();
+                projectsList.remove(delProject);
+                deleteProject(delProject.getId());
                 break;
 
+        }
+    }
+
+    private void deleteProject(int projectID) throws SQLException {
+        String query = "delete from cvdata.bmstu.projects WHERE id = ?";
+        try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1,projectID);
+            pstmt.executeUpdate();
         }
     }
 

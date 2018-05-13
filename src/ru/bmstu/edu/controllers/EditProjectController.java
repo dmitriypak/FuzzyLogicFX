@@ -49,7 +49,8 @@ public class EditProjectController {
   private TableColumn colAmountTotal;
   @FXML
   private TableColumn colCategory;
-
+  @FXML
+  private Button btnSave;
 
   private Node nodesource;
   private Project project;
@@ -126,6 +127,9 @@ public class EditProjectController {
     nodesource = (Node) actionEvent.getSource();
     Button clickedButton = (Button) source;
     switch (clickedButton.getId()) {
+      case "btnSaveProject":
+        btnSave.fire();
+        break;
       case "btnSave":
 
         project.setName(txtProjectName.getText());
@@ -178,12 +182,14 @@ public class EditProjectController {
   }
 
   private void updateProject(Project project) throws SQLException {
-    String query = "update cvdata.bmstu.linguisticvariables "
-        + " set name = ?, value = ?, description = ?, type = ? WHERE id = ?";
+    String query = "update cvdata.bmstu.projects "
+        + " set name = ?, descr = ?  WHERE id = ?";
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
       int i = 0;
-      pstmt.setString(++i,project.getName());
-      pstmt.setString(++i,project.getDescr());
+      pstmt.setString(++i,txtProjectName.getText());
+      pstmt.setString(++i,txtProjectDescr.getText());
+      pstmt.setInt(++i,project.getId());
+
       pstmt.executeUpdate();
     }
   }

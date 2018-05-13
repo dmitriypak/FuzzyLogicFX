@@ -39,23 +39,22 @@ public class EditVacancyController {
 
   @FXML
   private void initialize(){
-    if(listOutputVariables.size()>0){
-      outputVariable = listOutputVariables.get(0);
-      mfList = outputVariable.getMfList();
-    }
     createComboBox();
-
   }
 
   private void createComboBox(){
-    //Заполнение комбобокса
+    if(listOutputVariables.size()>0){
+      outputVariable = listOutputVariables.get(0);
+      mfList = outputVariable.getMfList();
 
+    }
+
+    //Заполнение комбобокса
     ObservableList<String> fnamesList = FXCollections.observableArrayList();
     for(MembershipFunction mf:mfList){
       fnamesList.add(mf.getNameMF());
     }
     comboCategory.setItems(fnamesList);
-
   }
 
   public Vacancy getVacancy(){
@@ -77,13 +76,11 @@ public class EditVacancyController {
       Object obj = parser.parse(vacancy.getValue());
       JSONObject jsonObject = (JSONObject) obj;
       comboCategory.setValue(jsonObject.get("nameCategory").toString());
-
-
     }else{
       txtWages.clear();
       txtVacancyName.clear();
       txtTotalAmount.clear();
-      comboCategory.getItems().clear();
+      comboCategory.setValue("");
     }
 
   }
