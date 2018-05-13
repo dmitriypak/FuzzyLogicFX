@@ -15,6 +15,9 @@ public class LinguisticVariable {
   private Boolean isactive;
   private Variable variable;
 
+
+  /////////////////
+
   public Variable getVariable() {
     return variable;
   }

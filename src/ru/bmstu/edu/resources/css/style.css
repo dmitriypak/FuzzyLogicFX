@@ -1,3 +1,13 @@
+.text-field{
+    -fx-font-family: Verdana;
+    -fx-font-size: 14px;
+}
+
+.combo-box{
+    -fx-font-family: Verdana;
+    -fx-font-size: 14px;
+}
+
 .table-view{
     -fx-font-family: Verdana;
     -fx-font-size: 14px;
@@ -23,7 +33,6 @@
 .label{
     -fx-font-family: Arial, sans-serif;
     -fx-font-size: 14px;
-    -fx-background-color: #f0f0f0;
 }
 
 #btnSaveProject{
@@ -90,7 +99,7 @@
     -fx-background-repeat: no-repeat;
 }
 #btnDeleteMF{
-    -fx-background-image: url("../../resources/images/bullet_delete.png");
+    -fx-background-image: url("../../resources/images/chart_bar_delete.png");
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }

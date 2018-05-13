@@ -147,6 +147,7 @@ public class LinguisticVariableController {
       case "btnAddVariable":
         LinguisticVariable linguisticVariable = new LinguisticVariable();
         linguisticVariable.setId(0);
+        linguisticVariable.setIsactive(true);
         editLinguisticVariableController.setLinguisticVariable(linguisticVariable);
         linguisticVariable = editLinguisticVariableController.getVariable();
         variableList.add(linguisticVariable);

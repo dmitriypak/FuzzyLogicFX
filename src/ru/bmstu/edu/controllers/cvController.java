@@ -52,6 +52,10 @@ public class cvController {
   private TableView tableCV;
   @FXML
   private CustomTextField txtPositionName;
+  @FXML
+  private Button btnViewRules;
+
+
   private Node nodesource;
 
   private ObservableList<CV> CVList = FXCollections.observableArrayList();
@@ -67,6 +71,13 @@ public class cvController {
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
     colSalary.setCellValueFactory(new PropertyValueFactory<CV,Integer>("salary"));
     colExperience.setCellValueFactory(new PropertyValueFactory<CV,String>("experience"));
+
+    tableCV.setOnMouseClicked( event -> {
+      if( event.getClickCount() == 2 ) {
+        btnViewRules.fire();
+      }});
+
+
 
     try {
       fxmlLoader.setLocation(getClass().getResource("../fxml/viewRules.fxml"));
@@ -103,15 +114,7 @@ public class cvController {
 
 
   private AreaChart getAreaChart(MembershipFunction mf, double param){
-    NumberAxis xAxis = new NumberAxis() ;
-    NumberAxis yAxis = new NumberAxis(0,1,0) ;
-    AreaChart chart = new AreaChart(xAxis, yAxis) ;
-    chart.setTitle(mf.getNameMF());
-    chart.setMaxWidth(200);
-    chart.setMaxHeight(200);
-    chart.setMinHeight(100);
-    chart.setMinWidth(100);
-    chart.setCreateSymbols(false);
+    double maxValue = 0;
 //    chart.getXAxis().setTickMarkVisible(false);
 //    chart.getYAxis().setTickMarkVisible(false);
 //    chart.getXAxis().setTickLabelsVisible(false);
@@ -124,13 +127,52 @@ public class cvController {
     String value[] = mf.getParamValueMF().split(" ");
     series.setName(mf.getNameMF());
     System.out.println("MFname:" + mf.getNameMF());
-    for(int i =0;i<value.length;i++){
-      series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
+    switch (value.length){
+      case 3:
+        for(int i =0;i<value.length;i++){
+          double val = Double.valueOf(value[i]);
+          series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
+          if(val>maxValue){
+            maxValue = val;
+          }
+        }
+
+        break;
+      case 4:
+        for(int i=0;i<value.length;i++){
+          double val = Double.valueOf(value[i]);
+          System.out.println("val " + val);
+          if(i==0 || i==3){
+            series.getData().add(new XYChart.Data(val,0));
+          }else{
+            series.getData().add(new XYChart.Data(val,1));
+          }
+          if(val>maxValue){
+            maxValue = val;
+          }
+        }
+        break;
     }
+    NumberAxis xAxis;
+    if(maxValue <= 1){
+      xAxis = new NumberAxis(0,1,0) ;
+    }else{
+      xAxis = new NumberAxis();
+    }
+
+    NumberAxis yAxis = new NumberAxis(0,1,0) ;
+    AreaChart chart = new AreaChart(xAxis, yAxis) ;
+    chart.setTitle(mf.getNameMF());
+    chart.setMaxWidth(200);
+    chart.setMaxHeight(150);
+    chart.setMinHeight(100);
+    chart.setMinWidth(100);
+    chart.setCreateSymbols(false);
+
     series1.getData().add(new XYChart.Data(param,0));
     series1.getData().add(new XYChart.Data(param,1));
 
-
+    //Красная линия
     if(param>=Double.valueOf(value[0]) && param<=Double.valueOf(value[1])){
       series2.getData().add(new XYChart.Data(Double.valueOf(value[0]),0));
       double y = getY(param,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
