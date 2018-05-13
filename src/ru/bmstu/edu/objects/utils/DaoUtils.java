@@ -162,7 +162,7 @@ public class DaoUtils {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         Rule rule = new Rule(rs.getInt("id"), rs.getString("value"),rs.getBoolean("isactive"));
-
+        Condition condition = new Condition();
         //Парсинг JSON
         Object obj = parser.parse(rule.getValue());
         JSONObject jsonObject = (JSONObject) obj;
@@ -178,6 +178,35 @@ public class DaoUtils {
           String nameVariable = ifParam.get("nameVariable").toString();
           ifMap.put(nameVariable,mf);
         }
+
+        //AND
+        JSONArray ANDarray = (JSONArray) jsonObject.get("AND");
+        System.out.println("AND: " + ANDarray);
+        for(int i =0;i<ANDarray.size();i++){
+          JSONObject andParam =  (JSONObject) ANDarray.get(i);
+          String idVariable = andParam.get("idvariable").toString();
+          String nameMF = andParam.get("nameMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF);
+          String nameVariable = andParam.get("nameVariable").toString();
+          andMap.put(nameVariable,mf);
+        }
+
+        //THEN
+        JSONArray THENarray = (JSONArray) jsonObject.get("THEN");
+        System.out.println("THEN: " + THENarray);
+        for(int i =0;i<THENarray.size();i++){
+          JSONObject ifParam =  (JSONObject) THENarray.get(i);
+          String idVariable = ifParam.get("idvariable").toString();
+          String nameMF = ifParam.get("nameMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF);
+          String nameVariable = ifParam.get("nameVariable").toString();
+          thenMap.put(nameVariable,mf);
+        }
+
+        condition.setANDmfList(andMap);
+        condition.setIFmfList(ifMap);
+        condition.setTHENmfList(thenMap);
+
         listRules.add(rule);
       }
     } catch (SQLException e) {

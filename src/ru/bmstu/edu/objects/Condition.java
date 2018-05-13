@@ -70,6 +70,30 @@ public class Condition {
 
   }
 
+  public Map<String, MembershipFunction> getIFmfList() {
+    return IFmfList;
+  }
+
+  public void setIFmfList(Map<String, MembershipFunction> IFmfList) {
+    this.IFmfList = IFmfList;
+  }
+
+  public Map<String, MembershipFunction> getANDmfList() {
+    return ANDmfList;
+  }
+
+  public void setANDmfList(Map<String, MembershipFunction> ANDmfList) {
+    this.ANDmfList = ANDmfList;
+  }
+
+  public Map<String, MembershipFunction> getTHENmfList() {
+    return THENmfList;
+  }
+
+  public void setTHENmfList(Map<String, MembershipFunction> THENmfList) {
+    this.THENmfList = THENmfList;
+  }
+
   public Condition(int idVariable, String nameVariable, String valueMF) {
     this.nameVariable = new SimpleStringProperty(nameVariable);
     this.idVariable = new SimpleIntegerProperty(idVariable);

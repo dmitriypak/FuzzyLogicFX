@@ -76,7 +76,9 @@ public class EditRuleController {
     }
   }
 
-
+  public Rule getRule(){
+    return rule;
+  }
 
   public void setRule(Rule rule){
     if(rule==null) return;
@@ -84,8 +86,6 @@ public class EditRuleController {
     System.out.println("Получено правило id: " + rule.getIdRule());
 
     comboIFVarName.setValue(rule.getVariableName());
-
-
 
   }
 
@@ -156,15 +156,13 @@ public class EditRuleController {
     comboAndMFName.getSelectionModel().clearSelection();
 
   }
-  public JSONArray getJSONCondition(int id, String nameVar, String nameMF){
+  public JSONObject getJSONCondition(int id, String nameVar, String nameMF){
     Map<String,String> map = new LinkedHashMap<>();
     map.put("idvariable",String.valueOf(id));
     map.put("nameVariable",nameVar);
     map.put("nameMF",nameMF);
     JSONObject obj = new JSONObject(map);
-    JSONArray array = new JSONArray();
-    array.add(obj);
-    return array;
+    return obj;
   }
 
 
@@ -173,17 +171,20 @@ public class EditRuleController {
     JSONObject obj = new JSONObject();
     JSONArray arAND = new JSONArray();
     int idVariableIF = mapInputVariables.get(comboIFVarName.getValue()).getId();
-    JSONArray arIF = getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString());
-    JSONArray arThen = getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString());
+    JSONArray arIF = new JSONArray();
+    arIF.add(getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString()));
+    JSONArray arThen = new JSONArray();
+    arThen.add(getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString()));
+    arAND = new JSONArray();
     if(conditionList.size()==0) {
-      arAND = getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString());
+      arAND.add(getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString()));
     }else{
+      JSONObject object = new JSONObject();
       for(int i = 0;i<conditionList.size();i++){
-        JSONArray array;
         Condition condition = conditionList.get(i);
         int idVariable = mapInputVariables.get(condition.getNameVariable()).getId();
-        array = getJSONCondition(idVariable,condition.getNameVariable(),condition.getValue());
-        arAND.add(array);
+        object = getJSONCondition(idVariable,condition.getNameVariable(),condition.getValue());
+        arAND.add(object);
       }
 
     }
@@ -193,8 +194,7 @@ public class EditRuleController {
     obj.put("IF",arIF);
 
     obj.put("THEN",arThen);
-
-    Rule rule = new Rule();
+    
     rule.setValue(obj.toString());
     DaoUtils.insertRule(rule,idVariableIF);
 

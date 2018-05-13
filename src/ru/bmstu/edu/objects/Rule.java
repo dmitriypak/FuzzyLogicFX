@@ -5,12 +5,11 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Rule {
   private SimpleIntegerProperty idRule = new SimpleIntegerProperty(0);
-
   private Condition condition;
-
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleStringProperty variableName = new SimpleStringProperty("");
   private Boolean isactive;
+
 
   public Boolean getIsactive() {
     return isactive;
@@ -36,9 +35,13 @@ public class Rule {
     this.variableName = new SimpleStringProperty(variableName);
   }
 
+  public Condition getCondition() {
+    return condition;
+  }
 
-
-
+  public void setCondition(Condition condition) {
+    this.condition = condition;
+  }
 
   public int getIdRule() {
     return idRule.get();

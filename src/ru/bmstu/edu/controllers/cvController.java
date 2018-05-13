@@ -23,10 +23,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
+import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
+import ru.bmstu.edu.objects.Rule;
 import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
@@ -64,6 +66,10 @@ public class cvController {
   private ViewRulesController viewRulesController;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
+  private ArrayList<Rule> listRules = DaoUtils.getRules();
+
+  public cvController() throws ParseException {
+  }
 
   @FXML
   private void initialize(){
@@ -208,13 +214,22 @@ public class cvController {
     return y;
   }
 
+  private TextArea getTextArea(String name){
+    TextArea textArea = new TextArea(name);
+    textArea.setFont(new Font("Verdana", 14));
+    textArea.setPadding(new Insets(25));
+    //label.setMaxWidth(100);
+    return textArea;
+  }
+
+
   private Label getLabel(String name){
     Label label = new Label(name);
     label.setFont(new Font("Verdana", 14));
     label.setTextAlignment(TextAlignment.CENTER);
     label.setTextFill(Paint.valueOf(String.valueOf(Color.BLUE)));
     label.setPadding(new Insets(25));
-    //label.setMaxWidth(100);
+    label.setMaxWidth(250);
     return label;
   }
   private void showDialog(CV cv) {
@@ -231,68 +246,77 @@ public class cvController {
       root.setMinWidth(300);
       ScrollPane scrollPane = new ScrollPane();
 
-      if(cv.getId()!=0){
-        //Входные переменные
+      if(cv.getId()==0) return;
 
-        int j = 0;
-        for(int i = 0;i<listInputVariables.size();i++){
-          LinguisticVariable linguisticVariable = listInputVariables.get(i);
-          //Название переменной
-          StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
-
-          double param = 0;
-          Variable variable = Variable.getVariableByName(nameVariable.toString());
-          switch (variable) {
-            case WORK_EXPERIENCE:
-              param = cv.getExperience();
-              break;
-            case SALARY:
-              param = cv.getSalary();
-              break;
-
-          }
-          nameVariable.append("\n").append(param);
-          Label label = getLabel(nameVariable.toString());
-          Label label1 = getLabel(String.valueOf(param));
-          //Построение графиков
-          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, param);
-          System.out.println("Получен список графиков: " + listAreaCharts.size());
-          root.add(label,i,0);
-
-          if(listAreaCharts.size()>0){
-            for(int k = 0;k<listAreaCharts.size();k++){
-              root.add(listAreaCharts.get(k),i,k+2);
-            }
-          }
-
-          j = i+1;
-        }
-
-        //Выходные переменные
-        for(int i = 0;i<listOutputVariables.size();i++){
-          double param = 0;
-          LinguisticVariable linguisticVariable = listOutputVariables.get(i);
-          Label label = getLabel(linguisticVariable.getName());
-          ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
-          root.add(label,i+j,0);
-
-          if(listAreaCharts.size()>0){
-            for(int k = 0;k<listAreaCharts.size();k++){
-              root.add(listAreaCharts.get(k),i+j,k+2);
-            }
-          }
-        }
-
-
-        scrollPane.setContent(root);
-        scrollPane.setPannable(true);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        Scene scene = new Scene(scrollPane);
-        scene.getStylesheets().add("ru/bmstu/edu/resources/css/chart.css");
-
-        viewRulesStage.setScene(scene);
+      for(int i = 0;i<listRules.size();i++){
+        System.out.println("idRule: " + listRules.get(i).getIdRule());
       }
+
+      int j = 0;
+      for(int i = 0;i<listInputVariables.size();i++){
+        LinguisticVariable linguisticVariable = listInputVariables.get(i);
+        //Название переменной
+        StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
+
+        double param = 0;
+        Variable variable = Variable.getVariableByName(nameVariable.toString());
+        switch (variable) {
+          case WORK_EXPERIENCE:
+            param = cv.getExperience();
+            nameVariable.append("\n").append(param);
+            break;
+          case SALARY:
+            param = cv.getSalary();
+            nameVariable.append("\n").append(param);
+            break;
+          case POSITION:
+            param = 0.5;
+            nameVariable.append("\n").append(cv.getPositionname());
+            break;
+
+        }
+
+        Label label = getLabel(nameVariable.toString());
+        //TextArea label = getTextArea(nameVariable.toString());
+        //Построение графиков
+        ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, param);
+        System.out.println("Получен список графиков: " + listAreaCharts.size());
+        root.add(label,i,0);
+
+        if(listAreaCharts.size()>0){
+          for(int k = 0;k<listAreaCharts.size();k++){
+            root.add(listAreaCharts.get(k),i,k+2);
+          }
+        }
+
+        j = i+1;
+      }
+
+      //Выходные переменные
+      for(int i = 0;i<listOutputVariables.size();i++){
+        double param = 0;
+        LinguisticVariable linguisticVariable = listOutputVariables.get(i);
+        Label label = getLabel(linguisticVariable.getName());
+        ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
+        root.add(label,i+j,0);
+
+        if(listAreaCharts.size()>0){
+          for(int k = 0;k<listAreaCharts.size();k++){
+            root.add(listAreaCharts.get(k),i+j,k+2);
+          }
+        }
+      }
+
+
+      scrollPane.setContent(root);
+      scrollPane.setPannable(true);
+      scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+      scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+      Scene scene = new Scene(scrollPane);
+      scene.getStylesheets().add("ru/bmstu/edu/resources/css/chart.css");
+
+      viewRulesStage.setScene(scene);
+
 
       viewRulesStage.initModality(Modality.WINDOW_MODAL);
       viewRulesStage.initOwner((Stage) nodesource.getScene().getWindow());

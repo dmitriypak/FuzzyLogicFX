@@ -58,8 +58,6 @@ public class RulesController {
         btnEditRule.fire();
       }});
 
-
-
     fillData();
   }
 
@@ -152,8 +150,9 @@ public class RulesController {
         Rule rule = new Rule();
         rule.setIdRule(0);
         editRuleController.setRule(rule);
-
         showDialog();
+        rule = editRuleController.getRule();
+        rulesList.add(rule);
         break;
       case "btnEditRule":
         editRuleController.setRule((Rule) tableRules.getSelectionModel().getSelectedItem());
