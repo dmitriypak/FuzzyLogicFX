@@ -203,9 +203,9 @@ public class DaoUtils {
           thenMap.put(nameVariable,mf);
         }
 
-        condition.setANDmfList(andMap);
-        condition.setIFmfList(ifMap);
-        condition.setTHENmfList(thenMap);
+//        condition.setANDmfList(andMap);
+//        condition.setIFmfList(ifMap);
+//        condition.setTHENmfList(thenMap);
 
         listRules.add(rule);
       }

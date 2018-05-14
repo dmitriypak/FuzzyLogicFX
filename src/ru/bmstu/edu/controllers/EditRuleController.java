@@ -84,7 +84,16 @@ public class EditRuleController {
     if(rule==null) return;
     this.rule = rule;
     System.out.println("Получено правило id: " + rule.getIdRule());
+    if(rule.getIdRule()==0){
+      comboIFVarName.getSelectionModel().clearSelection();
+      comboIFMFName.getSelectionModel().clearSelection();
+      comboAndVarName.getSelectionModel().clearSelection();
+      comboAndMFName.getSelectionModel().clearSelection();
+      comboThenVarName.getSelectionModel().clearSelection();
+      comboThenMFName.getSelectionModel().clearSelection();
+    }else{
 
+    }
     comboIFVarName.setValue(rule.getVariableName());
 
   }
@@ -99,12 +108,12 @@ public class EditRuleController {
     ComboBox comboBox = (ComboBox) source;
     System.out.println(comboBox.getValue());
     LinguisticVariable selectVariable = mapOutputVariables.get(comboBox.getValue());
-    ObservableList<String>mfNameList = FXCollections.observableArrayList();
+    ObservableList<MembershipFunction>mfNameList = FXCollections.observableArrayList();
     if(selectVariable!=null){
       ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
       for(int i = 0;i<mfList.size();i++){
         MembershipFunction mf = mfList.get(i);
-        mfNameList.add(mf.getNameMF());
+        mfNameList.add(mf);
       }
       switch (comboBox.getId()) {
         case "comboThenVarName":
@@ -123,15 +132,14 @@ public class EditRuleController {
 
     nodesource = (Node) actionEvent.getSource();
     ComboBox comboBox = (ComboBox) source;
-    System.out.println(comboBox.getValue());
     LinguisticVariable selectVariable = mapInputVariables.get(comboBox.getValue());
-    ObservableList<String>mfNameList = FXCollections.observableArrayList();
-    System.out.println(comboIFVarName.getValue());
+    ObservableList<MembershipFunction>mfNameList = FXCollections.observableArrayList();
+
     if(selectVariable!=null){
       ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
       for(int i = 0;i<mfList.size();i++){
         MembershipFunction mf = mfList.get(i);
-        mfNameList.add(mf.getNameMF());
+        mfNameList.add(mf);
       }
       switch (comboBox.getId()) {
         case "comboIFVarName":
@@ -147,43 +155,50 @@ public class EditRuleController {
   public void addCondition(){
     LinguisticVariable linguisticVariable = mapInputVariables.get(comboAndVarName.getValue());
     if(linguisticVariable==null) return;
-    String mfName = (String) comboAndMFName.getValue();
+    MembershipFunction m = (MembershipFunction) comboAndMFName.getSelectionModel().getSelectedItem();
+    String mfName = m.getNameMF();
     if(mfName.isEmpty()||mfName==null) return;
     Condition condition = new Condition(linguisticVariable.getId(),linguisticVariable.getName(),mfName);
+    condition.setMembershipFunction(m);
     conditionList.add(condition);
     tableAnd.setItems(conditionList);
     comboAndVarName.getSelectionModel().clearSelection();
     comboAndMFName.getSelectionModel().clearSelection();
 
   }
-  public JSONObject getJSONCondition(int id, String nameVar, String nameMF){
+  public JSONObject getJSONCondition(int id, String nameVariable, MembershipFunction mf){
     Map<String,String> map = new LinkedHashMap<>();
     map.put("idvariable",String.valueOf(id));
-    map.put("nameVariable",nameVar);
-    map.put("nameMF",nameMF);
+    map.put("nameVariable",nameVariable);
+    map.put("nameMF",mf.getNameMF());
+    map.put("codeMF", mf.getCodeMF());
     JSONObject obj = new JSONObject(map);
     return obj;
   }
 
 
   public void saveRule() throws SQLException {
-
     JSONObject obj = new JSONObject();
     JSONArray arAND = new JSONArray();
     int idVariableIF = mapInputVariables.get(comboIFVarName.getValue()).getId();
+
     JSONArray arIF = new JSONArray();
-    arIF.add(getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(),comboIFMFName.getValue().toString()));
+    MembershipFunction mfIF = (MembershipFunction) comboIFMFName.getSelectionModel().getSelectedItem();
+    arIF.add(getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(), mfIF));
+
     JSONArray arThen = new JSONArray();
-    arThen.add(getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),comboThenMFName.getValue().toString()));
+    MembershipFunction mfThen = (MembershipFunction) comboThenMFName.getSelectionModel().getSelectedItem();
+    arThen.add(getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),mfThen));
     arAND = new JSONArray();
     if(conditionList.size()==0) {
-      arAND.add(getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),comboAndMFName.getValue().toString()));
+      MembershipFunction mfAnd = (MembershipFunction) comboAndMFName.getSelectionModel().getSelectedItem();
+      arAND.add(getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),mfAnd));
     }else{
       JSONObject object = new JSONObject();
       for(int i = 0;i<conditionList.size();i++){
         Condition condition = conditionList.get(i);
         int idVariable = mapInputVariables.get(condition.getNameVariable()).getId();
-        object = getJSONCondition(idVariable,condition.getNameVariable(),condition.getValue());
+        object = getJSONCondition(idVariable,condition.getNameVariable(),condition.getMembershipFunction());
         arAND.add(object);
       }
 
@@ -194,7 +209,7 @@ public class EditRuleController {
     obj.put("IF",arIF);
 
     obj.put("THEN",arThen);
-    
+
     rule.setValue(obj.toString());
     DaoUtils.insertRule(rule,idVariableIF);
 

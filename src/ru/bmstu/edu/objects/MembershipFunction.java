@@ -66,4 +66,9 @@ public class MembershipFunction {
     this.mFname = mFname;
     this.codeMF =new SimpleStringProperty(mFname.getCode());
   }
+
+  @Override
+  public String toString() {
+    return nameMF.get();
+  }
 }
