@@ -92,11 +92,23 @@ public class EditRuleController {
       comboThenVarName.getSelectionModel().clearSelection();
       comboThenMFName.getSelectionModel().clearSelection();
     }else{
+      Map<String,Condition> map = rule.getIFConditionMap();
+      for(Map.Entry<String, Condition> m:map.entrySet()){
+
+        comboIFVarName.getSelectionModel().select(m.getKey());
+        System.out.println("map " + m.getKey());
+        Condition condition = m.getValue();
+        selectVarName(m.getKey());
+        comboIFMFName.setValue(condition.getMembershipFunction());
+      }
 
     }
-    comboIFVarName.setValue(rule.getVariableName());
 
   }
+
+
+
+
 
   public void selectVarOutputName(ActionEvent actionEvent) {
     Object source = actionEvent.getSource();
@@ -122,7 +134,19 @@ public class EditRuleController {
       }
     }
   }
+  public void selectVarName(String variableName){
+    LinguisticVariable selectVariable = mapInputVariables.get(variableName);
+    ObservableList<MembershipFunction>mfNameList = FXCollections.observableArrayList();
 
+    if(selectVariable!=null){
+      ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
+      for(int i = 0;i<mfList.size();i++){
+        MembershipFunction mf = mfList.get(i);
+        mfNameList.add(mf);
+      }
+      comboIFMFName.setItems(mfNameList);
+    }
+  }
 
   public void selectVarName(ActionEvent actionEvent){
     Object source = actionEvent.getSource();
@@ -158,7 +182,7 @@ public class EditRuleController {
     MembershipFunction m = (MembershipFunction) comboAndMFName.getSelectionModel().getSelectedItem();
     String mfName = m.getNameMF();
     if(mfName.isEmpty()||mfName==null) return;
-    Condition condition = new Condition(linguisticVariable.getId(),linguisticVariable.getName(),mfName);
+    Condition condition = new Condition(linguisticVariable.getId(),linguisticVariable.getName());
     condition.setMembershipFunction(m);
     conditionList.add(condition);
     tableAnd.setItems(conditionList);

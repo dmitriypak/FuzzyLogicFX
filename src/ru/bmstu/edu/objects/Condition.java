@@ -5,9 +5,6 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Condition {
 
-//  private Map<String,MembershipFunction> IFmfList;
-//  private Map<String,MembershipFunction> ANDmfList;
-//  private Map<String,MembershipFunction> THENmfList;
   private MembershipFunction membershipFunction;
   private SimpleIntegerProperty idVariable = new SimpleIntegerProperty(0);
   private SimpleStringProperty nameVariable = new SimpleStringProperty("");
@@ -79,10 +76,9 @@ public class Condition {
   }
 
 
-  public Condition(int idVariable, String nameVariable, String valueMF) {
+  public Condition(int idVariable, String nameVariable) {
     this.nameVariable = new SimpleStringProperty(nameVariable);
     this.idVariable = new SimpleIntegerProperty(idVariable);
-    this.value = new SimpleStringProperty(valueMF);
   }
 
 }

@@ -233,7 +233,7 @@ public class EditLinguisticVariableController{
     txtNameVariable.setText(linguisticVariable.getName());
     txtNameMF.clear();
     txtParamMF.clear();
-    comboCode.setValue("");
+    comboCode.getSelectionModel().clearSelection();
     comboTypeVariable.setValue(linguisticVariable.getType());
     if(linguisticVariable.getId()!=0){
       mfList = FXCollections.observableArrayList(DaoUtils.getMFList(linguisticVariable.getValue()));

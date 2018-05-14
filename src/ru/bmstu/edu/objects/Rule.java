@@ -3,9 +3,16 @@ package ru.bmstu.edu.objects;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.util.Map;
+
 public class Rule {
+
+
+  private Map<String,Condition> IFConditionMap;
+  private Map<String,Condition> ANDConditionMap;
+  private Map<String,Condition> THEConditionMap;
+
   private SimpleIntegerProperty idRule = new SimpleIntegerProperty(0);
-  private Condition condition;
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleStringProperty variableName = new SimpleStringProperty("");
   private Boolean isactive;
@@ -23,6 +30,30 @@ public class Rule {
     return variableName.get();
   }
 
+  public Map<String, Condition> getIFConditionMap() {
+    return IFConditionMap;
+  }
+
+  public void setIFConditionMap(Map<String, Condition> IFConditionMap) {
+    this.IFConditionMap = IFConditionMap;
+  }
+
+  public Map<String, Condition> getANDConditionMap() {
+    return ANDConditionMap;
+  }
+
+  public void setANDConditionMap(Map<String, Condition> ANDConditionMap) {
+    this.ANDConditionMap = ANDConditionMap;
+  }
+
+  public Map<String, Condition> getTHEConditionMap() {
+    return THEConditionMap;
+  }
+
+  public void setTHEConditionMap(Map<String, Condition> THEConditionMap) {
+    this.THEConditionMap = THEConditionMap;
+  }
+
   public SimpleStringProperty variableNameProperty() {
     return variableName;
   }
@@ -35,13 +66,6 @@ public class Rule {
     this.variableName = new SimpleStringProperty(variableName);
   }
 
-  public Condition getCondition() {
-    return condition;
-  }
-
-  public void setCondition(Condition condition) {
-    this.condition = condition;
-  }
 
   public int getIdRule() {
     return idRule.get();

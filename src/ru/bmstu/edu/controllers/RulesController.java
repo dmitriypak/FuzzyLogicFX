@@ -16,7 +16,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.CheckTreeView;
 import org.json.simple.parser.ParseException;
-import ru.bmstu.edu.objects.Condition;
 import ru.bmstu.edu.objects.Rule;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
@@ -71,7 +70,6 @@ public class RulesController {
     if(rulesList.size()>0){
       for(int i = 0;i<rulesList.size();i++){
         Rule rule = rulesList.get(i);
-        Condition condition = rule.getCondition();
 //        Map<String,MembershipFunction> mapCondition = condition.getIFmfList();
 //        for(Map.Entry<String, MembershipFunction> entry:mapCondition.entrySet()){
 //
