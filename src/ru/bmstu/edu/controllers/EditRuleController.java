@@ -45,6 +45,9 @@ public class EditRuleController {
   private TableView tableAnd;
   @FXML
   private Button btnCancel;
+  @FXML
+  private Button btnRemoveFromList;
+
 
   private Rule rule;
 
@@ -59,7 +62,7 @@ public class EditRuleController {
   @FXML
   private void initialize(){
     colVariableName.setCellValueFactory(new PropertyValueFactory<Condition,String>("nameVariable"));
-    colValueMF.setCellValueFactory(new PropertyValueFactory<EditRuleController,String>("valueMF"));
+    colValueMF.setCellValueFactory(new PropertyValueFactory<Condition,String>("valueMF"));
     if(mapInputVariables.size()>0){
       for (Map.Entry<String, LinguisticVariable> entry : mapInputVariables.entrySet()) {
         variablesNameList.add(entry.getKey());
@@ -92,14 +95,33 @@ public class EditRuleController {
       comboThenVarName.getSelectionModel().clearSelection();
       comboThenMFName.getSelectionModel().clearSelection();
     }else{
-      Map<String,Condition> map = rule.getIFConditionMap();
-      for(Map.Entry<String, Condition> m:map.entrySet()){
-
+      conditionList.clear();
+      //IF
+      Map<String,Condition> mapIF = rule.getIFConditionMap();
+      for(Map.Entry<String, Condition> m:mapIF.entrySet()){
         comboIFVarName.getSelectionModel().select(m.getKey());
-        System.out.println("map " + m.getKey());
+        System.out.println("mapIF " + m.getKey());
         Condition condition = m.getValue();
         selectVarName(m.getKey());
         comboIFMFName.setValue(condition.getMembershipFunction());
+      }
+      //AND
+      Map<String,Condition> mapAND = rule.getANDConditionMap();
+      for(Map.Entry<String, Condition> m:mapAND.entrySet()){
+        System.out.println("mapAND " + m.getKey());
+        Condition condition = m.getValue();
+        conditionList.add(condition);
+      }
+      tableAnd.setItems(conditionList);
+
+      //THEN
+      Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
+      for(Map.Entry<String, Condition> m:mapTHEN.entrySet()){
+        comboThenVarName.getSelectionModel().select(m.getKey());
+        System.out.println("mapTHEN " + m.getKey());
+        Condition condition = m.getValue();
+        selectVarName(m.getKey());
+        comboThenMFName.setValue(condition.getMembershipFunction());
       }
 
     }
@@ -188,8 +210,14 @@ public class EditRuleController {
     tableAnd.setItems(conditionList);
     comboAndVarName.getSelectionModel().clearSelection();
     comboAndMFName.getSelectionModel().clearSelection();
-
   }
+
+  public void removeCondition(){
+    Condition delCondition = (Condition) tableAnd.getSelectionModel().getSelectedItem();
+    conditionList.remove(delCondition);
+    tableAnd.setItems(conditionList);
+  }
+
   public JSONObject getJSONCondition(int id, String nameVariable, MembershipFunction mf){
     Map<String,String> map = new LinkedHashMap<>();
     map.put("idvariable",String.valueOf(id));

@@ -10,7 +10,7 @@ public class Rule {
 
   private Map<String,Condition> IFConditionMap;
   private Map<String,Condition> ANDConditionMap;
-  private Map<String,Condition> THEConditionMap;
+  private Map<String,Condition> THENConditionMap;
 
   private SimpleIntegerProperty idRule = new SimpleIntegerProperty(0);
   private SimpleStringProperty value = new SimpleStringProperty("");
@@ -46,12 +46,12 @@ public class Rule {
     this.ANDConditionMap = ANDConditionMap;
   }
 
-  public Map<String, Condition> getTHEConditionMap() {
-    return THEConditionMap;
+  public Map<String, Condition> getTHENConditionMap() {
+    return THENConditionMap;
   }
 
-  public void setTHEConditionMap(Map<String, Condition> THEConditionMap) {
-    this.THEConditionMap = THEConditionMap;
+  public void setTHENConditionMap(Map<String, Condition> THENConditionMap) {
+    this.THENConditionMap = THENConditionMap;
   }
 
   public SimpleStringProperty variableNameProperty() {

@@ -16,7 +16,7 @@ public class MembershipFunction {
   }
 
   public String getCodeMF() {
-    return mFname.getCode();
+    return codeMF.get();
   }
 
   public SimpleStringProperty codeMFProperty() {
@@ -32,6 +32,7 @@ public class MembershipFunction {
   }
   public MembershipFunction(String nameMF) {
     this.nameMF = new SimpleStringProperty(nameMF);
+    this.mFname = MFname.getMFnameByName(nameMF);
   }
 
   public String getNameMF() {

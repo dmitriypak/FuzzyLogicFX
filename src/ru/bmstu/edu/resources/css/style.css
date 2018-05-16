@@ -88,6 +88,12 @@
     -fx-background-repeat: no-repeat;
 }
 
+#btnRemoveFromList{
+    -fx-background-image: url("../../resources/images/toggle.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
 #btnSaveMF{
     -fx-background-image: url("../../resources/images/Save.png");
     -fx-background-size: stretch;

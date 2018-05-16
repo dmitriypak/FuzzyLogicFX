@@ -8,7 +8,7 @@ public class Condition {
   private MembershipFunction membershipFunction;
   private SimpleIntegerProperty idVariable = new SimpleIntegerProperty(0);
   private SimpleStringProperty nameVariable = new SimpleStringProperty("");
-  private SimpleStringProperty value = new SimpleStringProperty("");
+  private SimpleStringProperty valueMF = new SimpleStringProperty("");
   private SimpleStringProperty type = new SimpleStringProperty("");
 
   /////////////////////////
@@ -51,16 +51,16 @@ public class Condition {
     this.type.set(type);
   }
 
-  public String getValue() {
-    return value.get();
+  public String getValueMF() {
+    return valueMF.get();
   }
 
   public SimpleStringProperty valueMFProperty() {
-    return value;
+    return valueMF;
   }
 
-  public void setValue(String valueMF) {
-    this.value.set(valueMF);
+  public void setValueMF(String valueMF) {
+    this.valueMF.set(valueMF);
   }
 
   public String getNameVariable() {

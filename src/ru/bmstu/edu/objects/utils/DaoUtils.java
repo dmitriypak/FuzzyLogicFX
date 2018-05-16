@@ -108,6 +108,7 @@ public class DaoUtils {
         linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
         linguisticVariable.setVariable(Variable.getVariableByName(rs.getString("name")));
         mapVariables.put(linguisticVariable.getName(),linguisticVariable);
+
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -192,6 +193,7 @@ public class DaoUtils {
           String nameVariable = andParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
+          condition.setValueMF(mf.getNameMF());
           andMap.put(nameVariable,condition);
         }
 
@@ -210,7 +212,7 @@ public class DaoUtils {
         }
         rule.setIFConditionMap(ifMap);
         rule.setANDConditionMap(andMap);
-        rule.setTHEConditionMap(thenMap);
+        rule.setTHENConditionMap(thenMap);
         listRules.add(rule);
       }
     } catch (SQLException e) {
