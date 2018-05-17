@@ -152,16 +152,15 @@ public class DaoUtils {
 
   public static ArrayList<Rule> getRules() throws ParseException {
     ArrayList<Rule> listRules = new ArrayList<>();
-
-    Map<String,Condition> ifMap = new LinkedHashMap<>();
-    Map<String,Condition> andMap = new LinkedHashMap<>();
-    Map<String,Condition> thenMap = new LinkedHashMap<>();
-
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
         ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
+        Map<String,Condition> ifMap = new LinkedHashMap<>();
+        Map<String,Condition> andMap = new LinkedHashMap<>();
+        Map<String,Condition> thenMap = new LinkedHashMap<>();
+
         Rule rule = new Rule(rs.getInt("id"), rs.getString("value"),rs.getBoolean("isactive"));
 
         //Парсинг JSON

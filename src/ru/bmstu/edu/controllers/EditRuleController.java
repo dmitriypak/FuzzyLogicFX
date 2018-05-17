@@ -243,6 +243,7 @@ public class EditRuleController {
     arThen.add(getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),mfThen));
     arAND = new JSONArray();
     if(conditionList.size()==0) {
+      if(comboAndVarName.getValue().toString().isEmpty()) return;
       MembershipFunction mfAnd = (MembershipFunction) comboAndMFName.getSelectionModel().getSelectedItem();
       arAND.add(getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),mfAnd));
     }else{

@@ -137,7 +137,7 @@ public class RulesController {
   private void showDialog() {
     if (editRuleControllerStage==null) {
       editRuleControllerStage = new Stage();
-      editRuleControllerStage.setTitle("Редактирование записи");
+      editRuleControllerStage.setTitle("Конструктор правил");
       editRuleControllerStage.setMinHeight(150);
       editRuleControllerStage.setMinWidth(300);
       editRuleControllerStage.setResizable(false);
