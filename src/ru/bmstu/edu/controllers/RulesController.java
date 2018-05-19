@@ -16,11 +16,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.CheckTreeView;
 import org.json.simple.parser.ParseException;
+import ru.bmstu.edu.objects.Condition;
 import ru.bmstu.edu.objects.Rule;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class RulesController {
 
@@ -47,7 +49,7 @@ public class RulesController {
 
   @FXML
   private void initialize() throws ParseException {
-    colRule.setCellValueFactory(new PropertyValueFactory<Rule, String>("value"));
+    colRule.setCellValueFactory(new PropertyValueFactory<Rule, String>("descr"));
 
     try {
       fxmlLoader.setLocation(getClass().getResource("../fxml/editRule.fxml"));
@@ -68,14 +70,39 @@ public class RulesController {
   private void fillData() throws ParseException {
     StringBuilder stringBuilder = new StringBuilder();
     rulesList = FXCollections.observableArrayList(DaoUtils.getRules());
+    StringBuilder builder = new StringBuilder();
     if(rulesList.size()>0){
       for(int i = 0;i<rulesList.size();i++){
         Rule rule = rulesList.get(i);
-//        Map<String,MembershipFunction> mapCondition = condition.getIFmfList();
-//        for(Map.Entry<String, MembershipFunction> entry:mapCondition.entrySet()){
-//
-//        }
+        Map<String, Condition> mapIF = rule.getIFConditionMap();
+        Map<String, Condition> mapAND = rule.getANDConditionMap();
+        Map<String, Condition> mapTHEN = rule.getTHENConditionMap();
+
+        //IF
+        for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
+          String condition = entry.getKey();
+          Condition cond = entry.getValue();
+          builder.append("Если ").append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
+        }
+        //AND
+        for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
+          String condition = entry.getKey();
+          Condition cond = entry.getValue();
+          builder.append(" И ").append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
+        }
+
+        //THEN
+        for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+          String condition = entry.getKey();
+          Condition cond = entry.getValue();
+          builder.append(" ТОГДА ").append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
+        }
+
+
+        rule.setDescr(builder.toString());
+        builder.setLength(0);
       }
+
       tableRules.setItems(rulesList);
     }
 

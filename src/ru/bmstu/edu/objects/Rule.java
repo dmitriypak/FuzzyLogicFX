@@ -16,10 +16,24 @@ public class Rule {
   private SimpleStringProperty value = new SimpleStringProperty("");
   private SimpleStringProperty variableName = new SimpleStringProperty("");
   private Boolean isactive;
+  private SimpleStringProperty descr = new SimpleStringProperty("");
 
 
+  /////////////
   public Boolean getIsactive() {
     return isactive;
+  }
+
+  public SimpleStringProperty descrProperty() {
+    return descr;
+  }
+
+
+  public String getDescr() {
+    return descr.get();
+  }
+  public void setDescr(String descr) {
+    this.descr.set(descr);
   }
 
   public void setIsactive(Boolean isactive) {
