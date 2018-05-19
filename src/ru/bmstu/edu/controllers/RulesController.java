@@ -50,7 +50,7 @@ public class RulesController {
 
 
 
-  private ObservableList<Rule> rulesList;
+  private ObservableList<Rule> rulesList = FXCollections.observableArrayList();
 
   @FXML
   private void initialize() throws ParseException {
@@ -178,6 +178,7 @@ public class RulesController {
         showDialog();
         rule = editRuleController.getRule();
         rulesList.add(rule);
+        tableRules.setItems(rulesList);
         break;
       case "btnEditRule":
         editRuleController.setRule((Rule) tableRules.getSelectionModel().getSelectedItem());

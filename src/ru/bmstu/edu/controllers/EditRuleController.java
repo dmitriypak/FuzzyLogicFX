@@ -89,11 +89,12 @@ public class EditRuleController {
     System.out.println("Получено правило id: " + rule.getIdRule());
     if(rule.getIdRule()==0){
       comboIFVarName.getSelectionModel().clearSelection();
-      comboIFMFName.getSelectionModel().clearSelection();
+      comboIFMFName.setValue("");
       comboAndVarName.getSelectionModel().clearSelection();
-      comboAndMFName.getSelectionModel().clearSelection();
+      comboAndMFName.setValue("");
       comboThenVarName.getSelectionModel().clearSelection();
-      comboThenMFName.getSelectionModel().clearSelection();
+      comboThenMFName.setValue("");
+      conditionList.clear();
     }else{
       conditionList.clear();
       //IF
