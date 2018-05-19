@@ -24,7 +24,7 @@ public class MembershipFunction {
   }
 
 
-  public MembershipFunction(String nameMF, String paramValueMF, String mfCode) {
+  public MembershipFunction(String nameMF, String mfCode, String paramValueMF) {
     this.nameMF = new SimpleStringProperty(nameMF);
     this.paramValueMF = new SimpleStringProperty(paramValueMF);
     this.mFname = MFname.getMFnameByCode(mfCode);

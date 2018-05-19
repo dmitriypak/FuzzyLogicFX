@@ -223,6 +223,7 @@ public class EditRuleController {
     map.put("nameVariable",nameVariable);
     map.put("nameMF",mf.getNameMF());
     map.put("codeMF", mf.getCodeMF());
+    map.put("paramValueMF",mf.getParamValueMF());
     JSONObject obj = new JSONObject(map);
     return obj;
   }
@@ -234,7 +235,7 @@ public class EditRuleController {
     Map<String,Condition> thenMap = new LinkedHashMap<>();
 
     JSONObject obj = new JSONObject();
-    JSONArray arAND = new JSONArray();
+
     int idVariableIF = mapInputVariables.get(comboIFVarName.getValue()).getId();
 
     JSONArray arIF = new JSONArray();
@@ -255,7 +256,7 @@ public class EditRuleController {
     thenMap.put(comboThenVarName.getValue().toString(),condTHEN);
 
 
-    arAND = new JSONArray();
+    JSONArray arAND = new JSONArray();
     if(conditionList.size()==0) {
       if(comboAndVarName.getValue().toString().isEmpty()) return;
       int idVariableAND = mapInputVariables.get(comboAndVarName.getValue()).getId();
@@ -268,7 +269,7 @@ public class EditRuleController {
 
 
     }else{
-      JSONObject object = new JSONObject();
+      JSONObject object;
       for(int i = 0;i<conditionList.size();i++){
         Condition condition = conditionList.get(i);
         int idVariable = mapInputVariables.get(condition.getNameVariable()).getId();

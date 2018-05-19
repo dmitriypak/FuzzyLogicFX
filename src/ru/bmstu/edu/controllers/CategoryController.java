@@ -75,7 +75,7 @@ public class CategoryController {
     }
   }
 
-  private Region createHorizontalSlider(int min, int max, int minValue, int maxValue, String idVariable) {
+  private Region createHorizontalSlider(double min, double max, double minValue, double maxValue, String idVariable) {
     final TextField minField = new TextField();
     minField.setPrefColumnCount(5);
     final TextField maxField = new TextField();
@@ -241,10 +241,10 @@ public class CategoryController {
       LinguisticVariable linguisticVariable = listOutputVariables.get(i);
 
       ArrayList<MembershipFunction>mfList = linguisticVariable.getMfList();
-      int minValue = 0;
-      int maxValue = 0;
-      int min = 0;
-      int max = 0;
+      double minValue = 0;
+      double maxValue = 0;
+      double min = 0;
+      double max = 0;
       if(category.getId()!=0){
         for (Map.Entry<Variable,String> entry : categoriesMap.entrySet()) {
           Variable variable = entry.getKey();
@@ -259,7 +259,7 @@ public class CategoryController {
           String[] params = mf.getParamValueMF().split(" ");
 
           for(int k = 0;k<params.length;k++){
-            int paramValue = Integer.valueOf(params[k]);
+            double paramValue = Double.valueOf(params[k]);
             System.out.println("Params " + paramValue);
 
             if(paramValue < minValue){

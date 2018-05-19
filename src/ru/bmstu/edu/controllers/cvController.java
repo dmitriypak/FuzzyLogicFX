@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,7 +16,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -25,10 +29,7 @@ import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
-import ru.bmstu.edu.objects.CV;
-import ru.bmstu.edu.objects.LinguisticVariable;
-import ru.bmstu.edu.objects.MembershipFunction;
-import ru.bmstu.edu.objects.Rule;
+import ru.bmstu.edu.objects.*;
 import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
@@ -37,6 +38,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class cvController {
@@ -66,6 +68,9 @@ public class cvController {
   private ViewRulesController viewRulesController;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
+  private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
+  private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
+
   private ArrayList<Rule> listRules = DaoUtils.getRules();
 
   public cvController() throws ParseException {
@@ -130,7 +135,9 @@ public class cvController {
     XYChart.Series series = new XYChart.Series();
     XYChart.Series series1 = new XYChart.Series();
     XYChart.Series series2 = new XYChart.Series();
+    //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
+    System.out.println("Получен массив длины " + value.length + " " + mf.getParamValueMF());
     series.setName(mf.getNameMF());
     System.out.println("MFname:" + mf.getNameMF());
     switch (value.length){
@@ -223,20 +230,121 @@ public class cvController {
   }
 
 
-  private Label getLabel(String name){
+  private Slider getSlider(int min,int max, double value){
+    Slider slider = new Slider();
+
+    double increment = 0;
+
+    if (max==1){
+      increment = 0.1;
+    }
+    if(max<=100){
+      increment = 10;
+    }
+
+    if(max<=1000){
+      increment = 100;
+    }
+
+    if(max<=10000){
+      increment = 1000;
+    }
+
+    if(max<=100000){
+      increment = 10000;
+    }
+
+    if(max<=1000000){
+      increment = 100000;
+    }
+
+    slider.setMaxWidth(150);
+    slider.setMinWidth(150);
+    slider.setMin(min);
+    slider.setMax(max);
+    slider.setValue(value);
+    slider.setShowTickLabels(true);
+    slider.setShowTickMarks(true);
+    slider.setMajorTickUnit(increment);
+    slider.setBlockIncrement(increment);
+
+    return slider;
+  }
+
+
+//  private Region getSlider(int min,int max, double value){
+//    HBox box = new HBox(10);
+//    box.setAlignment(Pos.CENTER);
+//    //box.setPadding(new Insets(20,0,0,20));
+//    box.setFillHeight(false);
+//
+//
+//    Slider slider = new Slider();
+//
+//    final TextField valueField = new TextField();
+//    valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
+//
+//    double increment = 0;
+//
+//    if (max==1){
+//      increment = 0.1;
+//    }
+//    if(max<=100){
+//      increment = 10;
+//    }
+//
+//    if(max<=1000){
+//      increment = 100;
+//    }
+//
+//    if(max<=10000){
+//      increment = 1000;
+//    }
+//
+//    if(max<=100000){
+//      increment = 10000;
+//    }
+//
+//    if(max<=1000000){
+//      increment = 100000;
+//    }
+//
+//    slider.setMaxWidth(150);
+//    slider.setMinWidth(150);
+//    slider.setMin(min);
+//    slider.setMax(max);
+//    slider.setValue(value);
+//    slider.setShowTickLabels(true);
+//    slider.setShowTickMarks(true);
+//    slider.setMajorTickUnit(increment);
+//    slider.setBlockIncrement(increment);
+//    box.getChildren().addAll(valueField, slider);
+//    return box;
+//  }
+
+
+  private Region getLabel(String name){
+    HBox box = new HBox(10);
+    box.setAlignment(Pos.CENTER);
+    //box.setPadding(new Insets(20,0,0,20));
+    box.setFillHeight(false);
+
     Label label = new Label(name);
     label.setFont(new Font("Verdana", 14));
     label.setTextAlignment(TextAlignment.CENTER);
     label.setTextFill(Paint.valueOf(String.valueOf(Color.BLUE)));
-    label.setPadding(new Insets(25));
+    label.setPadding(new Insets(10,0,10,0));
     label.setMaxWidth(250);
-    return label;
+    box.getChildren().addAll(label);
+    return box;
   }
   private void showDialog(CV cv) {
 
     if (cv!=null) {
       Stage viewRulesStage = new Stage();
       GridPane root = new GridPane();
+      root.setAlignment(Pos.CENTER);
+      //root.setGridLinesVisible(true);
       viewRulesStage.setTitle("Мамдани");
       viewRulesStage.setMinHeight(600);
       viewRulesStage.setMinWidth(800);
@@ -247,65 +355,139 @@ public class cvController {
       ScrollPane scrollPane = new ScrollPane();
 
       if(cv.getId()==0) return;
-
-      for(int i = 0;i<listRules.size();i++){
-        System.out.println("idRule: " + listRules.get(i).getIdRule());
-      }
-
-      int j = 0;
+      int rowIndex = 0;
+      //Основной цикл по переменным
       for(int i = 0;i<listInputVariables.size();i++){
-        LinguisticVariable linguisticVariable = listInputVariables.get(i);
-        //Название переменной
-        StringBuilder nameVariable = new StringBuilder(linguisticVariable.getName());
 
-        double param = 0;
-        Variable variable = Variable.getVariableByName(nameVariable.toString());
-        switch (variable) {
+        ColumnConstraints columnConstraints = new ColumnConstraints();
+        columnConstraints.setMinWidth(250);
+        columnConstraints.setMaxWidth(250);
+        root.getColumnConstraints().add(columnConstraints);
+
+        LinguisticVariable linguisticVariable = listInputVariables.get(i);
+        Variable variable1 = Variable.getVariableByName(linguisticVariable.getName());
+        //Имя переменной
+        Region labelNameVariable = getLabel(linguisticVariable.getName());
+        root.add(labelNameVariable,i,rowIndex);
+
+        double min = 0;
+        double max = 0;
+        double value = 0;
+
+        ArrayList<MembershipFunction> mfList = linguisticVariable.getMfList();
+        for(int k = 0;k<mfList.size();k++){
+          MembershipFunction mf = mfList.get(k);
+          String[] params = mf.getParamValueMF().split(" ");
+
+          for(int l = 0;l<params.length;l++){
+            double paramValue = Double.valueOf(params[l]);
+            System.out.println("Params " + paramValue);
+            if(paramValue < min){
+              min = paramValue;
+            }
+            if(paramValue > max){
+              max = paramValue;
+            }
+          }
+        }
+        double param1 = 0;
+        rowIndex += 1;
+        switch (variable1){
           case WORK_EXPERIENCE:
-            param = cv.getExperience();
-            nameVariable.append("\n").append(param);
+            param1 = cv.getExperience();
+            Region labelWorkExperience = getLabel(String.valueOf(param1));
+            root.add(labelWorkExperience,i,rowIndex);
             break;
           case SALARY:
-            param = cv.getSalary();
-            nameVariable.append("\n").append(param);
+            param1 = cv.getSalary();
+            Region labelSalary = getLabel(String.valueOf(param1));
+            root.add(labelSalary,i,rowIndex);
             break;
           case POSITION:
-            param = 0.5;
-            nameVariable.append("\n").append(cv.getPositionname());
-            break;
+            param1 = 0.5;
+            Region labelPosition = getLabel(String.valueOf(param1));
+            root.add(labelPosition,i,rowIndex);
 
+            break;
         }
 
-        Label label = getLabel(nameVariable.toString());
-        //TextArea label = getTextArea(nameVariable.toString());
-        //Построение графиков
-        ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable, param);
-        System.out.println("Получен список графиков: " + listAreaCharts.size());
-        root.add(label,i,0);
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER);
+        Slider slider = getSlider((int)min,(int) max,param1);
+        hBox.getChildren().add(slider);
+        TextField valueField = new TextField();
+        valueField.setFont(new Font("Verdana", 14));
+        valueField.setAlignment(Pos.CENTER);
+        valueField.setId("slider"+linguisticVariable.getName());
+        valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
+        root.add(valueField,i,++rowIndex);
+        root.add(hBox,i,++rowIndex);
 
-        if(listAreaCharts.size()>0){
-          for(int k = 0;k<listAreaCharts.size();k++){
-            root.add(listAreaCharts.get(k),i,k+2);
+        //Цикл по правилам
+        for(int j = 0;j<listRules.size();j++){
+          rowIndex += 1;
+          Rule rule = listRules.get(j);
+
+          System.out.println("idRule: " + rule.getIdRule());
+          Map<String,Condition> mapIF = rule.getIFConditionMap();
+          Map<String,Condition> mapAND = rule.getANDConditionMap();
+          Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
+          double param = 0;
+          //Переменная IF
+          for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
+            LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
+            System.out.println("Получена переменная if " + ifVariable.getName());
+            Condition ifCondition = entry.getValue();
+            MembershipFunction ifMF = ifCondition.getMembershipFunction();
+            System.out.println("Получено condition if " + ifMF.getNameMF());
+
+            StringBuilder params = new StringBuilder();
+            Variable variable2 = Variable.getVariableByName(ifVariable.getName());
+
+            if(variable1.equals(variable2)){
+
+              switch (variable2) {
+                case WORK_EXPERIENCE:
+
+                  //Построение графика
+                  AreaChart chartExperience = getAreaChart(ifMF,param);
+                  root.add(chartExperience,i,rowIndex+1);
+                  break;
+                case SALARY:
+
+                  //Построение графика
+                  AreaChart chartSalary = getAreaChart(ifMF,param);
+                  root.add(chartSalary,i,rowIndex+1);
+
+                  break;
+                case POSITION:
+                  //Построение графика
+                  AreaChart chartPosition = getAreaChart(ifMF,param);
+                  root.add(chartPosition,i,rowIndex+1);
+                  break;
+              }
+            }
           }
         }
+        rowIndex = 0;
 
-        j = i+1;
       }
+
 
       //Выходные переменные
-      for(int i = 0;i<listOutputVariables.size();i++){
-        double param = 0;
-        LinguisticVariable linguisticVariable = listOutputVariables.get(i);
-        Label label = getLabel(linguisticVariable.getName());
-        ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
-        root.add(label,i+j,0);
-
-        if(listAreaCharts.size()>0){
-          for(int k = 0;k<listAreaCharts.size();k++){
-            root.add(listAreaCharts.get(k),i+j,k+2);
-          }
-        }
-      }
+//      for(int i = 0;i<listOutputVariables.size();i++){
+//        double param = 0;
+//        LinguisticVariable linguisticVariable = listOutputVariables.get(i);
+//        Label label = getLabel(linguisticVariable.getName());
+//        ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
+//        root.add(label,i+j,0);
+//
+//        if(listAreaCharts.size()>0){
+//          for(int k = 0;k<listAreaCharts.size();k++){
+//            root.add(listAreaCharts.get(k),i+j,k+2);
+//          }
+//        }
+//      }
 
 
       scrollPane.setContent(root);
@@ -340,6 +522,8 @@ public class cvController {
     }
     return listCharts;
   }
+
+
 
   private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, double param) {
     ArrayList<AreaChart> listCharts = new ArrayList<>();

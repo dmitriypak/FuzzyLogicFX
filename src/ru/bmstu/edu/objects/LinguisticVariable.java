@@ -39,7 +39,6 @@ public class LinguisticVariable {
   }
 
   private ArrayList<MembershipFunction> mfList = new ArrayList<>();
-  private ArrayList<Condition> ruleList = new ArrayList<>();
 
   public ArrayList<MembershipFunction> getMfList() {
     return mfList;

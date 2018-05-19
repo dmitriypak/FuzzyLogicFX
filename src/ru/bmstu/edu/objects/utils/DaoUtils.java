@@ -42,7 +42,7 @@ public class DaoUtils {
         System.out.println(mfParamValue);
         String mfCode =  mfParamName.get("MFCode").toString();
         System.out.println(mfCode);
-        MembershipFunction membershipFunction = new MembershipFunction(mfParam, mfParamValue,mfCode);
+        MembershipFunction membershipFunction = new MembershipFunction(mfParam,mfCode,mfParamValue);
         list.add(membershipFunction);
       }
 //      Iterator<JSONArray> iterator = mf.iterator();
@@ -206,7 +206,8 @@ public class DaoUtils {
           int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
           String nameMF = ifParam.get("nameMF").toString();
           String codeMF = ifParam.get("codeMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF);
+          String paramValueMF = ifParam.get("paramValueMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
           String nameVariable = ifParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
@@ -221,7 +222,8 @@ public class DaoUtils {
           int idVariable = Integer.valueOf(andParam.get("idvariable").toString());
           String nameMF = andParam.get("nameMF").toString();
           String codeMF = andParam.get("codeMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF);
+          String paramValueMF = andParam.get("paramValueMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
           String nameVariable = andParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
@@ -237,7 +239,8 @@ public class DaoUtils {
           int idVariable = Integer.valueOf(thenParam.get("idvariable").toString());
           String nameMF = thenParam.get("nameMF").toString();
           String codeMF = thenParam.get("codeMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF);
+          String paramValueMF = thenParam.get("paramValueMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
           String nameVariable = thenParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
