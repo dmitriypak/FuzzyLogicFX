@@ -147,8 +147,39 @@ public class DaoUtils {
       jsonObject.setValue(rule.getValue());
       pstmt.setObject(++i, jsonObject);
       pstmt.executeUpdate();
+    }catch(Exception ex){
+      ex.printStackTrace();
     }
   }
+
+  public static void updateRule(Rule rule, int idVariable, int idRule) throws SQLException {
+    String query = "UPDATE cvdata.bmstu.rules "
+        + " SET idvariable = ?, value = ? WHERE id = ?" ;
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+        int i = 0;
+        pstmt.setInt(++i,idVariable);
+        PGobject jsonObject = new PGobject();
+        jsonObject.setType("json");
+        jsonObject.setValue(rule.getValue());
+        pstmt.setObject(++i, jsonObject);
+        pstmt.setInt(++i,rule.getIdRule());
+        pstmt.executeUpdate();
+
+      }catch (Exception ex){
+      ex.printStackTrace();
+    }
+  }
+
+  public static String getRuleDescr(Map<String, Condition>map,String param){
+    StringBuilder descr = new StringBuilder();
+    for(Map.Entry<String, Condition> entry:map.entrySet()){
+      String condition = entry.getKey();
+      Condition cond = entry.getValue();
+      descr.append(param).append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
+    }
+    return descr.toString();
+  }
+
 
   public static ArrayList<Rule> getRules() throws ParseException {
     ArrayList<Rule> listRules = new ArrayList<>();
@@ -174,7 +205,8 @@ public class DaoUtils {
           JSONObject ifParam =  (JSONObject) IFarray.get(i);
           int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
           String nameMF = ifParam.get("nameMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF);
+          String codeMF = ifParam.get("codeMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF);
           String nameVariable = ifParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
@@ -188,7 +220,8 @@ public class DaoUtils {
           JSONObject andParam =  (JSONObject) ANDarray.get(i);
           int idVariable = Integer.valueOf(andParam.get("idvariable").toString());
           String nameMF = andParam.get("nameMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF);
+          String codeMF = andParam.get("codeMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF);
           String nameVariable = andParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
@@ -200,11 +233,12 @@ public class DaoUtils {
         JSONArray THENarray = (JSONArray) jsonObject.get("THEN");
         System.out.println("THEN: " + THENarray);
         for(int i =0;i<THENarray.size();i++){
-          JSONObject ifParam =  (JSONObject) THENarray.get(i);
-          int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
-          String nameMF = ifParam.get("nameMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF);
-          String nameVariable = ifParam.get("nameVariable").toString();
+          JSONObject thenParam =  (JSONObject) THENarray.get(i);
+          int idVariable = Integer.valueOf(thenParam.get("idvariable").toString());
+          String nameMF = thenParam.get("nameMF").toString();
+          String codeMF = thenParam.get("codeMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF);
+          String nameVariable = thenParam.get("nameVariable").toString();
           Condition condition = new Condition(idVariable,nameVariable);
           condition.setMembershipFunction(mf);
           thenMap.put(nameVariable,condition);

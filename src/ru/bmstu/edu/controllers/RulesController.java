@@ -44,6 +44,11 @@ public class RulesController {
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private Stage editRuleControllerStage;
 
+  private Map<String, Condition> mapIF;
+  private Map<String, Condition> mapAND;
+  private Map<String, Condition> mapTHEN;
+
+
 
   private ObservableList<Rule> rulesList;
 
@@ -66,7 +71,6 @@ public class RulesController {
     fillData();
   }
 
-
   private void fillData() throws ParseException {
     StringBuilder stringBuilder = new StringBuilder();
     rulesList = FXCollections.observableArrayList(DaoUtils.getRules());
@@ -74,30 +78,13 @@ public class RulesController {
     if(rulesList.size()>0){
       for(int i = 0;i<rulesList.size();i++){
         Rule rule = rulesList.get(i);
-        Map<String, Condition> mapIF = rule.getIFConditionMap();
-        Map<String, Condition> mapAND = rule.getANDConditionMap();
-        Map<String, Condition> mapTHEN = rule.getTHENConditionMap();
+        mapIF = rule.getIFConditionMap();
+        mapAND = rule.getANDConditionMap();
+        mapTHEN = rule.getTHENConditionMap();
 
-        //IF
-        for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
-          String condition = entry.getKey();
-          Condition cond = entry.getValue();
-          builder.append("Если ").append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
-        }
-        //AND
-        for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
-          String condition = entry.getKey();
-          Condition cond = entry.getValue();
-          builder.append(" И ").append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
-        }
-
-        //THEN
-        for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
-          String condition = entry.getKey();
-          Condition cond = entry.getValue();
-          builder.append(" ТОГДА ").append(condition).append(" ").append(cond.getMembershipFunction().getNameMF());
-        }
-
+        builder.append(DaoUtils.getRuleDescr(mapIF,"Если "));
+        builder.append(DaoUtils.getRuleDescr(mapAND," И "));
+        builder.append(DaoUtils.getRuleDescr(mapTHEN," ТОГДА "));
 
         rule.setDescr(builder.toString());
         builder.setLength(0);
@@ -195,7 +182,6 @@ public class RulesController {
       case "btnEditRule":
         editRuleController.setRule((Rule) tableRules.getSelectionModel().getSelectedItem());
         showDialog();
-
         break;
       case "btnDeleteRule":
         Rule delRule;

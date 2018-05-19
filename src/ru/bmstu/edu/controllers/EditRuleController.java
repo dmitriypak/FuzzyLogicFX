@@ -110,6 +110,7 @@ public class EditRuleController {
       for(Map.Entry<String, Condition> m:mapAND.entrySet()){
         System.out.println("mapAND " + m.getKey());
         Condition condition = m.getValue();
+        System.out.println("CodeMF " + m.getValue().getMembershipFunction().getCodeMF());
         conditionList.add(condition);
       }
       tableAnd.setItems(conditionList);
@@ -127,9 +128,6 @@ public class EditRuleController {
     }
 
   }
-
-
-
 
 
   public void selectVarOutputName(ActionEvent actionEvent) {
@@ -230,6 +228,10 @@ public class EditRuleController {
 
 
   public void saveRule() throws SQLException {
+    Map<String,Condition> ifMap = new LinkedHashMap<>();
+    Map<String,Condition> andMap = new LinkedHashMap<>();
+    Map<String,Condition> thenMap = new LinkedHashMap<>();
+
     JSONObject obj = new JSONObject();
     JSONArray arAND = new JSONArray();
     int idVariableIF = mapInputVariables.get(comboIFVarName.getValue()).getId();
@@ -237,15 +239,33 @@ public class EditRuleController {
     JSONArray arIF = new JSONArray();
     MembershipFunction mfIF = (MembershipFunction) comboIFMFName.getSelectionModel().getSelectedItem();
     arIF.add(getJSONCondition(idVariableIF,comboIFVarName.getValue().toString(), mfIF));
+    Condition condIF = new Condition(idVariableIF,comboIFMFName.getValue().toString());
+    condIF.setMembershipFunction(mfIF);
+    ifMap.put(comboIFVarName.getValue().toString(),condIF);
+
 
     JSONArray arThen = new JSONArray();
     MembershipFunction mfThen = (MembershipFunction) comboThenMFName.getSelectionModel().getSelectedItem();
-    arThen.add(getJSONCondition(mapOutputVariables.get(comboThenVarName.getValue()).getId(),comboThenVarName.getValue().toString(),mfThen));
+    int idVariableTHEN = mapOutputVariables.get(comboThenVarName.getValue()).getId();
+    arThen.add(getJSONCondition(idVariableTHEN,comboThenVarName.getValue().toString(),mfThen));
+
+    Condition condTHEN = new Condition(idVariableTHEN,comboThenMFName.getValue().toString());
+    condTHEN.setMembershipFunction(mfThen);
+    thenMap.put(comboThenVarName.getValue().toString(),condTHEN);
+
+
     arAND = new JSONArray();
     if(conditionList.size()==0) {
       if(comboAndVarName.getValue().toString().isEmpty()) return;
+      int idVariableAND = mapInputVariables.get(comboAndVarName.getValue()).getId();
       MembershipFunction mfAnd = (MembershipFunction) comboAndMFName.getSelectionModel().getSelectedItem();
-      arAND.add(getJSONCondition(mapInputVariables.get(comboAndVarName.getValue()).getId(),comboAndVarName.getValue().toString(),mfAnd));
+      arAND.add(getJSONCondition(idVariableAND,comboAndVarName.getValue().toString(),mfAnd));
+
+      Condition condAND = new Condition(idVariableAND,comboAndVarName.getValue().toString());
+      condAND.setMembershipFunction(mfAnd);
+      andMap.put(comboAndVarName.getValue().toString(),condAND);
+
+
     }else{
       JSONObject object = new JSONObject();
       for(int i = 0;i<conditionList.size();i++){
@@ -253,8 +273,8 @@ public class EditRuleController {
         int idVariable = mapInputVariables.get(condition.getNameVariable()).getId();
         object = getJSONCondition(idVariable,condition.getNameVariable(),condition.getMembershipFunction());
         arAND.add(object);
+        andMap.put(condition.getNameVariable(),condition);
       }
-
     }
 
     obj.put("AND",arAND);
@@ -264,7 +284,22 @@ public class EditRuleController {
     obj.put("THEN",arThen);
 
     rule.setValue(obj.toString());
-    DaoUtils.insertRule(rule,idVariableIF);
+    rule.setIFConditionMap(ifMap);
+    rule.setANDConditionMap(andMap);
+    rule.setTHENConditionMap(andMap);
+    StringBuilder builder = new StringBuilder();
+    builder.append(DaoUtils.getRuleDescr(ifMap,"Если "));
+    builder.append(DaoUtils.getRuleDescr(andMap, " И "));
+    builder.append(DaoUtils.getRuleDescr(thenMap," ТОГДА "));
+    rule.setDescr(builder.toString());
+
+
+    if(rule.getIdRule()==0){
+      DaoUtils.insertRule(rule,idVariableIF);
+    }else{
+      DaoUtils.updateRule(rule,idVariableIF,rule.getIdRule());
+    }
+
 
     System.out.println(obj.toString());
     btnCancel.fire();
