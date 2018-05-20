@@ -205,6 +205,7 @@ public class EditRuleController {
     if(mfName.isEmpty()||mfName==null) return;
     Condition condition = new Condition(linguisticVariable.getId(),linguisticVariable.getName());
     condition.setMembershipFunction(m);
+    condition.setValueMF(m.getNameMF());
     conditionList.add(condition);
     tableAnd.setItems(conditionList);
     comboAndVarName.getSelectionModel().clearSelection();

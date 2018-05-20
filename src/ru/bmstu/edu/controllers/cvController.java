@@ -131,6 +131,19 @@ public class cvController {
   }
 
 
+  private AreaChart getEmptyAreaChart(){
+    final NumberAxis xAxis = new NumberAxis(0,1,0) ;
+    final NumberAxis yAxis = new NumberAxis(0,1,0) ;
+    AreaChart<Number,Number> chart = new AreaChart<Number,Number>(xAxis, yAxis) ;
+    chart.setMaxWidth(200);
+    chart.setMaxHeight(150);
+    chart.setMinHeight(100);
+    chart.setMinWidth(100);
+    chart.setCreateSymbols(false);
+    chart.setAnimated(false);
+    return chart;
+  }
+
   private AreaChart getAreaChart(MembershipFunction mf, double param, int id, String textFieldName){
     double maxValue = 0;
 //    chart.getXAxis().setTickMarkVisible(false);
@@ -406,6 +419,7 @@ public class cvController {
             break;
         }
 
+        //Slider + Listener
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
         Slider slider = getSlider((int)min,(int) max,param1);
@@ -415,10 +429,12 @@ public class cvController {
           System.out.println(newVal.doubleValue());
 
           }
-      });
-
+        });
 
         hBox.getChildren().add(slider);
+
+
+        //Текстовое поле
         TextField valueField = new TextField();
         valueField.setFont(new Font("Verdana", 14));
         valueField.setAlignment(Pos.CENTER);
@@ -499,6 +515,9 @@ public class cvController {
               }
             }
           }
+
+
+
 
 
         }
@@ -631,9 +650,6 @@ public class cvController {
 
       case "btnViewRules":
         CV cv = (CV) tableCV.getSelectionModel().getSelectedItem();
-
-
-
 
         viewRulesController.setCV((CV) tableCV.getSelectionModel().getSelectedItem());
         //viewRulesController.setStage((Stage) nodesource.getScene().getWindow());
