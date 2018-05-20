@@ -75,6 +75,7 @@ public class cvController {
   private ViewRulesController viewRulesController;
   private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
+  private ArrayList<LinguisticVariable> listVariables = DaoUtils.getVariables();
   private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
   private Scene scene;
@@ -233,10 +234,13 @@ public class cvController {
       public void handle(ActionEvent actionEvent) {
         double newValue = 0;
         for (XYChart.Data<Number, Number> data : series1.getData()) {
+          System.out.println("textField "+textFieldName);
           TextField textField = (TextField) scene.lookup(textFieldName);
-          //System.out.println("textField3 "+textField.getText());
-          newValue = Double.valueOf(textField.getText().replace(",","."));
-          data.setXValue(newValue);
+
+          if(textField!=null) {
+            newValue = Double.valueOf(textField.getText().replace(",", "."));
+            data.setXValue(newValue);
+          }
         }
 
         //Заливка
@@ -363,15 +367,16 @@ public class cvController {
 
       if(cv.getId()==0) return;
       int rowIndex = 0;
+      int columnIndex = 0;
       //Основной цикл по переменным
-      for(int i = 0;i<listInputVariables.size();i++){
+      for(int i = 0;i<listVariables.size();i++){
 
         ColumnConstraints columnConstraints = new ColumnConstraints();
         columnConstraints.setMinWidth(250);
         columnConstraints.setMaxWidth(250);
         root.getColumnConstraints().add(columnConstraints);
 
-        LinguisticVariable linguisticVariable = listInputVariables.get(i);
+        LinguisticVariable linguisticVariable = listVariables.get(i);
         int variableID = linguisticVariable.getId();
         Variable variable1 = Variable.getVariableByName(linguisticVariable.getName());
         //Имя переменной
@@ -438,6 +443,7 @@ public class cvController {
         TextField valueField = new TextField();
         valueField.setFont(new Font("Verdana", 14));
         valueField.setAlignment(Pos.CENTER);
+        System.out.println("id " + variableID);
         valueField.setId("textField"+variableID);
         valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
         root.add(valueField,i,++rowIndex);
@@ -478,6 +484,7 @@ public class cvController {
                 case POSITION:
                   System.out.println("POSITION " + param);
                   //Построение графика
+                  param = 0.5;
                   AreaChart chartPosition1 = getAreaChart(ifMF,param,linguisticVariable.getId(),"#textField"+variableID);
                   root.add(chartPosition1,i,rowIndex+1);
 
@@ -516,30 +523,51 @@ public class cvController {
             }
           }
 
+          //Выходные переменные
 
+//          ColumnConstraints columnConstraints = new ColumnConstraints();
+//          columnConstraints.setMinWidth(250);
+//          columnConstraints.setMaxWidth(250);
+//          root.getColumnConstraints().add(columnConstraints);
+
+//          LinguisticVariable linguisticVariable = listOutputVariables.get(0);
+//          int variableID = linguisticVariable.getId();
+//          Variable variable = Variable.getVariableByName(linguisticVariable.getName());
+//          //Имя переменной
+//          Region labelNameVariable = getLabel(linguisticVariable.getName());
+//          root.add(labelNameVariable,listInputVariables.size(),rowIndex);
+
+
+
+          //Переменная THEN
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+            LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
+            System.out.println("Получена переменная THEN " + thenVariable.getName());
+            Condition thenCondition = entry.getValue();
+            MembershipFunction thenMF = thenCondition.getMembershipFunction();
+            System.out.println("Получено condition THEN " + thenMF.getNameMF());
+            Variable variable4 = Variable.getVariableByName(thenVariable.getName());
+
+            if(variable1.equals(variable4)){
+              switch (variable4) {
+                case RANK:
+                  //Построение графика
+                  AreaChart category = getAreaChart(thenMF,cv.getExperience(), variableID,"#textField"+variableID);
+                  root.add(category,i,rowIndex+1);
+                  break;
+              }
+            }
+          }
 
 
 
         }
         rowIndex = 0;
-
       }
 
 
-      //Выходные переменные
-//      for(int i = 0;i<listOutputVariables.size();i++){
-//        double param = 0;
-//        LinguisticVariable linguisticVariable = listOutputVariables.get(i);
-//        Label label = getLabel(linguisticVariable.getName());
-//        ArrayList<AreaChart> listAreaCharts = drawMFAreaGraph(linguisticVariable,param);
-//        root.add(label,i+j,0);
-//
-//        if(listAreaCharts.size()>0){
-//          for(int k = 0;k<listAreaCharts.size();k++){
-//            root.add(listAreaCharts.get(k),i+j,k+2);
-//          }
-//        }
-//      }
+
+
 
 
       scrollPane.setContent(root);

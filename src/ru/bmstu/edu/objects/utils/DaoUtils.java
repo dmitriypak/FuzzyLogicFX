@@ -58,6 +58,25 @@ public class DaoUtils {
   }
 
 
+  public static ArrayList<LinguisticVariable> getVariables(){
+    ArrayList<LinguisticVariable> listVariables = new ArrayList<>();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
+        ("select id, name, VALUE, type, isactive from cvdata.bmstu.linguisticvariables WHERE isactive = 'true' order by type;")) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
+            rs.getString("value"),rs.getString("type"), rs.getBoolean("isactive"));
+        linguisticVariable.setMfList(DaoUtils.getMFList(linguisticVariable.getValue()));
+        linguisticVariable.setVariable(Variable.getVariableByName(rs.getString("name")));
+        listVariables.add(linguisticVariable);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return listVariables;
+  }
+
+
 
   public static ArrayList<LinguisticVariable> getInputVariables(){
     ArrayList<LinguisticVariable> listVariables = new ArrayList<>();

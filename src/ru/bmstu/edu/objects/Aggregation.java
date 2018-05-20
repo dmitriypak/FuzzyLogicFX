@@ -2,7 +2,7 @@ package ru.bmstu.edu.objects;
 
 import java.util.ArrayList;
 
-public class TriangleMF {
+public class Aggregation {
 
   //Определение принадлежности
   public static MembershipFunction getMF(ArrayList<MembershipFunction>listMF, Double value){
@@ -11,17 +11,25 @@ public class TriangleMF {
     double VAL2 = 0;
     for(MembershipFunction m:listMF){
       String values[] = m.getParamValueMF().split(" ");
+      switch (values.length){
+        case 3:
+          double a = Double.valueOf(values[0]);
+          double b = Double.valueOf(values[1]);
+          double c = Double.valueOf(values[2]);
+          if(value>=a && value<=b ){
+            VAL1 = getValueMFA(a,b,value);
+            System.out.println("VAL1: " + VAL1);
+          }
+          if(value>=b && value<=c){
+            VAL2 = getValueMFB(b,c,value);
+            System.out.println("VAL2: " + VAL2);
+          }
+          break;
+        case 4:
+          break;
 
-      double val1 = Double.valueOf(values[0]);
-      double val2 = Double.valueOf(values[1]);
-      double val3 = Double.valueOf(values[2]);
-        if(value>=val1 && value<=val2 ){
-          VAL1 = getValueMFA(val1,val2,value);
-          System.out.println("VAL1: " + VAL1);
-        }
-        if(value>=val2 && value<=val3){
-          System.out.println("VAL2: " + VAL2);
-        }
+      }
+
 
     }
 

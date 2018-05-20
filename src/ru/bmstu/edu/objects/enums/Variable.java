@@ -5,7 +5,7 @@ public enum Variable {
   SALARY ("Размер заработной платы"),
   WORK_EXPERIENCE("Стаж работы"),
   POSITION("Желаемая должность"),
-  RANK("РАНГ");
+  RANK("Категория");
 
 
   private String name;
