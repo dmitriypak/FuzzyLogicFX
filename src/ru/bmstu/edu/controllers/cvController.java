@@ -131,7 +131,7 @@ public class cvController {
   }
 
 
-  private AreaChart getAreaChart(MembershipFunction mf, double param, int id){
+  private AreaChart getAreaChart(MembershipFunction mf, double param, int id, String textFieldName){
     double maxValue = 0;
 //    chart.getXAxis().setTickMarkVisible(false);
 //    chart.getYAxis().setTickMarkVisible(false);
@@ -219,54 +219,42 @@ public class cvController {
       @Override
       public void handle(ActionEvent actionEvent) {
         double newValue = 0;
-        double oldValue = 0;
         for (XYChart.Data<Number, Number> data : series1.getData()) {
-          TextField textField = (TextField) scene.lookup("#textField3");
-          System.out.println("textField3 "+textField.getText());
+          TextField textField = (TextField) scene.lookup(textFieldName);
+          //System.out.println("textField3 "+textField.getText());
           newValue = Double.valueOf(textField.getText().replace(",","."));
           data.setXValue(newValue);
         }
 
+        //Заливка
         series2.getData().clear();
-
-        if(newValue!=oldValue){
-          oldValue = newValue;
-          System.out.println("oldValue " + oldValue);
-          //Заливка
-          series2.getData().clear();
-          if(newValue>=Double.valueOf(value[0]) && newValue<=Double.valueOf(value[1])){
-            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-            double y = getY(newValue,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-            series2.getData().add(new XYChart.Data<Number,Number>(newValue,y));
-            double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-            series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+        if(newValue>=Double.valueOf(value[0]) && newValue<=Double.valueOf(value[1])){
+          series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
+          double y = getY(newValue,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+          series2.getData().add(new XYChart.Data<Number,Number>(newValue,y));
+          double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+          series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+          series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
+        }else{
+          if(newValue>=Double.valueOf(value[1]) && newValue<=Double.valueOf(value[2])){
             series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-          }else{
-            if(newValue>=Double.valueOf(value[1]) && newValue<=Double.valueOf(value[2])){
-              series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-              double y = getY(newValue,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-              series2.getData().add(new XYChart.Data(newValue,y));
-              double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-              series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-              series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-            }
+            double y = getY(newValue,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+            series2.getData().add(new XYChart.Data(newValue,y));
+            double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+            series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
           }
-
         }
-
       }
     }));
-    // Repeat indefinitely until stop() method is called.
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.setAutoReverse(true);
     timeline.play();
 
-
-
-
     chart.getData().addAll(series,series2,series1);
     return chart;
   }
+
 
 
   private double getX(double y, double x1, double x2, double y1, double y2){
@@ -371,6 +359,7 @@ public class cvController {
         root.getColumnConstraints().add(columnConstraints);
 
         LinguisticVariable linguisticVariable = listInputVariables.get(i);
+        int variableID = linguisticVariable.getId();
         Variable variable1 = Variable.getVariableByName(linguisticVariable.getName());
         //Имя переменной
         Region labelNameVariable = getLabel(linguisticVariable.getName());
@@ -425,22 +414,6 @@ public class cvController {
                             Number oldVal, Number newVal) {
           System.out.println(newVal.doubleValue());
 
-//          AreaChart chart = (AreaChart) scene.lookup("#chart"+linguisticVariable.getId());
-//          System.out.println("AreaChart "+chart);
-//
-//          for (int m = 0;m<chart.getData().size();m++) {
-//            if(m==1){
-//              XYChart.Series<Number, Number> series = (XYChart.Series<Number, Number>) chart.getData().get(m);
-//              double newValue = newVal.doubleValue();
-//              for (XYChart.Data<Number, Number> data : series.getData()) {
-//                data.setXValue(newValue);
-//              }
-//            }
-//
-//
-//
-//            //chart = getAreaChart(ifMF,newVal, linguisticVariable.getId());
-//          }
           }
       });
 
@@ -449,7 +422,7 @@ public class cvController {
         TextField valueField = new TextField();
         valueField.setFont(new Font("Verdana", 14));
         valueField.setAlignment(Pos.CENTER);
-        valueField.setId("textField"+linguisticVariable.getId());
+        valueField.setId("textField"+variableID);
         valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
         root.add(valueField,i,++rowIndex);
         root.add(hBox,i,++rowIndex);
@@ -471,7 +444,6 @@ public class cvController {
             Condition ifCondition = entry.getValue();
             MembershipFunction ifMF = ifCondition.getMembershipFunction();
             System.out.println("Получено condition if " + ifMF.getNameMF());
-
             Variable variable2 = Variable.getVariableByName(ifVariable.getName());
 
             if(variable1.equals(variable2)){
@@ -479,32 +451,56 @@ public class cvController {
               switch (variable2) {
                 case WORK_EXPERIENCE:
                   //Построение графика
-                  AreaChart chartExperience = getAreaChart(ifMF,param, linguisticVariable.getId());
-                  root.add(chartExperience,i,rowIndex+1);
+                  AreaChart chartExperience1 = getAreaChart(ifMF,cv.getExperience(), variableID,"#textField"+variableID);
+                  root.add(chartExperience1,i,rowIndex+1);
                   break;
                 case SALARY:
-
                   //Построение графика
-                  AreaChart chartSalary = getAreaChart(ifMF,param, linguisticVariable.getId());
-                  root.add(chartSalary,i,rowIndex+1);
-                  slider.valueProperty().addListener(new ChangeListener<Number>() {
-                    public void changed(ObservableValue<? extends Number> obsVal,
-                                        Number oldVal, Number newVal) {
-                      System.out.println(newVal.doubleValue());
-                    }
-                  });
+                  AreaChart chartSalary1 = getAreaChart(ifMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
+                  root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
+                  System.out.println("POSITION " + param);
                   //Построение графика
-                  AreaChart chartPosition = getAreaChart(ifMF,param,linguisticVariable.getId());
-
-
-                  root.add(chartPosition,i,rowIndex+1);
+                  AreaChart chartPosition1 = getAreaChart(ifMF,param,linguisticVariable.getId(),"#textField"+variableID);
+                  root.add(chartPosition1,i,rowIndex+1);
 
                   break;
               }
             }
           }
+
+          //Переменная AND
+          for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
+            LinguisticVariable andVariable =  mapInputVariables.get(entry.getKey());
+            System.out.println("Получена переменная and " + andVariable.getName());
+            Condition andCondition = entry.getValue();
+            MembershipFunction andMF = andCondition.getMembershipFunction();
+            System.out.println("Получено condition and " + andMF.getNameMF());
+            Variable variable3 = Variable.getVariableByName(andVariable.getName());
+
+            if(variable1.equals(variable3)){
+              switch (variable3) {
+                case WORK_EXPERIENCE:
+                  //Построение графика
+                  AreaChart chartExperience2 = getAreaChart(andMF,cv.getExperience(), variableID,"#textField"+variableID);
+                  root.add(chartExperience2,i,rowIndex+1);
+                  break;
+                case SALARY:
+                  //Построение графика
+                  AreaChart chartSalary2 = getAreaChart(andMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
+                  root.add(chartSalary2,i,rowIndex+1);
+                  break;
+                case POSITION:
+                  //Построение графика
+                  AreaChart chartPosition2 = getAreaChart(andMF,param,linguisticVariable.getId(),"#textField"+variableID);
+                  root.add(chartPosition2,i,rowIndex+1);
+                  break;
+              }
+            }
+          }
+
+
         }
         rowIndex = 0;
 
@@ -571,23 +567,23 @@ public class cvController {
 
 
 
-  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, double param) {
-    ArrayList<AreaChart> listCharts = new ArrayList<>();
-    ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
-    System.out.println("Список MF: " + listMF.size());
-    System.out.println("Переменная: " + linguisticVariable.getName());
-
-    if(listMF.size()>0){
-      for(MembershipFunction mf:listMF){
-        //Определение принадлежности
-        String nameVariable = linguisticVariable.getName();
-        AreaChart chart = getAreaChart(mf,param,linguisticVariable.getId());
-        listCharts.add(chart);
-      }
-
-    }
-    return listCharts;
-  }
+//  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, double param) {
+//    ArrayList<AreaChart> listCharts = new ArrayList<>();
+//    ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
+//    System.out.println("Список MF: " + listMF.size());
+//    System.out.println("Переменная: " + linguisticVariable.getName());
+//
+//    if(listMF.size()>0){
+//      for(MembershipFunction mf:listMF){
+//        //Определение принадлежности
+//        String nameVariable = linguisticVariable.getName();
+//        AreaChart chart = getAreaChart(mf,param,linguisticVariable.getId());
+//        listCharts.add(chart);
+//      }
+//
+//    }
+//    return listCharts;
+//  }
   private void fillData(){
     CVList.clear();
     StringBuilder query = new StringBuilder("select id, positionname, salary, experience from cvdata.bmstu.CV");
