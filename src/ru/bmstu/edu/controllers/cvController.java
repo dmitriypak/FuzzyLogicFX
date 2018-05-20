@@ -1,8 +1,14 @@
 package ru.bmstu.edu.controllers;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -26,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
@@ -70,7 +77,7 @@ public class cvController {
   private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
   private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
-
+  private Scene scene;
   private ArrayList<Rule> listRules = DaoUtils.getRules();
 
   public cvController() throws ParseException {
@@ -124,7 +131,7 @@ public class cvController {
   }
 
 
-  private AreaChart getAreaChart(MembershipFunction mf, double param){
+  private AreaChart getAreaChart(MembershipFunction mf, double param, int id){
     double maxValue = 0;
 //    chart.getXAxis().setTickMarkVisible(false);
 //    chart.getYAxis().setTickMarkVisible(false);
@@ -132,9 +139,9 @@ public class cvController {
 //    chart.getXAxis().setTickLength(0);
 //    chart.getYAxis().setTickLabelsVisible(false);
 //    chart.setVerticalGridLinesVisible(false);
-    XYChart.Series series = new XYChart.Series();
-    XYChart.Series series1 = new XYChart.Series();
-    XYChart.Series series2 = new XYChart.Series();
+    XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
     //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
     System.out.println("Получен массив длины " + value.length + " " + mf.getParamValueMF());
@@ -144,7 +151,7 @@ public class cvController {
       case 3:
         for(int i =0;i<value.length;i++){
           double val = Double.valueOf(value[i]);
-          series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
+          series.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[i]),i%2));
           if(val>maxValue){
             maxValue = val;
           }
@@ -156,9 +163,9 @@ public class cvController {
           double val = Double.valueOf(value[i]);
           System.out.println("val " + val);
           if(i==0 || i==3){
-            series.getData().add(new XYChart.Data(val,0));
+            series.getData().add(new XYChart.Data<Number,Number>(val,0));
           }else{
-            series.getData().add(new XYChart.Data(val,1));
+            series.getData().add(new XYChart.Data<Number,Number>(val,1));
           }
           if(val>maxValue){
             maxValue = val;
@@ -166,43 +173,96 @@ public class cvController {
         }
         break;
     }
-    NumberAxis xAxis;
+    final NumberAxis xAxis;
     if(maxValue <= 1){
       xAxis = new NumberAxis(0,1,0) ;
     }else{
       xAxis = new NumberAxis();
     }
 
-    NumberAxis yAxis = new NumberAxis(0,1,0) ;
-    AreaChart chart = new AreaChart(xAxis, yAxis) ;
+    final NumberAxis yAxis = new NumberAxis(0,1,0) ;
+    AreaChart<Number,Number> chart = new AreaChart<Number,Number>(xAxis, yAxis) ;
     chart.setTitle(mf.getNameMF());
     chart.setMaxWidth(200);
     chart.setMaxHeight(150);
     chart.setMinHeight(100);
     chart.setMinWidth(100);
     chart.setCreateSymbols(false);
-
-    series1.getData().add(new XYChart.Data(param,0));
-    series1.getData().add(new XYChart.Data(param,1));
+    chart.setId("chart"+id);
+    chart.setAnimated(false);
 
     //Красная линия
+    series1.getData().add(new XYChart.Data<Number,Number>(param,0));
+    series1.getData().add(new XYChart.Data<Number,Number>(param,1));
+
+    //Заливка
     if(param>=Double.valueOf(value[0]) && param<=Double.valueOf(value[1])){
-      series2.getData().add(new XYChart.Data(Double.valueOf(value[0]),0));
+      series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
       double y = getY(param,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-      series2.getData().add(new XYChart.Data(param,y));
+      series2.getData().add(new XYChart.Data<Number,Number>(param,y));
       double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-      series2.getData().add(new XYChart.Data(x,y));
-      series2.getData().add(new XYChart.Data(Double.valueOf(value[2]),0));
+      series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+      series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
     }else{
       if(param>=Double.valueOf(value[1]) && param<=Double.valueOf(value[2])){
-        series2.getData().add(new XYChart.Data(Double.valueOf(value[2]),0));
+        series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
         double y = getY(param,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
         series2.getData().add(new XYChart.Data(param,y));
         double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-        series2.getData().add(new XYChart.Data(x,y));
-        series2.getData().add(new XYChart.Data(Double.valueOf(value[0]),0));
+        series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+        series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
       }
     }
+
+    Timeline timeline = new Timeline();
+    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        double newValue = 0;
+        double oldValue = 0;
+        for (XYChart.Data<Number, Number> data : series1.getData()) {
+          TextField textField = (TextField) scene.lookup("#textField3");
+          System.out.println("textField3 "+textField.getText());
+          newValue = Double.valueOf(textField.getText().replace(",","."));
+          data.setXValue(newValue);
+        }
+
+        series2.getData().clear();
+
+        if(newValue!=oldValue){
+          oldValue = newValue;
+          System.out.println("oldValue " + oldValue);
+          //Заливка
+          series2.getData().clear();
+          if(newValue>=Double.valueOf(value[0]) && newValue<=Double.valueOf(value[1])){
+            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
+            double y = getY(newValue,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+            series2.getData().add(new XYChart.Data<Number,Number>(newValue,y));
+            double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+            series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
+          }else{
+            if(newValue>=Double.valueOf(value[1]) && newValue<=Double.valueOf(value[2])){
+              series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
+              double y = getY(newValue,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+              series2.getData().add(new XYChart.Data(newValue,y));
+              double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+              series2.getData().add(new XYChart.Data<Number,Number>(x,y));
+              series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
+            }
+          }
+
+        }
+
+      }
+    }));
+    // Repeat indefinitely until stop() method is called.
+    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setAutoReverse(true);
+    timeline.play();
+
+
+
 
     chart.getData().addAll(series,series2,series1);
     return chart;
@@ -241,19 +301,15 @@ public class cvController {
     if(max<=100){
       increment = 10;
     }
-
     if(max<=1000){
       increment = 100;
     }
-
     if(max<=10000){
       increment = 1000;
     }
-
     if(max<=100000){
       increment = 10000;
     }
-
     if(max<=1000000){
       increment = 100000;
     }
@@ -272,56 +328,6 @@ public class cvController {
   }
 
 
-//  private Region getSlider(int min,int max, double value){
-//    HBox box = new HBox(10);
-//    box.setAlignment(Pos.CENTER);
-//    //box.setPadding(new Insets(20,0,0,20));
-//    box.setFillHeight(false);
-//
-//
-//    Slider slider = new Slider();
-//
-//    final TextField valueField = new TextField();
-//    valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
-//
-//    double increment = 0;
-//
-//    if (max==1){
-//      increment = 0.1;
-//    }
-//    if(max<=100){
-//      increment = 10;
-//    }
-//
-//    if(max<=1000){
-//      increment = 100;
-//    }
-//
-//    if(max<=10000){
-//      increment = 1000;
-//    }
-//
-//    if(max<=100000){
-//      increment = 10000;
-//    }
-//
-//    if(max<=1000000){
-//      increment = 100000;
-//    }
-//
-//    slider.setMaxWidth(150);
-//    slider.setMinWidth(150);
-//    slider.setMin(min);
-//    slider.setMax(max);
-//    slider.setValue(value);
-//    slider.setShowTickLabels(true);
-//    slider.setShowTickMarks(true);
-//    slider.setMajorTickUnit(increment);
-//    slider.setBlockIncrement(increment);
-//    box.getChildren().addAll(valueField, slider);
-//    return box;
-//  }
-
 
   private Region getLabel(String name){
     HBox box = new HBox(10);
@@ -333,7 +339,7 @@ public class cvController {
     label.setFont(new Font("Verdana", 14));
     label.setTextAlignment(TextAlignment.CENTER);
     label.setTextFill(Paint.valueOf(String.valueOf(Color.BLUE)));
-    label.setPadding(new Insets(10,0,10,0));
+    label.setPadding(new Insets(0,0,0,0));
     label.setMaxWidth(250);
     box.getChildren().addAll(label);
     return box;
@@ -414,11 +420,36 @@ public class cvController {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
         Slider slider = getSlider((int)min,(int) max,param1);
+        slider.valueProperty().addListener(new ChangeListener<Number>() {
+        public void changed(ObservableValue<? extends Number> obsVal,
+                            Number oldVal, Number newVal) {
+          System.out.println(newVal.doubleValue());
+
+//          AreaChart chart = (AreaChart) scene.lookup("#chart"+linguisticVariable.getId());
+//          System.out.println("AreaChart "+chart);
+//
+//          for (int m = 0;m<chart.getData().size();m++) {
+//            if(m==1){
+//              XYChart.Series<Number, Number> series = (XYChart.Series<Number, Number>) chart.getData().get(m);
+//              double newValue = newVal.doubleValue();
+//              for (XYChart.Data<Number, Number> data : series.getData()) {
+//                data.setXValue(newValue);
+//              }
+//            }
+//
+//
+//
+//            //chart = getAreaChart(ifMF,newVal, linguisticVariable.getId());
+//          }
+          }
+      });
+
+
         hBox.getChildren().add(slider);
         TextField valueField = new TextField();
         valueField.setFont(new Font("Verdana", 14));
         valueField.setAlignment(Pos.CENTER);
-        valueField.setId("slider"+linguisticVariable.getName());
+        valueField.setId("textField"+linguisticVariable.getId());
         valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
         root.add(valueField,i,++rowIndex);
         root.add(hBox,i,++rowIndex);
@@ -441,29 +472,35 @@ public class cvController {
             MembershipFunction ifMF = ifCondition.getMembershipFunction();
             System.out.println("Получено condition if " + ifMF.getNameMF());
 
-            StringBuilder params = new StringBuilder();
             Variable variable2 = Variable.getVariableByName(ifVariable.getName());
 
             if(variable1.equals(variable2)){
 
               switch (variable2) {
                 case WORK_EXPERIENCE:
-
                   //Построение графика
-                  AreaChart chartExperience = getAreaChart(ifMF,param);
+                  AreaChart chartExperience = getAreaChart(ifMF,param, linguisticVariable.getId());
                   root.add(chartExperience,i,rowIndex+1);
                   break;
                 case SALARY:
 
                   //Построение графика
-                  AreaChart chartSalary = getAreaChart(ifMF,param);
+                  AreaChart chartSalary = getAreaChart(ifMF,param, linguisticVariable.getId());
                   root.add(chartSalary,i,rowIndex+1);
-
+                  slider.valueProperty().addListener(new ChangeListener<Number>() {
+                    public void changed(ObservableValue<? extends Number> obsVal,
+                                        Number oldVal, Number newVal) {
+                      System.out.println(newVal.doubleValue());
+                    }
+                  });
                   break;
                 case POSITION:
                   //Построение графика
-                  AreaChart chartPosition = getAreaChart(ifMF,param);
+                  AreaChart chartPosition = getAreaChart(ifMF,param,linguisticVariable.getId());
+
+
                   root.add(chartPosition,i,rowIndex+1);
+
                   break;
               }
             }
@@ -494,10 +531,19 @@ public class cvController {
       scrollPane.setPannable(true);
       scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
       scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-      Scene scene = new Scene(scrollPane);
+      scene = new Scene(scrollPane);
       scene.getStylesheets().add("ru/bmstu/edu/resources/css/chart.css");
 
       viewRulesStage.setScene(scene);
+
+//      Slider positionSlider = (Slider) scene.lookup("#sliderPosition");
+//      positionSlider.valueProperty().addListener(new ChangeListener<Number>() {
+//        public void changed(ObservableValue<? extends Number> obsVal,
+//                            Number oldVal, Number newVal) {
+//          System.out.println(newVal.doubleValue());
+//        }
+//      });
+
 
 
       viewRulesStage.initModality(Modality.WINDOW_MODAL);
@@ -535,7 +581,7 @@ public class cvController {
       for(MembershipFunction mf:listMF){
         //Определение принадлежности
         String nameVariable = linguisticVariable.getName();
-        AreaChart chart = getAreaChart(mf,param);
+        AreaChart chart = getAreaChart(mf,param,linguisticVariable.getId());
         listCharts.add(chart);
       }
 
