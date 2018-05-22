@@ -223,6 +223,8 @@ public class cvController {
         double y = getY(param,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
         series2.getData().add(new XYChart.Data(param,y));
         double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+
+
         series2.getData().add(new XYChart.Data<Number,Number>(x,y));
         series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
       }
@@ -363,7 +365,7 @@ public class cvController {
         double valueCategory = 0;
         for(int k = 0;k<listInputVariables.size();k++){
           LinguisticVariable linguisticVariable = listInputVariables.get(k);
-          
+
           TextField textField = (TextField) scene.lookup("#textField"+listInputVariables.get(k).getId());
           System.out.println("Value Text Field " + listInputVariables.get(k).getName() + ": " + textField.getText().replace(",", "."));
           valueCategory +=  Double.valueOf(textField.getText().replace(",", "."));
@@ -587,9 +589,10 @@ public class cvController {
         if(!variable1.equals(Variable.RANK)){
           valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
         }
-
-        root.add(valueField,i,++rowIndex);
-        root.add(hBox,i,++rowIndex);
+        rowIndex+=1;
+        root.add(valueField,i,rowIndex);
+        rowIndex+=1;
+        root.add(hBox,i,rowIndex);
 
         //Цикл по правилам
         for(int j = 0;j<listRules.size();j++){
@@ -599,7 +602,6 @@ public class cvController {
           System.out.println("idRule: " + rule.getIdRule());
           Map<String,Condition> mapIF = rule.getIFConditionMap();
           Map<String,Condition> mapAND = rule.getANDConditionMap();
-          Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
           double param = 0;
           //Переменная IF
           for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
@@ -621,6 +623,7 @@ public class cvController {
                 case SALARY:
                   //Построение графика
                   AreaChart chartSalary1 = getAreaChart(ifMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
+
                   root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
@@ -628,6 +631,16 @@ public class cvController {
                   //Построение графика
                   param = 0.5;
                   AreaChart chartPosition1 = getAreaChart(ifMF,param,linguisticVariable.getId(),"#textField"+variableID);
+
+                  MembershipFunction mf = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
+                  System.out.println("Степень уверенности " + mf.getNameMF());
+                  //Степень уверенности
+                  Label st = new Label(String.valueOf(param));
+                  st.setFont(new Font("Verdana", 12));
+                  st.setPadding(new Insets(0,0,0,5));
+                  st.setTextFill(Paint.valueOf(String.valueOf(Color.RED)));
+
+                  root.add(st,i,rowIndex+1);
                   root.add(chartPosition1,i,rowIndex+1);
 
                   break;
@@ -678,9 +691,16 @@ public class cvController {
 //          //Имя переменной
 //          Region labelNameVariable = getLabel(linguisticVariable.getName());
 //          root.add(labelNameVariable,listInputVariables.size(),rowIndex);
-
-
-
+        }
+        if(i==listVariables.size()-1){
+          rowIndex = 3;
+        }
+        System.out.println("Rowindex " + rowIndex);
+        //Цикл по правилам
+        for(int j = 0;j<listRules.size();j++) {
+          rowIndex += 1;
+          Rule rule = listRules.get(j);
+          Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
           //Переменная THEN
           for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
             LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
@@ -694,22 +714,15 @@ public class cvController {
               switch (variable4) {
                 case RANK:
                   //Построение графика
-                  AreaChart category = getOutputAreaChart(thenMF,cv.getExperience(), variableID,"#textField"+variableID);
+                  AreaChart category = getOutputAreaChart(thenMF,0.5, variableID,"#textField"+variableID);
                   root.add(category,i,rowIndex+1);
                   break;
               }
             }
           }
-
-
-
         }
         rowIndex = 0;
       }
-
-
-
-
 
 
       scrollPane.setContent(root);
