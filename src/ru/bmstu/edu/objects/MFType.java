@@ -5,10 +5,11 @@ import java.util.ArrayList;
 public class MFType {
 
   //Определение принадлежности
-  public static MembershipFunction getTriangleMF(ArrayList<MembershipFunction>listMF, Double value){
+  public static double getTriangleMF(ArrayList<MembershipFunction>listMF, Double value){
     MembershipFunction mf = new MembershipFunction();
-    double VAL1 = 0;
-    double VAL2 = 0;
+    double result = 100;
+    double VAL1 = 100;
+    double VAL2 = 100;
     for(MembershipFunction m:listMF){
       String values[] = m.getParamValueMF().split(" ");
 
@@ -17,15 +18,29 @@ public class MFType {
       double c = Double.valueOf(values[2]);
       if(value>=a && value<=b ){
         VAL1 = getValueMFA(a,b,value);
+        result = VAL1;
         System.out.println("VAL1: " + VAL1);
-      }
-      if(value>=b && value<=c){
-        VAL2 = getValueMFB(b,c,value);
-        System.out.println("VAL2: " + VAL2);
+      }else{
+        if(value>=b && value<=c){
+          VAL2 = getValueMFB(b,c,value);
+          result = VAL2;
+          System.out.println("VAL2: " + VAL2);
+        }else{
+          result = 0;
+        }
       }
 
+//      if(VAL1<VAL2){
+//        if(result>VAL1){
+//          result = VAL1;
+//        }
+//      }else{
+//        if(result>VAL2){
+//          result = VAL2;
+//        }
+//      }
     }
-    return mf;
+    return result;
   }
 
   public static MembershipFunction getTrapMF(ArrayList<MembershipFunction>listMF, Double value){

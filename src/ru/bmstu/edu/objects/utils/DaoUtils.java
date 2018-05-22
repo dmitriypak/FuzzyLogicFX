@@ -225,6 +225,11 @@ public class DaoUtils {
           int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
           String nameMF = ifParam.get("nameMF").toString();
           String codeMF = ifParam.get("codeMF").toString();
+
+          //ParamValue из LinguisticVariable по codeMF!!!
+
+
+
           String paramValueMF = ifParam.get("paramValueMF").toString();
           MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
           String nameVariable = ifParam.get("nameVariable").toString();

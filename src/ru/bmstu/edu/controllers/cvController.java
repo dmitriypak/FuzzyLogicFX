@@ -80,6 +80,8 @@ public class cvController {
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
   private Scene scene;
   private ArrayList<Rule> listRules = DaoUtils.getRules();
+  private Timeline timeline;
+
 
   public cvController() throws ParseException {
   }
@@ -230,7 +232,7 @@ public class cvController {
       }
     }
 
-    Timeline timeline = new Timeline();
+    timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -269,7 +271,6 @@ public class cvController {
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.setAutoReverse(true);
     timeline.play();
-
     chart.getData().addAll(series,series2,series1);
     return chart;
   }
@@ -471,6 +472,13 @@ public class cvController {
   }
 
 
+  private Label getLabel(double value){
+    Label label = new Label(String.valueOf(value));
+    label.setFont(new Font("Verdana", 12));
+    label.setPadding(new Insets(0,0,0,5));
+    label.setTextFill(Paint.valueOf(String.valueOf(Color.RED)));
+    return label;
+  }
 
   private Region getLabel(String name){
     HBox box = new HBox(10);
@@ -618,29 +626,32 @@ public class cvController {
                 case WORK_EXPERIENCE:
                   //Построение графика
                   AreaChart chartExperience1 = getAreaChart(ifMF,cv.getExperience(), variableID,"#textField"+variableID);
+
+                  System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
+
+
+
+                  double stExperience = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getExperience()));
+                  root.add( getLabel(stExperience),i,rowIndex+1);
                   root.add(chartExperience1,i,rowIndex+1);
                   break;
                 case SALARY:
                   //Построение графика
                   AreaChart chartSalary1 = getAreaChart(ifMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
-
+                  double stSalary = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getSalary()));
+                  root.add( getLabel(stSalary),i,rowIndex+1);
                   root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
                   System.out.println("POSITION " + param);
+                  System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
                   //Построение графика
                   param = 0.5;
                   AreaChart chartPosition1 = getAreaChart(ifMF,param,linguisticVariable.getId(),"#textField"+variableID);
 
-                  MembershipFunction mf = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
-                  System.out.println("Степень уверенности " + mf.getNameMF());
+                  double stPosition = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
                   //Степень уверенности
-                  Label st = new Label(String.valueOf(param));
-                  st.setFont(new Font("Verdana", 12));
-                  st.setPadding(new Insets(0,0,0,5));
-                  st.setTextFill(Paint.valueOf(String.valueOf(Color.RED)));
-
-                  root.add(st,i,rowIndex+1);
+                  root.add(getLabel(stPosition),i,rowIndex+1);
                   root.add(chartPosition1,i,rowIndex+1);
 
                   break;
@@ -662,16 +673,23 @@ public class cvController {
                 case WORK_EXPERIENCE:
                   //Построение графика
                   AreaChart chartExperience2 = getAreaChart(andMF,cv.getExperience(), variableID,"#textField"+variableID);
+                  double stExperience = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getExperience()));
+                  root.add( getLabel(stExperience),i,rowIndex+1);
                   root.add(chartExperience2,i,rowIndex+1);
                   break;
                 case SALARY:
                   //Построение графика
                   AreaChart chartSalary2 = getAreaChart(andMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
+                  double stSalary = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getSalary()));
+                  root.add( getLabel(stSalary),i,rowIndex+1);
                   root.add(chartSalary2,i,rowIndex+1);
+
                   break;
                 case POSITION:
                   //Построение графика
                   AreaChart chartPosition2 = getAreaChart(andMF,param,linguisticVariable.getId(),"#textField"+variableID);
+                  double stPosition = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
+                  root.add(getLabel(stPosition),i,rowIndex+1);
                   root.add(chartPosition2,i,rowIndex+1);
                   break;
               }
@@ -748,7 +766,6 @@ public class cvController {
       viewRulesStage.initOwner((Stage) nodesource.getScene().getWindow());
       viewRulesStage.showAndWait();
     }
-
   }
 
   private ArrayList<LineChart> drawMFLineGraph(LinguisticVariable linguisticVariable) {
@@ -837,6 +854,10 @@ public class cvController {
         viewRulesController.setCV((CV) tableCV.getSelectionModel().getSelectedItem());
         //viewRulesController.setStage((Stage) nodesource.getScene().getWindow());
         showDialog(cv);
+        break;
+
+      case "btnStop":
+        timeline.stop();
         break;
     }
 
