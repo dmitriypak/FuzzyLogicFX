@@ -22,10 +22,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -147,8 +144,14 @@ public class cvController {
     return chart;
   }
 
-  private AreaChart getAreaChart(MembershipFunction mf, double param, int id, String textFieldName){
+  private StackPane getAreaChart(MembershipFunction mf, double param, int id, String textFieldName, LinguisticVariable variable){
+    StackPane stack = new StackPane();
     double maxValue = 0;
+    double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),Double.valueOf(param)) * 100.0) / 100.0; ;
+
+    //String value = String.valueOf(f.format(stValue));
+    Label stLabel = getLabel(stValue);
+    //root.add( getLabel(stExperience),i,rowIndex+1);
 //    chart.getXAxis().setTickMarkVisible(false);
 //    chart.getYAxis().setTickMarkVisible(false);
 //    chart.getXAxis().setTickLabelsVisible(false);
@@ -158,6 +161,7 @@ public class cvController {
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
+
     //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
     System.out.println("Получен массив длины " + value.length + " " + mf.getParamValueMF());
@@ -238,7 +242,7 @@ public class cvController {
       public void handle(ActionEvent actionEvent) {
         double newValue = 0;
         for (XYChart.Data<Number, Number> data : series1.getData()) {
-          System.out.println("textField "+textFieldName);
+          //System.out.println("textField "+textFieldName);
           TextField textField = (TextField) scene.lookup(textFieldName);
 
           if(textField!=null) {
@@ -266,13 +270,20 @@ public class cvController {
             series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
           }
         }
+
+
       }
     }));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.setAutoReverse(true);
     timeline.play();
     chart.getData().addAll(series,series2,series1);
-    return chart;
+
+    stLabel.setMaxWidth(215);
+    stLabel.setMinWidth(50);
+    stLabel.setAlignment(Pos.CENTER_LEFT);
+    stack.getChildren().addAll(chart,stLabel);
+    return stack;
   }
 
 
@@ -368,13 +379,13 @@ public class cvController {
           LinguisticVariable linguisticVariable = listInputVariables.get(k);
 
           TextField textField = (TextField) scene.lookup("#textField"+listInputVariables.get(k).getId());
-          System.out.println("Value Text Field " + listInputVariables.get(k).getName() + ": " + textField.getText().replace(",", "."));
+          //System.out.println("Value Text Field " + listInputVariables.get(k).getName() + ": " + textField.getText().replace(",", "."));
           valueCategory +=  Double.valueOf(textField.getText().replace(",", "."));
         }
 
         double newValue = 0;
         for (XYChart.Data<Number, Number> data : series1.getData()) {
-          System.out.println("textField "+textFieldName);
+          //System.out.println("textField "+textFieldName);
           TextField textField = (TextField) scene.lookup(textFieldName);
 
           if(textField!=null) {
@@ -625,21 +636,21 @@ public class cvController {
               switch (variable2) {
                 case WORK_EXPERIENCE:
                   //Построение графика
-                  AreaChart chartExperience1 = getAreaChart(ifMF,cv.getExperience(), variableID,"#textField"+variableID);
+                  Region chartExperience1 = getAreaChart(ifMF,cv.getExperience(), variableID,"#textField"+variableID,linguisticVariable);
 
                   System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
 
 
 
-                  double stExperience = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getExperience()));
-                  root.add( getLabel(stExperience),i,rowIndex+1);
+//                  double stExperience = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getExperience()));
+//                  root.add( getLabel(stExperience),i,rowIndex+1);
                   root.add(chartExperience1,i,rowIndex+1);
                   break;
                 case SALARY:
                   //Построение графика
-                  AreaChart chartSalary1 = getAreaChart(ifMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
-                  double stSalary = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getSalary()));
-                  root.add( getLabel(stSalary),i,rowIndex+1);
+                  Region chartSalary1 = getAreaChart(ifMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID,linguisticVariable);
+//                  double stSalary = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getSalary()));
+//                  root.add( getLabel(stSalary),i,rowIndex+1);
                   root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
@@ -647,11 +658,11 @@ public class cvController {
                   System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
                   //Построение графика
                   param = 0.5;
-                  AreaChart chartPosition1 = getAreaChart(ifMF,param,linguisticVariable.getId(),"#textField"+variableID);
+                  Region chartPosition1 = getAreaChart(ifMF,param,linguisticVariable.getId(),"#textField"+variableID,linguisticVariable);
 
-                  double stPosition = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
-                  //Степень уверенности
-                  root.add(getLabel(stPosition),i,rowIndex+1);
+//                  double stPosition = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
+//                  //Степень уверенности
+//                  root.add(getLabel(stPosition),i,rowIndex+1);
                   root.add(chartPosition1,i,rowIndex+1);
 
                   break;
@@ -672,24 +683,24 @@ public class cvController {
               switch (variable3) {
                 case WORK_EXPERIENCE:
                   //Построение графика
-                  AreaChart chartExperience2 = getAreaChart(andMF,cv.getExperience(), variableID,"#textField"+variableID);
-                  double stExperience = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getExperience()));
-                  root.add( getLabel(stExperience),i,rowIndex+1);
+                  Region chartExperience2 = getAreaChart(andMF,cv.getExperience(), variableID,"#textField"+variableID,linguisticVariable);
+//                  double stExperience = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getExperience()));
+//                  root.add( getLabel(stExperience),i,rowIndex+1);
                   root.add(chartExperience2,i,rowIndex+1);
                   break;
                 case SALARY:
                   //Построение графика
-                  AreaChart chartSalary2 = getAreaChart(andMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID);
-                  double stSalary = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getSalary()));
-                  root.add( getLabel(stSalary),i,rowIndex+1);
+                  Region chartSalary2 = getAreaChart(andMF,cv.getSalary(), linguisticVariable.getId(),"#textField"+variableID,linguisticVariable);
+//                  double stSalary = MFType.getTriangleMF(linguisticVariable.getMfList(),Double.valueOf(cv.getSalary()));
+//                  root.add( getLabel(stSalary),i,rowIndex+1);
                   root.add(chartSalary2,i,rowIndex+1);
 
                   break;
                 case POSITION:
                   //Построение графика
-                  AreaChart chartPosition2 = getAreaChart(andMF,param,linguisticVariable.getId(),"#textField"+variableID);
-                  double stPosition = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
-                  root.add(getLabel(stPosition),i,rowIndex+1);
+                  Region chartPosition2 = getAreaChart(andMF,param,linguisticVariable.getId(),"#textField"+variableID,linguisticVariable);
+//                  double stPosition = MFType.getTriangleMF(linguisticVariable.getMfList(),param);
+//                  root.add(getLabel(stPosition),i,rowIndex+1);
                   root.add(chartPosition2,i,rowIndex+1);
                   break;
               }
