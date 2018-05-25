@@ -200,6 +200,88 @@ public class DaoUtils {
   }
 
 
+  public static Map<Integer,Rule> getMapRules() throws ParseException {
+    Map<Integer,Rule> mapRules = new LinkedHashMap<>();
+    org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
+    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
+        ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()){
+        Map<String,Condition> ifMap = new LinkedHashMap<>();
+        Map<String,Condition> andMap = new LinkedHashMap<>();
+        Map<String,Condition> thenMap = new LinkedHashMap<>();
+
+        Rule rule = new Rule(rs.getInt("id"), rs.getString("value"),rs.getBoolean("isactive"));
+
+        //Парсинг JSON
+        Object obj = parser.parse(rule.getValue());
+        JSONObject jsonObject = (JSONObject) obj;
+        System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+        //IF
+        JSONArray IFarray = (JSONArray) jsonObject.get("IF");
+        System.out.println("IF: " + IFarray);
+        for(int i =0;i<IFarray.size();i++){
+          JSONObject ifParam =  (JSONObject) IFarray.get(i);
+          int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
+          String nameMF = ifParam.get("nameMF").toString();
+          String codeMF = ifParam.get("codeMF").toString();
+
+          //ParamValue из LinguisticVariable по codeMF!!!
+
+
+
+          String paramValueMF = ifParam.get("paramValueMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+          String nameVariable = ifParam.get("nameVariable").toString();
+          Condition condition = new Condition(idVariable,nameVariable);
+          condition.setMembershipFunction(mf);
+          ifMap.put(nameVariable,condition);
+        }
+
+        //AND
+        JSONArray ANDarray = (JSONArray) jsonObject.get("AND");
+        System.out.println("AND: " + ANDarray);
+        for(int i =0;i<ANDarray.size();i++){
+          JSONObject andParam =  (JSONObject) ANDarray.get(i);
+          int idVariable = Integer.valueOf(andParam.get("idvariable").toString());
+          String nameMF = andParam.get("nameMF").toString();
+          String codeMF = andParam.get("codeMF").toString();
+          String paramValueMF = andParam.get("paramValueMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+          String nameVariable = andParam.get("nameVariable").toString();
+          Condition condition = new Condition(idVariable,nameVariable);
+          condition.setMembershipFunction(mf);
+          condition.setValueMF(mf.getNameMF());
+          andMap.put(nameVariable,condition);
+        }
+
+        //THEN
+        JSONArray THENarray = (JSONArray) jsonObject.get("THEN");
+        System.out.println("THEN: " + THENarray);
+        for(int i =0;i<THENarray.size();i++){
+          JSONObject thenParam =  (JSONObject) THENarray.get(i);
+          int idVariable = Integer.valueOf(thenParam.get("idvariable").toString());
+          String nameMF = thenParam.get("nameMF").toString();
+          String codeMF = thenParam.get("codeMF").toString();
+          String paramValueMF = thenParam.get("paramValueMF").toString();
+          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+          String nameVariable = thenParam.get("nameVariable").toString();
+          Condition condition = new Condition(idVariable,nameVariable);
+          condition.setMembershipFunction(mf);
+          thenMap.put(nameVariable,condition);
+        }
+        rule.setIFConditionMap(ifMap);
+        rule.setANDConditionMap(andMap);
+        rule.setTHENConditionMap(thenMap);
+        mapRules.put(rule.getIdRule(),rule);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return mapRules;
+  }
+
+
   public static ArrayList<Rule> getRules() throws ParseException {
     ArrayList<Rule> listRules = new ArrayList<>();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();

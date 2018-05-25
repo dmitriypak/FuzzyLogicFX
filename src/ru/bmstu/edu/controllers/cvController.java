@@ -76,7 +76,8 @@ public class cvController {
   private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
   private Scene scene;
-  private ArrayList<Rule> listRules = DaoUtils.getRules();
+  //private ArrayList<Rule> listRules = DaoUtils.getRules();
+  private Map<Integer,Rule> mapRules = DaoUtils.getMapRules();
   private Timeline timeline;
 
 
@@ -147,13 +148,10 @@ public class cvController {
   private StackPane getAreaChart(MembershipFunction mf, double param, int ruleID, int variableID, String textFieldName, LinguisticVariable variable){
     StackPane stack = new StackPane();
     double maxValue = 0;
-    double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),Double.valueOf(param),mf.getCodeMF()) * 100.0) / 100.0;
     Label stLabel = getLabel();
     stLabel.setId("label"+variableID + ruleID+mf.getCodeMF());
     stLabel.setMaxWidth(215);
     stLabel.setMinWidth(50);
-
-
 //    chart.getXAxis().setTickMarkVisible(false);
 //    chart.getYAxis().setTickMarkVisible(false);
 //    chart.getXAxis().setTickLabelsVisible(false);
@@ -252,9 +250,17 @@ public class cvController {
             data.setXValue(newValue);
           }
         }
-
+        // Расчет степени уверенности
         Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
-        label.setText(String.valueOf(Math.round(MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0));
+        double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
+        label.setText(String.valueOf(stValue));
+
+        Rule r = mapRules.get(ruleID);
+        if(stValue ==0){
+          r.setStatus(false);
+        }else{
+          r.setStatus(true);
+        }
 
         //Заливка
         series2.getData().clear();
@@ -290,14 +296,11 @@ public class cvController {
   }
 
 
-  private AreaChart getOutputAreaChart(MembershipFunction mf, double param, int id, String textFieldName){
+
+
+  private StackPane getOutputAreaChart(MembershipFunction mf, double param, int ruleID, int variableID, String textFieldName, LinguisticVariable variable){
+    StackPane stack = new StackPane();
     double maxValue = 0;
-//    chart.getXAxis().setTickMarkVisible(false);
-//    chart.getYAxis().setTickMarkVisible(false);
-//    chart.getXAxis().setTickLabelsVisible(false);
-//    chart.getXAxis().setTickLength(0);
-//    chart.getYAxis().setTickLabelsVisible(false);
-//    chart.setVerticalGridLinesVisible(false);
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
@@ -347,8 +350,20 @@ public class cvController {
     chart.setMinHeight(100);
     chart.setMinWidth(100);
     chart.setCreateSymbols(false);
-    chart.setId("chart"+id);
+    chart.setId("chart"+variableID+ruleID);
     chart.setAnimated(false);
+
+    double newValue = 0;
+//    for (XYChart.Data<Number, Number> data : series1.getData()) {
+//      //System.out.println("textField "+textFieldName);
+//      TextField textField = (TextField) scene.lookup(textFieldName);
+//
+//      if(textField!=null) {
+//        newValue = Double.valueOf(textField.getText().replace(",", "."));
+//        data.setXValue(newValue);
+//        param = newValue;
+//      }
+//    }
 
     //Красная линия
     series1.getData().add(new XYChart.Data<Number,Number>(param,0));
@@ -396,6 +411,12 @@ public class cvController {
           }
         }
 
+        for(Map.Entry<Integer,Rule>entryR:mapRules.entrySet()){
+          Rule rule = entryR.getValue();
+          System.out.println("Status rule " + rule.getIdRule() + "  " + rule.getStatus());
+        }
+
+
         //Заливка
         series2.getData().clear();
         if(newValue>=Double.valueOf(value[0]) && newValue<=Double.valueOf(value[1])){
@@ -422,7 +443,8 @@ public class cvController {
     timeline.play();
 
     chart.getData().addAll(series,series2,series1);
-    return chart;
+    stack.getChildren().addAll(chart);
+    return stack;
   }
 
 
@@ -510,7 +532,6 @@ public class cvController {
     return box;
   }
   private void showDialog(CV cv) {
-
     if (cv!=null) {
       Stage viewRulesStage = new Stage();
       GridPane root = new GridPane();
@@ -617,9 +638,11 @@ public class cvController {
         root.add(hBox,i,rowIndex);
 
         //Цикл по правилам
-        for(int j = 0;j<listRules.size();j++){
+        int j = 0;
+        for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()){
+          j+=1;
           rowIndex += 1;
-          Rule rule = listRules.get(j);
+          Rule rule = entryRule.getValue();
           int ruleID = rule.getIdRule();
 
           System.out.println("idRule: " + rule.getIdRule());
@@ -640,15 +663,13 @@ public class cvController {
               switch (variable2) {
                 case WORK_EXPERIENCE:
                   //Построение графика
-                  Region chartExperience1 = getAreaChart(ifMF,cv.getExperience(), variableID, ruleID,"#textField"+variableID,linguisticVariable);
-
+                  Region chartExperience1 = getAreaChart(ifMF,cv.getExperience(),ruleID , variableID,"#textField"+variableID,linguisticVariable);
                   System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
-
                   root.add(chartExperience1,i,rowIndex+1);
                   break;
                 case SALARY:
                   //Построение графика
-                  Region chartSalary1 = getAreaChart(ifMF,cv.getSalary(), variableID, ruleID,"#textField"+variableID,linguisticVariable);
+                  Region chartSalary1 = getAreaChart(ifMF,cv.getSalary(), ruleID, variableID,"#textField"+variableID,linguisticVariable);
                   root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
@@ -656,8 +677,7 @@ public class cvController {
                   System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
                   //Построение графика
                   param = 0.5;
-                  Region chartPosition1 = getAreaChart(ifMF,param, variableID, ruleID,"#textField"+variableID,linguisticVariable);
-
+                  Region chartPosition1 = getAreaChart(ifMF,param, ruleID, variableID,"#textField"+variableID,linguisticVariable);
                   root.add(chartPosition1,i,rowIndex+1);
 
                   break;
@@ -678,18 +698,18 @@ public class cvController {
               switch (variable3) {
                 case WORK_EXPERIENCE:
                   //Построение графика
-                  Region chartExperience2 = getAreaChart(andMF,cv.getExperience(), variableID, ruleID,"#textField"+variableID,linguisticVariable);
+                  Region chartExperience2 = getAreaChart(andMF,cv.getExperience(), ruleID, variableID,"#textField"+variableID,linguisticVariable);
                   root.add(chartExperience2,i,rowIndex+1);
                   break;
                 case SALARY:
                   //Построение графика
-                  Region chartSalary2 = getAreaChart(andMF,cv.getSalary(), variableID, ruleID,"#textField"+variableID,linguisticVariable);
+                  Region chartSalary2 = getAreaChart(andMF,cv.getSalary(), ruleID, variableID,"#textField"+variableID,linguisticVariable);
                   root.add(chartSalary2,i,rowIndex+1);
 
                   break;
                 case POSITION:
                   //Построение графика
-                  Region chartPosition2 = getAreaChart(andMF,param,variableID, ruleID,"#textField"+variableID,linguisticVariable);
+                  Region chartPosition2 = getAreaChart(andMF,param,ruleID, variableID,"#textField"+variableID,linguisticVariable);
                   root.add(chartPosition2,i,rowIndex+1);
                   break;
               }
@@ -715,10 +735,11 @@ public class cvController {
         }
         System.out.println("Rowindex " + rowIndex);
         //Цикл по правилам
-        for(int j = 0;j<listRules.size();j++) {
+        for(Map.Entry<Integer,Rule>entryRulesOutput:mapRules.entrySet()) {
           rowIndex += 1;
-          Rule rule = listRules.get(j);
+          Rule rule = entryRulesOutput.getValue();
           Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
+          int ruleID = rule.getIdRule();
           //Переменная THEN
           for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
             LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
@@ -732,8 +753,8 @@ public class cvController {
               switch (variable4) {
                 case RANK:
                   //Построение графика
-                  AreaChart category = getOutputAreaChart(thenMF,0.5, variableID,"#textField"+variableID);
-                  root.add(category,i,rowIndex+1);
+                  Region rank = getOutputAreaChart(thenMF,0.5,ruleID, variableID,"#textField"+variableID,linguisticVariable);
+                  root.add(rank,i,rowIndex+1);
                   break;
               }
             }

@@ -17,11 +17,21 @@ public class Rule {
   private SimpleStringProperty variableName = new SimpleStringProperty("");
   private Boolean isactive;
   private SimpleStringProperty descr = new SimpleStringProperty("");
+  private Boolean status;
+
 
 
   /////////////
   public Boolean getIsactive() {
     return isactive;
+  }
+
+  public Boolean getStatus() {
+    return status;
+  }
+
+  public void setStatus(Boolean status) {
+    this.status = status;
   }
 
   public SimpleStringProperty descrProperty() {
