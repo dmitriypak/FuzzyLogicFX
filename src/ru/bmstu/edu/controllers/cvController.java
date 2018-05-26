@@ -35,7 +35,7 @@ import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.*;
 import ru.bmstu.edu.objects.enums.Variable;
-import ru.bmstu.edu.objects.fuzzy.Aggregation;
+import ru.bmstu.edu.objects.fuzzy.Mamdani;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -307,6 +307,8 @@ public class cvController {
     stLabel.setMaxWidth(215);
     stLabel.setMinWidth(50);
 
+    String textFieldName = "#textField"+variableID;
+
 
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
@@ -382,9 +384,14 @@ public class cvController {
             }
           }
         }
-        valueCategory = Aggregation.getAggregationResult(valuesMas);
+        valueCategory = Mamdani.getAggregationResult(valuesMas);
+        Rule rule = mapRules.get(ruleID);
+        if(rule!=null){
+          rule.setValueOutput(valueCategory);
+          mapRules.put(ruleID,rule);
+        }
+
         double XX = getX(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-        System.out.println("valueCategory  " + valueCategory);
 
         // Расчет степени уверенности
         Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
@@ -392,7 +399,7 @@ public class cvController {
           label.setText(String.valueOf(valueCategory));
         }
 
-        System.out.println("ValueCategory " + valueCategory);
+        //System.out.println("ValueCategory " + valueCategory);
 
         series2.getData().clear();
         //Заливка
@@ -414,12 +421,20 @@ public class cvController {
           }
         }
 
-//        if(valueCategory ==0){
-//          rule.setStatus(false);
-//        }else{
-//          rule.setStatus(true);
-//        }
-//        mapRules.put(rule.getIdRule(),rule);
+        double masOutput[] = new double[mapRules.size()];
+        int z = 0;
+        for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+          Rule outputRule = r.getValue();
+          masOutput[z] = outputRule.getValueOutput();
+          System.out.println("Rank " + outputRule.getValueOutput());
+          z+=1;
+        }
+        double accumulationResult = Mamdani.getAccumulationResult(masOutput);
+        TextField textField = (TextField) scene.lookup(textFieldName);
+        if(textField!=null){
+          System.out.println("Accumulation result " + accumulationResult);
+          textField.setText(String.valueOf(accumulationResult));
+        }
 
 
 
