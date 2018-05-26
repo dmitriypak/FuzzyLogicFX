@@ -399,26 +399,40 @@ public class cvController {
           label.setText(String.valueOf(valueCategory));
         }
 
-        //System.out.println("ValueCategory " + valueCategory);
-
         series2.getData().clear();
-        //Заливка
-        if(XX>=Double.valueOf(value[0]) && XX<=Double.valueOf(value[1])){
-          series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-          double y = getY(XX,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-          series2.getData().add(new XYChart.Data<Number,Number>(XX,y));
-          double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-          series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-          series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-        }else{
-          if(XX>=Double.valueOf(value[1]) && XX<=Double.valueOf(value[2])){
-            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-            double y = getY(XX,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-            series2.getData().add(new XYChart.Data(XX,y));
-            double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-            series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-          }
+        switch (value.length) {
+          case 3:
+
+            //Заливка
+            if (XX >= Double.valueOf(value[0]) && XX <= Double.valueOf(value[1])) {
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              double y = getY(XX, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+              series2.getData().add(new XYChart.Data<Number, Number>(XX, y));
+              double x = getX(y, Double.valueOf(value[1]), Double.valueOf(value[2]), 1, 0);
+              series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[2]), 0));
+            } else {
+              if (XX >= Double.valueOf(value[1]) && XX <= Double.valueOf(value[2])) {
+                series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[2]), 0));
+                double y = getY(XX, Double.valueOf(value[1]), Double.valueOf(value[2]), 1, 0);
+                series2.getData().add(new XYChart.Data(XX, y));
+                double x = getX(y, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+                series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+                series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              }
+            }
+            break;
+          case 4:
+            //Заливка 0.75 0.9 1 1
+            series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+
+            double y = getY(XX, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+            series2.getData().add(new XYChart.Data<Number, Number>(XX, y));
+            double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+            series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+            series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+
+            break;
         }
 
         double masOutput[] = new double[mapRules.size()];
