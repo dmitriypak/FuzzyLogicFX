@@ -310,8 +310,6 @@ public class DaoUtils {
 
           //ParamValue из LinguisticVariable по codeMF!!!
 
-
-
           String paramValueMF = ifParam.get("paramValueMF").toString();
           MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
           String nameVariable = ifParam.get("nameVariable").toString();

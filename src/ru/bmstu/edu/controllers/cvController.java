@@ -35,6 +35,7 @@ import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.*;
 import ru.bmstu.edu.objects.enums.Variable;
+import ru.bmstu.edu.objects.fuzzy.Aggregation;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -42,7 +43,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class cvController {
@@ -79,7 +83,7 @@ public class cvController {
   //private ArrayList<Rule> listRules = DaoUtils.getRules();
   private Map<Integer,Rule> mapRules = DaoUtils.getMapRules();
   private Timeline timeline;
-
+  private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
 
   public cvController() throws ParseException {
   }
@@ -149,10 +153,13 @@ public class cvController {
     StackPane stack = new StackPane();
     String textFieldName = "#textField"+variableID;
     double maxValue = 0;
+
     Label stLabel = getLabel();
-    stLabel.setId("label"+variableID + ruleID+mf.getCodeMF());
+    String nameLabel ="label"+variableID + "_"+ruleID+"_"+mf.getCodeMF();
+    stLabel.setId(nameLabel);
     stLabel.setMaxWidth(215);
     stLabel.setMinWidth(50);
+
 //    chart.getXAxis().setTickMarkVisible(false);
 //    chart.getYAxis().setTickMarkVisible(false);
 //    chart.getXAxis().setTickLabelsVisible(false);
@@ -230,8 +237,6 @@ public class cvController {
         double y = getY(param,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
         series2.getData().add(new XYChart.Data(param,y));
         double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-
-
         series2.getData().add(new XYChart.Data<Number,Number>(x,y));
         series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
       }
@@ -252,16 +257,11 @@ public class cvController {
           }
         }
         // Расчет степени уверенности
-        Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
+
+        Label label = (Label) scene.lookup("#label"+variableID+"_"+ruleID+"_"+mf.getCodeMF());
         double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
         label.setText(String.valueOf(stValue));
-
-        Rule r = mapRules.get(ruleID);
-        if(stValue ==0){
-          r.setStatus(false);
-        }else{
-          r.setStatus(true);
-        }
+        mapLabelValues.put(nameLabel,stValue);
 
         //Заливка
         series2.getData().clear();
@@ -297,7 +297,7 @@ public class cvController {
   }
 
 
-
+// Выходные переменные
 
   private StackPane getOutputAreaChart(MembershipFunction mf, double param, int ruleID, int variableID){
     StackPane stack = new StackPane();
@@ -361,9 +361,6 @@ public class cvController {
     chart.setId("chart"+variableID+ruleID);
     chart.setAnimated(false);
 
-
-
-
     //Красная линия
     series1.getData().add(new XYChart.Data<Number,Number>(param,0));
     series1.getData().add(new XYChart.Data<Number,Number>(param,1));
@@ -393,50 +390,48 @@ public class cvController {
       public void handle(ActionEvent actionEvent) {
         double valueCategory = 0;
 
-        //stLabel.setId("label"+variableID + ruleID+mf.getCodeMF());
-        double values [] = new double[listInputVariables.size()];
-        for(int k = 0;k<listInputVariables.size();k++){
-          LinguisticVariable variable = listInputVariables.get(k);
-          int idVariable = variable.getId();
-
-          Label labelVar = (Label) scene.lookup("#label"+idVariable+ruleID+mf.getCodeMF());
-          System.out.println("#label"+idVariable+ruleID+mf.getCodeMF());
-          if(labelVar!=null){
-            System.out.println("Value k " + labelVar.getText() + "Ruleid " + ruleID);
-          }
-
-          //TextField textField = (TextField) scene.lookup("#textField"+linguisticVariable.getId());
-          //System.out.println("Value Text Field " + listInputVariables.get(k).getName() + ": " + textField.getText().replace(",", "."));
-          //double value  =  Double.valueOf(textField.getText().replace(",", "."));
-          //values[k] = Math.round(MFType.getTriangleMF(linguisticVariable.getMfList(),value,mf.getCodeMF()) * 100.0) / 100.0;
-
-        }
-
-//        valueCategory = Aggregation.getAggregationResult(values);
-//        System.out.println("Value Category " + valueCategory);
-//        for (XYChart.Data<Number, Number> data : series1.getData()) {
-//          //System.out.println("textField "+textFieldName);
-//          TextField textField = (TextField) scene.lookup(textFieldName);
-//          if(textField!=null) {
-//            if(valueCategory>0){
-//              textField.setText(String.valueOf(valueCategory));
-//            }
-//          }
-//        }
-
-        // Расчет степени уверенности
-//        Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
-//        if(label!=null){
-//          label.setText(String.valueOf(valueCategory));
-//        }
-
-
-
         for(Map.Entry<Integer,Rule>entryR:mapRules.entrySet()){
           Rule rule = entryR.getValue();
-          //System.out.println("Status rule " + rule.getIdRule() + "  " + rule.getStatus());
-        }
+          int idRule = rule.getIdRule();
+          Pattern pattern = Pattern.compile("_(.*?)_");
 
+          double valuesMas[] = new double[listInputVariables.size()];
+          int q = 0;
+          for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
+            System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
+            Matcher matcher = pattern.matcher(entryLabel.getKey());
+            //
+            if (matcher.find())
+            {
+              int id = Integer.valueOf(matcher.group(1));
+              if(id==idRule){
+                valuesMas[q] = entryLabel.getValue();
+                q+=1;
+                System.out.println(matcher.group(1));
+              }
+            }
+          }
+
+          valueCategory = Aggregation.getAggregationResult(valuesMas);
+          // Расчет степени уверенности
+          Label label = (Label) scene.lookup("#label"+variableID+rule.getIdRule()+mf.getCodeMF());
+          if(label!=null){
+            label.setText(String.valueOf(valueCategory));
+          }
+          System.out.println("ValueCategory " + valueCategory);
+        }
+//        if(valueCategory ==0){
+//          rule.setStatus(false);
+//        }else{
+//          rule.setStatus(true);
+//        }
+//        mapRules.put(ruleID,rule);
+
+//        for (XYChart.Data<Number, Number> data : series1.getData()) {
+//          if(valueCategory>0) {
+//            data.setXValue(valueCategory);
+//          }
+//        }
 
         //Заливка
         series2.getData().clear();
@@ -791,16 +786,6 @@ public class cvController {
       scene.getStylesheets().add("ru/bmstu/edu/resources/css/chart.css");
 
       viewRulesStage.setScene(scene);
-
-//      Slider positionSlider = (Slider) scene.lookup("#sliderPosition");
-//      positionSlider.valueProperty().addListener(new ChangeListener<Number>() {
-//        public void changed(ObservableValue<? extends Number> obsVal,
-//                            Number oldVal, Number newVal) {
-//          System.out.println(newVal.doubleValue());
-//        }
-//      });
-
-
 
       viewRulesStage.initModality(Modality.WINDOW_MODAL);
       viewRulesStage.initOwner((Stage) nodesource.getScene().getWindow());

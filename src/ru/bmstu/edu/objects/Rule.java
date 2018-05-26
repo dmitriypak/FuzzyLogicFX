@@ -20,8 +20,22 @@ public class Rule {
   private Boolean status;
 
 
+  private double valueOutput;
+
 
   /////////////
+
+  public double getValueOutput() {
+    return valueOutput;
+  }
+
+  public void setValueOutput(double valueOutput) {
+    this.valueOutput = valueOutput;
+  }
+
+
+
+
   public Boolean getIsactive() {
     return isactive;
   }
