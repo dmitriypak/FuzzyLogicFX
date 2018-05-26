@@ -223,25 +223,6 @@ public class cvController {
     series1.getData().add(new XYChart.Data<Number,Number>(param,0));
     series1.getData().add(new XYChart.Data<Number,Number>(param,1));
 
-    //Заливка
-    if(param>=Double.valueOf(value[0]) && param<=Double.valueOf(value[1])){
-      series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-      double y = getY(param,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-      series2.getData().add(new XYChart.Data<Number,Number>(param,y));
-      double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-      series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-      series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-    }else{
-      if(param>=Double.valueOf(value[1]) && param<=Double.valueOf(value[2])){
-        series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-        double y = getY(param,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-        series2.getData().add(new XYChart.Data(param,y));
-        double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-        series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-        series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-      }
-    }
-
     timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
@@ -259,29 +240,61 @@ public class cvController {
         // Расчет степени уверенности
 
         Label label = (Label) scene.lookup("#label"+variableID+"_"+ruleID+"_"+mf.getCodeMF());
-        double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
-        label.setText(String.valueOf(stValue));
-        mapLabelValues.put(nameLabel,stValue);
-
-        //Заливка
         series2.getData().clear();
-        if(newValue>=Double.valueOf(value[0]) && newValue<=Double.valueOf(value[1])){
-          series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-          double y = getY(newValue,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-          series2.getData().add(new XYChart.Data<Number,Number>(newValue,y));
-          double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-          series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-          series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-        }else{
-          if(newValue>=Double.valueOf(value[1]) && newValue<=Double.valueOf(value[2])){
-            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-            double y = getY(newValue,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-            series2.getData().add(new XYChart.Data(newValue,y));
-            double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-            series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-            series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-          }
+        switch (value.length) {
+          case 3:
+            double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
+            label.setText(String.valueOf(stValue));
+            mapLabelValues.put(nameLabel,stValue);
+
+            //Заливка
+            if (newValue >= Double.valueOf(value[0]) && newValue <= Double.valueOf(value[1])) {
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              double y = getY(newValue, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+              series2.getData().add(new XYChart.Data<Number, Number>(newValue, y));
+              double x = getX(y, Double.valueOf(value[1]), Double.valueOf(value[2]), 1, 0);
+              series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[2]), 0));
+            } else {
+              if (newValue >= Double.valueOf(value[1]) && newValue <= Double.valueOf(value[2])) {
+                series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[2]), 0));
+                double y = getY(newValue, Double.valueOf(value[1]), Double.valueOf(value[2]), 1, 0);
+                series2.getData().add(new XYChart.Data(newValue, y));
+                double x = getX(y, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+                series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+                series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              }
+            }
+
+
+            break;
+          case 4:
+            double stValueT = Math.round(MFType.getTrapMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
+            label.setText(String.valueOf(stValueT));
+            mapLabelValues.put(nameLabel,stValueT);
+
+            if(Double.valueOf(value[0])==0){
+              //Заливка  0 0 0.1 0.2
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              double y = stValueT;
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[1]), y));
+              double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+              series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+            }else{
+              //Заливка  0.75 0.9 1 1
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              double y = getY(newValue, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+              series2.getData().add(new XYChart.Data<Number, Number>(newValue, y));
+              double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+              series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+            }
+
+
+            break;
         }
+
 
 
       }
@@ -503,7 +516,7 @@ public class cvController {
 //            for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
 //
 //            }
-            System.out.println("ruleValueOutput " +ruleValueOutput);
+            //System.out.println("ruleValueOutput " +ruleValueOutput);
           }
 
 

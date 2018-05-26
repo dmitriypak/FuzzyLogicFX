@@ -159,7 +159,6 @@ public class EditRuleController {
   public void selectOutputVarName(String variableName){
     LinguisticVariable selectVariable = mapOutputVariables.get(variableName);
     ObservableList<MembershipFunction>mfNameList = FXCollections.observableArrayList();
-
     if(selectVariable!=null){
       ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
       for(int i = 0;i<mfList.size();i++){
@@ -241,10 +240,10 @@ public class EditRuleController {
   public JSONObject getJSONCondition(int id, String nameVariable, MembershipFunction mf){
     Map<String,String> map = new LinkedHashMap<>();
     map.put("idvariable",String.valueOf(id));
-    map.put("nameVariable",nameVariable);
-    map.put("nameMF",mf.getNameMF());
+    //map.put("nameVariable",nameVariable);
+    //map.put("nameMF",mf.getNameMF());
     map.put("codeMF", mf.getCodeMF());
-    map.put("paramValueMF",mf.getParamValueMF());
+    //map.put("paramValueMF",mf.getParamValueMF());
     JSONObject obj = new JSONObject(map);
     return obj;
   }

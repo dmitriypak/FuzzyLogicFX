@@ -223,19 +223,34 @@ public class DaoUtils {
         for(int i =0;i<IFarray.size();i++){
           JSONObject ifParam =  (JSONObject) IFarray.get(i);
           int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
-          String nameMF = ifParam.get("nameMF").toString();
+          //String nameMF = ifParam.get("nameMF").toString();
           String codeMF = ifParam.get("codeMF").toString();
+          try(PreparedStatement pstm = PostgreSQLConnection.getConnection().prepareStatement
+              ("select name, value from cvdata.bmstu.linguisticvariables where id = ?")){
+            pstm.setInt(1,idVariable);
+            ResultSet rs2 = pstm.executeQuery();
+            if (rs2.next()){
+              ArrayList<MembershipFunction> mfList = DaoUtils.getMFList(rs2.getString("value"));
+              for(int j =0;j<mfList.size();j++){
+                MembershipFunction m = mfList.get(j);
+                if(m.getCodeMF().equals(codeMF)){
+                  String nameMF = m.getNameMF();
+                  String paramValueMF = m.getParamValueMF();
 
-          //ParamValue из LinguisticVariable по codeMF!!!
+                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+
+                  String nameVariable = rs2.getString("name");
+                  Condition condition = new Condition(idVariable,nameVariable);
+                  condition.setMembershipFunction(mf);
+                  ifMap.put(nameVariable,condition);
+                }
+              }
+            }
+          }
+
+          //String paramValueMF = ifParam.get("paramValueMF").toString();
 
 
-
-          String paramValueMF = ifParam.get("paramValueMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-          String nameVariable = ifParam.get("nameVariable").toString();
-          Condition condition = new Condition(idVariable,nameVariable);
-          condition.setMembershipFunction(mf);
-          ifMap.put(nameVariable,condition);
         }
 
         //AND
@@ -244,15 +259,29 @@ public class DaoUtils {
         for(int i =0;i<ANDarray.size();i++){
           JSONObject andParam =  (JSONObject) ANDarray.get(i);
           int idVariable = Integer.valueOf(andParam.get("idvariable").toString());
-          String nameMF = andParam.get("nameMF").toString();
           String codeMF = andParam.get("codeMF").toString();
-          String paramValueMF = andParam.get("paramValueMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-          String nameVariable = andParam.get("nameVariable").toString();
-          Condition condition = new Condition(idVariable,nameVariable);
-          condition.setMembershipFunction(mf);
-          condition.setValueMF(mf.getNameMF());
-          andMap.put(nameVariable,condition);
+          try(PreparedStatement pstm = PostgreSQLConnection.getConnection().prepareStatement
+              ("select name, value from cvdata.bmstu.linguisticvariables where id = ?")){
+            pstm.setInt(1,idVariable);
+            ResultSet rs2 = pstm.executeQuery();
+            if (rs2.next()){
+              ArrayList<MembershipFunction> mfList = DaoUtils.getMFList(rs2.getString("value"));
+              for(int j =0;j<mfList.size();j++){
+                MembershipFunction m = mfList.get(j);
+                if(m.getCodeMF().equals(codeMF)){
+                  String nameMF = m.getNameMF();
+                  String paramValueMF = m.getParamValueMF();
+
+                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+
+                  String nameVariable = rs2.getString("name");
+                  Condition condition = new Condition(idVariable,nameVariable);
+                  condition.setMembershipFunction(mf);
+                  andMap.put(nameVariable,condition);
+                }
+              }
+            }
+          }
         }
 
         //THEN
@@ -261,14 +290,29 @@ public class DaoUtils {
         for(int i =0;i<THENarray.size();i++){
           JSONObject thenParam =  (JSONObject) THENarray.get(i);
           int idVariable = Integer.valueOf(thenParam.get("idvariable").toString());
-          String nameMF = thenParam.get("nameMF").toString();
           String codeMF = thenParam.get("codeMF").toString();
-          String paramValueMF = thenParam.get("paramValueMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-          String nameVariable = thenParam.get("nameVariable").toString();
-          Condition condition = new Condition(idVariable,nameVariable);
-          condition.setMembershipFunction(mf);
-          thenMap.put(nameVariable,condition);
+          try(PreparedStatement pstm = PostgreSQLConnection.getConnection().prepareStatement
+              ("select name, value from cvdata.bmstu.linguisticvariables where id = ?")){
+            pstm.setInt(1,idVariable);
+            ResultSet rs2 = pstm.executeQuery();
+            if (rs2.next()){
+              ArrayList<MembershipFunction> mfList = DaoUtils.getMFList(rs2.getString("value"));
+              for(int j =0;j<mfList.size();j++){
+                MembershipFunction m = mfList.get(j);
+                if(m.getCodeMF().equals(codeMF)){
+                  String nameMF = m.getNameMF();
+                  String paramValueMF = m.getParamValueMF();
+
+                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+
+                  String nameVariable = rs2.getString("name");
+                  Condition condition = new Condition(idVariable,nameVariable);
+                  condition.setMembershipFunction(mf);
+                  thenMap.put(nameVariable,condition);
+                }
+              }
+            }
+          }
         }
         rule.setIFConditionMap(ifMap);
         rule.setANDConditionMap(andMap);
@@ -305,17 +349,29 @@ public class DaoUtils {
         for(int i =0;i<IFarray.size();i++){
           JSONObject ifParam =  (JSONObject) IFarray.get(i);
           int idVariable = Integer.valueOf(ifParam.get("idvariable").toString());
-          String nameMF = ifParam.get("nameMF").toString();
           String codeMF = ifParam.get("codeMF").toString();
+          try(PreparedStatement pstm = PostgreSQLConnection.getConnection().prepareStatement
+              ("select name, value from cvdata.bmstu.linguisticvariables where id = ?")){
+            pstm.setInt(1,idVariable);
+            ResultSet rs2 = pstm.executeQuery();
+            if (rs2.next()){
+              ArrayList<MembershipFunction> mfList = DaoUtils.getMFList(rs2.getString("value"));
+              for(int j =0;j<mfList.size();j++){
+                MembershipFunction m = mfList.get(j);
+                if(m.getCodeMF().equals(codeMF)){
+                  String nameMF = m.getNameMF();
+                  String paramValueMF = m.getParamValueMF();
 
-          //ParamValue из LinguisticVariable по codeMF!!!
+                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
 
-          String paramValueMF = ifParam.get("paramValueMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-          String nameVariable = ifParam.get("nameVariable").toString();
-          Condition condition = new Condition(idVariable,nameVariable);
-          condition.setMembershipFunction(mf);
-          ifMap.put(nameVariable,condition);
+                  String nameVariable = rs2.getString("name");
+                  Condition condition = new Condition(idVariable,nameVariable);
+                  condition.setMembershipFunction(mf);
+                  ifMap.put(nameVariable,condition);
+                }
+              }
+            }
+          }
         }
 
         //AND
@@ -324,15 +380,29 @@ public class DaoUtils {
         for(int i =0;i<ANDarray.size();i++){
           JSONObject andParam =  (JSONObject) ANDarray.get(i);
           int idVariable = Integer.valueOf(andParam.get("idvariable").toString());
-          String nameMF = andParam.get("nameMF").toString();
           String codeMF = andParam.get("codeMF").toString();
-          String paramValueMF = andParam.get("paramValueMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-          String nameVariable = andParam.get("nameVariable").toString();
-          Condition condition = new Condition(idVariable,nameVariable);
-          condition.setMembershipFunction(mf);
-          condition.setValueMF(mf.getNameMF());
-          andMap.put(nameVariable,condition);
+          try(PreparedStatement pstm = PostgreSQLConnection.getConnection().prepareStatement
+              ("select name, value from cvdata.bmstu.linguisticvariables where id = ?")){
+            pstm.setInt(1,idVariable);
+            ResultSet rs2 = pstm.executeQuery();
+            if (rs2.next()){
+              ArrayList<MembershipFunction> mfList = DaoUtils.getMFList(rs2.getString("value"));
+              for(int j =0;j<mfList.size();j++){
+                MembershipFunction m = mfList.get(j);
+                if(m.getCodeMF().equals(codeMF)){
+                  String nameMF = m.getNameMF();
+                  String paramValueMF = m.getParamValueMF();
+
+                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+
+                  String nameVariable = rs2.getString("name");
+                  Condition condition = new Condition(idVariable,nameVariable);
+                  condition.setMembershipFunction(mf);
+                  andMap.put(nameVariable,condition);
+                }
+              }
+            }
+          }
         }
 
         //THEN
@@ -341,14 +411,29 @@ public class DaoUtils {
         for(int i =0;i<THENarray.size();i++){
           JSONObject thenParam =  (JSONObject) THENarray.get(i);
           int idVariable = Integer.valueOf(thenParam.get("idvariable").toString());
-          String nameMF = thenParam.get("nameMF").toString();
           String codeMF = thenParam.get("codeMF").toString();
-          String paramValueMF = thenParam.get("paramValueMF").toString();
-          MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-          String nameVariable = thenParam.get("nameVariable").toString();
-          Condition condition = new Condition(idVariable,nameVariable);
-          condition.setMembershipFunction(mf);
-          thenMap.put(nameVariable,condition);
+          try(PreparedStatement pstm = PostgreSQLConnection.getConnection().prepareStatement
+              ("select name, value from cvdata.bmstu.linguisticvariables where id = ?")){
+            pstm.setInt(1,idVariable);
+            ResultSet rs2 = pstm.executeQuery();
+            if (rs2.next()){
+              ArrayList<MembershipFunction> mfList = DaoUtils.getMFList(rs2.getString("value"));
+              for(int j =0;j<mfList.size();j++){
+                MembershipFunction m = mfList.get(j);
+                if(m.getCodeMF().equals(codeMF)){
+                  String nameMF = m.getNameMF();
+                  String paramValueMF = m.getParamValueMF();
+
+                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
+
+                  String nameVariable = rs2.getString("name");
+                  Condition condition = new Condition(idVariable,nameVariable);
+                  condition.setMembershipFunction(mf);
+                  ifMap.put(nameVariable,condition);
+                }
+              }
+            }
+          }
         }
         rule.setIFConditionMap(ifMap);
         rule.setANDConditionMap(andMap);

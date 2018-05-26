@@ -8,8 +8,6 @@ public class MFType {
   public static double getTriangleMF(ArrayList<MembershipFunction>listMF, Double value,String codeMF){
     MembershipFunction mf = new MembershipFunction();
     double result = 100;
-    double VAL1 = 100;
-    double VAL2 = 100;
     for(MembershipFunction m:listMF){
       String values[] = m.getParamValueMF().split(" ");
       if(m.getCodeMF().equals(codeMF)){
@@ -17,14 +15,10 @@ public class MFType {
         double b = Double.valueOf(values[1]);
         double c = Double.valueOf(values[2]);
         if(value>=a && value<=b ){
-          VAL1 = getValueMFA(a,b,value);
-          result = VAL1;
-          //System.out.println("VAL1: " + VAL1);
+          result = getValueMFA(a,b,value);
         }else{
           if(value>=b && value<=c){
-            VAL2 = getValueMFB(b,c,value);
-            result = VAL2;
-            //System.out.println("VAL2: " + VAL2);
+            result = getValueMFB(b,c,value);
           }else{
             result = 0;
           }
@@ -34,24 +28,49 @@ public class MFType {
     return result;
   }
 
-  public static MembershipFunction getTrapMF(ArrayList<MembershipFunction>listMF, Double value){
+  public static double getTrapMF(ArrayList<MembershipFunction>listMF, Double value,String codeMF){
     MembershipFunction mf = new MembershipFunction();
-    double VAL1 = 0;
-    double VAL2 = 0;
+    double result = 100;
+
     for(MembershipFunction m:listMF){
       String values[] = m.getParamValueMF().split(" ");
+      if(m.getCodeMF().equals(codeMF)){
+        double a = Double.valueOf(values[0]);
+        double b = Double.valueOf(values[1]);
+        double c = Double.valueOf(values[2]);
+        double d = Double.valueOf(values[3]);
+        if(value>=a && value<=b ){
+          result = getValueMFA(a,b,value);
+        }else{
+          if(value>=b && value<=c){
+            result = 1;
+          }else{
+            if(value>=c&&value<=d){
+              result = getValueMFC(c,d,value);
+            }else {
+              result = 0;
+            }
+          }
+        }
+      }
     }
-
-
-    return mf;
+    return result;
   }
 
-  //Получение значение по формуле для треугольной функции
   private static double getValueMFA(double a, double b, double x){
-    return 1-(b-x)/(b-a);
+    if(b==a){
+      return 1-(b-x)/1;
+    }else{
+      return 1-(b-x)/(b-a);
+    }
+
   }
   private static double getValueMFB(double b, double c, double x){
     return 1-(x-b)/(c-b);
   }
 
+  //Получение значение по формуле для треугольной функции
+  private static double getValueMFC(double c, double d, double x){
+    return 1-(x-c)/(d-x);
+  }
 }
