@@ -216,7 +216,7 @@ public class cvController {
     chart.setMinHeight(100);
     chart.setMinWidth(100);
     chart.setCreateSymbols(false);
-    chart.setId("chart"+variableID+ruleID);
+    chart.setId("chart"+variableID+ruleID+mf.getCodeMF());
     chart.setAnimated(false);
 
     //Красная линия
@@ -301,7 +301,6 @@ public class cvController {
 
   private StackPane getOutputAreaChart(MembershipFunction mf, double param, int ruleID, int variableID){
     StackPane stack = new StackPane();
-    String textFieldName = "#textField"+variableID;
     double maxValue = 0;
     Label stLabel = getLabel();
     stLabel.setId("label"+variableID+ ruleID+mf.getCodeMF());
@@ -312,6 +311,7 @@ public class cvController {
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
+
     //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
     System.out.println("Получен массив длины " + value.length + " " + mf.getParamValueMF());
@@ -343,6 +343,7 @@ public class cvController {
         }
         break;
     }
+
     final NumberAxis xAxis;
     if(maxValue <= 1){
       xAxis = new NumberAxis(0,1,0) ;
@@ -358,7 +359,7 @@ public class cvController {
     chart.setMinHeight(100);
     chart.setMinWidth(100);
     chart.setCreateSymbols(false);
-    chart.setId("chart"+variableID+ruleID);
+    chart.setId("chart"+variableID+ruleID+mf.getCodeMF());
     chart.setAnimated(false);
 
     //Красная линия
@@ -393,48 +394,45 @@ public class cvController {
         for(Map.Entry<Integer,Rule>entryR:mapRules.entrySet()){
           Rule rule = entryR.getValue();
           int idRule = rule.getIdRule();
-          Pattern pattern = Pattern.compile("_(.*?)_");
+        }
 
-          double valuesMas[] = new double[listInputVariables.size()];
-          int q = 0;
-          for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
-            System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
-            Matcher matcher = pattern.matcher(entryLabel.getKey());
-            //
-            if (matcher.find())
-            {
-              int id = Integer.valueOf(matcher.group(1));
-              if(id==idRule){
-                valuesMas[q] = entryLabel.getValue();
-                q+=1;
-                System.out.println(matcher.group(1));
-              }
+        double valuesMas[] = new double[listInputVariables.size()];
+        int q = 0;
+        for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
+          System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
+          Pattern pattern = Pattern.compile("_(.*?)_");
+          Matcher matcher = pattern.matcher(entryLabel.getKey());
+
+          if (matcher.find()) {
+            int id = Integer.valueOf(matcher.group(1));
+            if(id==ruleID){
+              valuesMas[q] = entryLabel.getValue();
+              q+=1;
             }
           }
-
-          valueCategory = Aggregation.getAggregationResult(valuesMas);
-          // Расчет степени уверенности
-          Label label = (Label) scene.lookup("#label"+variableID+rule.getIdRule()+mf.getCodeMF());
-          if(label!=null){
-            label.setText(String.valueOf(valueCategory));
-          }
-          System.out.println("ValueCategory " + valueCategory);
         }
-//        if(valueCategory ==0){
-//          rule.setStatus(false);
-//        }else{
-//          rule.setStatus(true);
-//        }
-//        mapRules.put(ruleID,rule);
+        valueCategory = Aggregation.getAggregationResult(valuesMas);
+        System.out.println("valueCategory  " + valueCategory);
 
-//        for (XYChart.Data<Number, Number> data : series1.getData()) {
-//          if(valueCategory>0) {
-//            data.setXValue(valueCategory);
-//          }
-//        }
+        // Расчет степени уверенности
+        Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
+        if(label!=null){
+          label.setText(String.valueOf(valueCategory));
+        }
 
-        //Заливка
+        System.out.println("ValueCategory " + valueCategory);
+
+        if(valueCategory>0) {
+          for (XYChart.Data<Number, Number> data : series1.getData()) {
+            data.setXValue(valueCategory);
+          }
+        }else{
+          for (XYChart.Data<Number, Number> data : series1.getData()) {
+            data.setXValue(0);
+          }
+        }
         series2.getData().clear();
+        //Заливка
         if(valueCategory>=Double.valueOf(value[0]) && valueCategory<=Double.valueOf(value[1])){
           series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
           double y = getY(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
@@ -452,6 +450,16 @@ public class cvController {
             series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
           }
         }
+
+//        if(valueCategory ==0){
+//          rule.setStatus(false);
+//        }else{
+//          rule.setStatus(true);
+//        }
+//        mapRules.put(rule.getIdRule(),rule);
+
+
+
       }
     }));
     timeline.setCycleCount(Animation.INDEFINITE);
