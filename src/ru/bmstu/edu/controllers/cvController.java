@@ -309,7 +309,6 @@ public class cvController {
 
 
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
-    XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
 
     //Кол-во точек
@@ -362,44 +361,16 @@ public class cvController {
     chart.setId("chart"+variableID+ruleID+mf.getCodeMF());
     chart.setAnimated(false);
 
-    //Красная линия
-    series1.getData().add(new XYChart.Data<Number,Number>(param,0));
-    series1.getData().add(new XYChart.Data<Number,Number>(param,1));
-
-    //Заливка
-    if(param>=Double.valueOf(value[0]) && param<=Double.valueOf(value[1])){
-      series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-      double y = getY(param,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-      series2.getData().add(new XYChart.Data<Number,Number>(param,y));
-      double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-      series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-      series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-    }else{
-      if(param>=Double.valueOf(value[1]) && param<=Double.valueOf(value[2])){
-        series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-        double y = getY(param,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-        series2.getData().add(new XYChart.Data(param,y));
-        double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-        series2.getData().add(new XYChart.Data<Number,Number>(x,y));
-        series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-      }
-    }
-
     Timeline timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
         double valueCategory = 0;
 
-        for(Map.Entry<Integer,Rule>entryR:mapRules.entrySet()){
-          Rule rule = entryR.getValue();
-          int idRule = rule.getIdRule();
-        }
-
         double valuesMas[] = new double[listInputVariables.size()];
         int q = 0;
         for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
-          System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
+          //System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
           Pattern pattern = Pattern.compile("_(.*?)_");
           Matcher matcher = pattern.matcher(entryLabel.getKey());
 
@@ -412,6 +383,7 @@ public class cvController {
           }
         }
         valueCategory = Aggregation.getAggregationResult(valuesMas);
+        double XX = getX(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
         System.out.println("valueCategory  " + valueCategory);
 
         // Расчет степени уверенности
@@ -422,29 +394,20 @@ public class cvController {
 
         System.out.println("ValueCategory " + valueCategory);
 
-        if(valueCategory>0) {
-          for (XYChart.Data<Number, Number> data : series1.getData()) {
-            data.setXValue(valueCategory);
-          }
-        }else{
-          for (XYChart.Data<Number, Number> data : series1.getData()) {
-            data.setXValue(0);
-          }
-        }
         series2.getData().clear();
         //Заливка
-        if(valueCategory>=Double.valueOf(value[0]) && valueCategory<=Double.valueOf(value[1])){
+        if(XX>=Double.valueOf(value[0]) && XX<=Double.valueOf(value[1])){
           series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
-          double y = getY(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
-          series2.getData().add(new XYChart.Data<Number,Number>(valueCategory,y));
+          double y = getY(XX,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+          series2.getData().add(new XYChart.Data<Number,Number>(XX,y));
           double x = getX(y,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
           series2.getData().add(new XYChart.Data<Number,Number>(x,y));
           series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
         }else{
-          if(valueCategory>=Double.valueOf(value[1]) && valueCategory<=Double.valueOf(value[2])){
+          if(XX>=Double.valueOf(value[1]) && XX<=Double.valueOf(value[2])){
             series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[2]),0));
-            double y = getY(valueCategory,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
-            series2.getData().add(new XYChart.Data(valueCategory,y));
+            double y = getY(XX,Double.valueOf(value[1]),Double.valueOf(value[2]),1,0);
+            series2.getData().add(new XYChart.Data(XX,y));
             double x = getX(y,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
             series2.getData().add(new XYChart.Data<Number,Number>(x,y));
             series2.getData().add(new XYChart.Data<Number,Number>(Double.valueOf(value[0]),0));
@@ -466,7 +429,7 @@ public class cvController {
     timeline.setAutoReverse(true);
     timeline.play();
 
-    chart.getData().addAll(series,series2,series1);
+    chart.getData().addAll(series,series2);
     stack.getChildren().addAll(chart,stLabel);
     return stack;
   }
