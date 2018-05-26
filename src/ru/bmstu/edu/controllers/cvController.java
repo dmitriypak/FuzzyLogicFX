@@ -426,13 +426,13 @@ public class cvController {
         for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
           Rule outputRule = r.getValue();
           masOutput[z] = outputRule.getValueOutput();
-          System.out.println("Rank " + outputRule.getValueOutput());
+          //System.out.println("Rank " + outputRule.getValueOutput());
           z+=1;
         }
         double accumulationResult = Mamdani.getAccumulationResult(masOutput);
         TextField textField = (TextField) scene.lookup(textFieldName);
         if(textField!=null){
-          System.out.println("Accumulation result " + accumulationResult);
+          //System.out.println("Accumulation result " + accumulationResult);
           textField.setText(String.valueOf(accumulationResult));
         }
 
@@ -448,6 +448,55 @@ public class cvController {
     stack.getChildren().addAll(chart,stLabel);
     return stack;
   }
+
+  private StackPane getTotalOutputAreaChart(){
+    StackPane stack = new StackPane();
+    XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
+
+    final NumberAxis xAxis = new NumberAxis(0,1,0) ;
+    final NumberAxis yAxis = new NumberAxis(0,1,0) ;
+    AreaChart<Number,Number> chart = new AreaChart<Number,Number>(xAxis, yAxis) ;
+    chart.setTitle("");
+    chart.setMaxWidth(200);
+    chart.setMaxHeight(150);
+    chart.setMinHeight(100);
+    chart.setMinWidth(100);
+    chart.setCreateSymbols(false);
+    chart.setId("chartTotalOutput");
+    chart.setAnimated(false);
+
+    //Map<String,Double>
+    Timeline timeline = new Timeline();
+    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+          Rule outputRule = r.getValue();
+
+          double ruleValueOutput = outputRule.getValueOutput();
+          if(ruleValueOutput>0){
+            Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+//            for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+//
+//            }
+            System.out.println("ruleValueOutput " +ruleValueOutput);
+          }
+
+
+        }
+
+      }
+    }));
+    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setAutoReverse(true);
+    timeline.play();
+
+    chart.getData().addAll(series);
+    stack.getChildren().addAll(chart);
+    return stack;
+  }
+
+
 
 
 
@@ -760,9 +809,13 @@ public class cvController {
             }
           }
         }
+        columnIndex = i;
         rowIndex = 0;
       }
 
+      //Построение итогового графика выходных переменных
+      Region outputAreaChart = getTotalOutputAreaChart();
+      root.add(outputAreaChart,columnIndex,mapRules.size()+5);
 
       scrollPane.setContent(root);
       scrollPane.setPannable(true);

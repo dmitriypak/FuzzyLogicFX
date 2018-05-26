@@ -122,7 +122,7 @@ public class EditRuleController {
         comboThenVarName.getSelectionModel().select(m.getKey());
         System.out.println("mapTHEN " + m.getKey());
         Condition condition = m.getValue();
-        selectVarName(m.getKey());
+        selectOutputVarName(m.getKey());
         comboThenMFName.setValue(condition.getMembershipFunction());
       }
 
@@ -155,6 +155,23 @@ public class EditRuleController {
       }
     }
   }
+
+  public void selectOutputVarName(String variableName){
+    LinguisticVariable selectVariable = mapOutputVariables.get(variableName);
+    ObservableList<MembershipFunction>mfNameList = FXCollections.observableArrayList();
+
+    if(selectVariable!=null){
+      ObservableList<MembershipFunction> mfList = FXCollections.observableArrayList(selectVariable.getMfList());
+      for(int i = 0;i<mfList.size();i++){
+        MembershipFunction mf = mfList.get(i);
+        mfNameList.add(mf);
+      }
+      comboThenMFName.setItems(mfNameList);
+    }
+  }
+
+
+
   public void selectVarName(String variableName){
     LinguisticVariable selectVariable = mapInputVariables.get(variableName);
     ObservableList<MembershipFunction>mfNameList = FXCollections.observableArrayList();
@@ -168,6 +185,9 @@ public class EditRuleController {
       comboIFMFName.setItems(mfNameList);
     }
   }
+
+
+
 
   public void selectVarName(ActionEvent actionEvent){
     Object source = actionEvent.getSource();
