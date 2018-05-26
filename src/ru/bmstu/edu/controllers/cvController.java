@@ -423,14 +423,24 @@ public class cvController {
             }
             break;
           case 4:
-            //Заливка 0.75 0.9 1 1
-            series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+            if(Double.valueOf(value[0])==0){
+              //Заливка  0 0 0.1 0.2
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              double y = valueCategory;
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[1]), y));
+              double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+              series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+            }else{
+              //Заливка  0.75 0.9 1 1
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+              double y = getY(XX, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+              series2.getData().add(new XYChart.Data<Number, Number>(XX, y));
+              double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+              series2.getData().add(new XYChart.Data<Number, Number>(x, y));
+              series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+            }
 
-            double y = getY(XX, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
-            series2.getData().add(new XYChart.Data<Number, Number>(XX, y));
-            double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
-            series2.getData().add(new XYChart.Data<Number, Number>(x, y));
-            series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
 
             break;
         }
