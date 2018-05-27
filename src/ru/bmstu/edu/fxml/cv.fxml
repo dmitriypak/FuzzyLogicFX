@@ -14,7 +14,7 @@
           <TableColumn fx:id="colPosition" prefWidth="259.0" text="Желаемая должность" />
           <TableColumn fx:id="colSalary" prefWidth="91.0" text="Размер ЗП" />
             <TableColumn fx:id="colExperience" prefWidth="126.0" text="Опыт работы" />
-            <TableColumn prefWidth="122.0" text="Категория" />
+            <TableColumn fx:id="colCategory" prefWidth="122.0" text="Категория" />
         </columns>
       </TableView>
       <CustomTextField fx:id="txtPositionName" layoutX="14.0" layoutY="79.0" prefHeight="25.0" prefWidth="369.0" text="бухгалтер" />

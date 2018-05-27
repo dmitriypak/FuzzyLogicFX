@@ -55,11 +55,9 @@ public class cvController {
   @FXML
   private TableColumn colSalary;
   @FXML
-  private TableColumn colCity;
-  @FXML
-  private TableColumn colAge;
-  @FXML
   private TableColumn colExperience;
+  @FXML
+  private TableColumn colCategory;
   @FXML
   private TableView tableCV;
   @FXML
@@ -74,16 +72,16 @@ public class cvController {
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private ViewRulesController viewRulesController;
-  private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
-  private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
+//  private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
+//  private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
   private ArrayList<LinguisticVariable> listVariables = DaoUtils.getVariables();
   private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
   private Scene scene;
-  //private ArrayList<Rule> listRules = DaoUtils.getRules();
   private Map<Integer,Rule> mapRules = DaoUtils.getMapRules();
   private Timeline timeline;
   private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
+  private static String totalRank = "";
 
   public cvController() throws ParseException {
   }
@@ -94,6 +92,7 @@ public class cvController {
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
     colSalary.setCellValueFactory(new PropertyValueFactory<CV,Integer>("salary"));
     colExperience.setCellValueFactory(new PropertyValueFactory<CV,String>("experience"));
+    colCategory.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryName"));
 
     tableCV.setOnMouseClicked( event -> {
       if( event.getClickCount() == 2 ) {
@@ -111,6 +110,113 @@ public class cvController {
     }
 
   }
+
+  //Степень уверенности
+  private double getStValue(MembershipFunction mf, double param, LinguisticVariable variable) {
+    double stValue = 0;
+    if(param>0) {
+      stValue = Math.round(MFType.getTriangleMF(variable.getMfList(), param, mf.getCodeMF()) * 100.0) / 100.0;
+    }
+    return stValue;
+  }
+
+
+  private double getRank(CV cv) {
+    double rank = 0;
+    if (cv!=null) {
+
+      for(int i = 0;i<listVariables.size();i++){
+
+        LinguisticVariable linguisticVariable = listVariables.get(i);
+
+        Variable variable1 = Variable.getVariableByName(linguisticVariable.getName());
+
+        //Цикл по правилам
+        for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()){
+          Rule rule = entryRule.getValue();
+          Map<String,Condition> mapIF = rule.getIFConditionMap();
+          Map<String,Condition> mapAND = rule.getANDConditionMap();
+          double param = 0;
+          //Переменная IF
+          for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
+            LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
+            System.out.println("Получена переменная if " + ifVariable.getName());
+            Condition ifCondition = entry.getValue();
+            MembershipFunction ifMF = ifCondition.getMembershipFunction();
+            System.out.println("Получено condition if " + ifMF.getNameMF());
+            Variable variable2 = Variable.getVariableByName(ifVariable.getName());
+
+            if(variable1.equals(variable2)){
+
+              switch (variable2) {
+                case WORK_EXPERIENCE:
+                  double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
+                  rank = stWorkExperience;
+                  System.out.println("stWorkExperience " + stWorkExperience);
+                  break;
+                case SALARY:
+                  break;
+                case POSITION:
+                  //Построение графика
+                  param = 0.5;
+                  break;
+              }
+            }
+          }
+
+          //Переменная AND
+          for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
+            LinguisticVariable andVariable =  mapInputVariables.get(entry.getKey());
+            System.out.println("Получена переменная and " + andVariable.getName());
+            Condition andCondition = entry.getValue();
+            MembershipFunction andMF = andCondition.getMembershipFunction();
+            System.out.println("Получено condition and " + andMF.getNameMF());
+            Variable variable3 = Variable.getVariableByName(andVariable.getName());
+
+            if(variable1.equals(variable3)){
+              switch (variable3) {
+                case WORK_EXPERIENCE:
+                  break;
+                case SALARY:
+                  break;
+                case POSITION:
+                  break;
+              }
+            }
+          }
+        }
+
+        //Цикл по правилам
+        for(Map.Entry<Integer,Rule>entryRulesOutput:mapRules.entrySet()) {
+          Rule rule = entryRulesOutput.getValue();
+          Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
+          int ruleID = rule.getIdRule();
+          //Переменная THEN
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+            LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
+            System.out.println("Получена переменная THEN " + thenVariable.getName());
+            Condition thenCondition = entry.getValue();
+            MembershipFunction thenMF = thenCondition.getMembershipFunction();
+            System.out.println("Получено condition THEN " + thenMF.getNameMF());
+            Variable variable4 = Variable.getVariableByName(thenVariable.getName());
+
+            if(variable1.equals(variable4)){
+              switch (variable4) {
+                case RANK:
+                  break;
+              }
+            }
+          }
+        }
+      }
+    }
+    return rank;
+  }
+
+
+
+
+
   private LineChart getLineChart(MembershipFunction mf){
     NumberAxis xAxis = new NumberAxis() ;
     NumberAxis yAxis = new NumberAxis(0,1,0) ;
@@ -474,7 +580,11 @@ public class cvController {
         TextField textField = (TextField) scene.lookup(textFieldName);
         if(textField!=null){
           //System.out.println("Accumulation result " + accumulationResult);
-          textField.setText(String.valueOf(accumulationResult));
+          String categoryName = getCategoryName(accumulationResult);
+
+          textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
+
+         // totalRank = accumulationResult;
         }
 
 
@@ -605,6 +715,16 @@ public class cvController {
     label.setFont(new Font("Verdana", 12));
     label.setPadding(new Insets(0,0,0,5));
     label.setTextFill(Paint.valueOf(String.valueOf(Color.RED)));
+    return label;
+  }
+
+  private Label getRedLabel(String name){
+    Label label = new Label(name);
+    label.setFont(new Font("Verdana", 16));
+    label.setTextAlignment(TextAlignment.CENTER);
+    label.setTextFill(Paint.valueOf(String.valueOf(Color.RED)));
+    label.setPadding(new Insets(0,0,0,0));
+    label.setMaxWidth(250);
     return label;
   }
 
@@ -805,20 +925,6 @@ public class cvController {
               }
             }
           }
-
-          //Выходные переменные
-
-//          ColumnConstraints columnConstraints = new ColumnConstraints();
-//          columnConstraints.setMinWidth(250);
-//          columnConstraints.setMaxWidth(250);
-//          root.getColumnConstraints().add(columnConstraints);
-
-//          LinguisticVariable linguisticVariable = listOutputVariables.get(0);
-//          int variableID = linguisticVariable.getId();
-//          Variable variable = Variable.getVariableByName(linguisticVariable.getName());
-//          //Имя переменной
-//          Region labelNameVariable = getLabel(linguisticVariable.getName());
-//          root.add(labelNameVariable,listInputVariables.size(),rowIndex);
         }
         if(i==listVariables.size()-1){
           rowIndex = 3;
@@ -853,6 +959,12 @@ public class cvController {
         columnIndex = i;
         rowIndex = 0;
       }
+//      Region label = getRedLabel("");
+//      label.setId("TotalRank");
+//      root.add(label,columnIndex,3);
+
+      //String categoryName = getCategoryName();
+
 
       //Построение итогового графика выходных переменных
 //      Region outputAreaChart = getTotalOutputAreaChart();
@@ -872,6 +984,38 @@ public class cvController {
       viewRulesStage.showAndWait();
     }
   }
+
+  private String getCategoryName(double value){
+    String name = null;
+    ArrayList<LinguisticVariable>listOutputVariables = DaoUtils.getOutputVariables();
+    for(LinguisticVariable linguisticVariable:listOutputVariables){
+      ArrayList<MembershipFunction>mfList = linguisticVariable.getMfList();
+      for(MembershipFunction m:mfList){
+        String values[] = m.getParamValueMF().split(" ");
+        double minValue = 0;
+        double maxValue = 0;
+        switch (values.length){
+          case 3:
+            minValue = Double.valueOf(values[0]);
+            maxValue = Double.valueOf(values[2]);
+            break;
+          case 4:
+            minValue = Double.valueOf(values[0]);
+            maxValue = Double.valueOf(values[3]);
+            break;
+        }
+
+        if(value>=minValue&&value<=maxValue){
+          name = m.getNameMF();
+          return name;
+        }
+      }
+    }
+
+
+    return name;
+  }
+
 
   private ArrayList<LineChart> drawMFLineGraph(LinguisticVariable linguisticVariable) {
     ArrayList<LineChart> listCharts = new ArrayList<>();
@@ -933,6 +1077,7 @@ public class cvController {
         cv.setPositionname(rs.getString("positionname"));
         cv.setSalary(rs.getInt("salary"));
         cv.setExperience(rs.getInt("experience"));
+        //cv.setCategoryName(getRank(cv));
         CVList.add(cv);
       }
       tableCV.setItems(CVList);

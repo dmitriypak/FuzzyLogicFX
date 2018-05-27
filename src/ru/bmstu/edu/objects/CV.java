@@ -1,5 +1,6 @@
 package ru.bmstu.edu.objects;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -30,8 +31,29 @@ public class CV {
   private SimpleStringProperty deleted = new SimpleStringProperty("");
   private SimpleStringProperty fullnessrate = new SimpleStringProperty("");
 
+
+
+
+///////////////
+
   public CV() {
   }
+
+
+  public double getCategoryName() {
+    return categoryName.get();
+  }
+
+  public SimpleDoubleProperty categoryNameProperty() {
+    return categoryName;
+  }
+
+  public void setCategoryName(double categoryName) {
+    this.categoryName.set(categoryName);
+  }
+
+  private SimpleDoubleProperty categoryName = new SimpleDoubleProperty(0);
+
 
   public int getId() {
     return id.get();
