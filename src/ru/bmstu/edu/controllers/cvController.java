@@ -244,6 +244,7 @@ public class cvController {
         switch (value.length) {
           case 3:
             double stValue = Math.round(MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
+            //double stValue = MFType.getTriangleMF(variable.getMfList(),newValue,mf.getCodeMF());
             label.setText(String.valueOf(stValue));
             mapLabelValues.put(nameLabel,stValue);
 
@@ -270,6 +271,7 @@ public class cvController {
             break;
           case 4:
             double stValueT = Math.round(MFType.getTrapMF(variable.getMfList(),newValue,mf.getCodeMF()) * 100.0) / 100.0;
+            //double stValueT =MFType.getTrapMF(variable.getMfList(),newValue,mf.getCodeMF()) ;
             label.setText(String.valueOf(stValueT));
             mapLabelValues.put(nameLabel,stValueT);
 
@@ -406,10 +408,10 @@ public class cvController {
 
         double XX = getX(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
 
-
         Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
         if(label!=null){
           label.setText(String.valueOf(valueCategory));
+
         }
 
         series2.getData().clear();
@@ -458,17 +460,17 @@ public class cvController {
             break;
         }
 
-        double masOutput[] = new double[mapRules.size()];
-        int z = 0;
-        for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
-          Rule outputRule = r.getValue();
-          masOutput[z] = outputRule.getValueOutput();
-          //System.out.println("Rank " + outputRule.getValueOutput());
-          z+=1;
-        }
+//        double masOutput[] = new double[mapRules.size()];
+//        int z = 0;
+//        for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+//          Rule outputRule = r.getValue();
+//          masOutput[z] = outputRule.getValueOutput();
+//          //System.out.println("Rank " + outputRule.getValueOutput());
+//          z+=1;
+//        }
 
 
-        double accumulationResult = Mamdani.getAccumulationResult(masOutput);
+        double accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
         TextField textField = (TextField) scene.lookup(textFieldName);
         if(textField!=null){
           //System.out.println("Accumulation result " + accumulationResult);
@@ -512,14 +514,14 @@ public class cvController {
         for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
           Rule outputRule = r.getValue();
 
-          double ruleValueOutput = outputRule.getValueOutput();
-          if(ruleValueOutput>0){
-            Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
-//            for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
-//
-//            }
-            //System.out.println("ruleValueOutput " +ruleValueOutput);
-          }
+//          double ruleValueOutput = outputRule.getValueOutput();
+//          if(ruleValueOutput>0){
+//            Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+////            for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+////
+////            }
+//            //System.out.println("ruleValueOutput " +ruleValueOutput);
+//          }
 
 
         }
@@ -853,8 +855,8 @@ public class cvController {
       }
 
       //Построение итогового графика выходных переменных
-      Region outputAreaChart = getTotalOutputAreaChart();
-      root.add(outputAreaChart,columnIndex,mapRules.size()+5);
+//      Region outputAreaChart = getTotalOutputAreaChart();
+//      root.add(outputAreaChart,columnIndex,mapRules.size()+5);
 
       scrollPane.setContent(root);
       scrollPane.setPannable(true);
