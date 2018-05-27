@@ -38,7 +38,6 @@ public class Mamdani {
 
       Rule outputRule = r.getValue();
       double x = outputRule.getValueOutput();
-      //System.out.println("X " + x);
       //Правило активное
       if(x>0){
         Map<String,Condition> conditionMap = outputRule.getTHENConditionMap();
@@ -47,7 +46,6 @@ public class Mamdani {
         for(Map.Entry<String,Condition> c:conditionMap.entrySet()) {
           MembershipFunction mf = c.getValue().getMembershipFunction();
           String values[] = mf.getParamValueMF().split(" ");
-//          System.out.println("mfName " + mf.getNameMF());
           switch (values.length){
             case 3:
               minValue = Double.valueOf(values[0]);

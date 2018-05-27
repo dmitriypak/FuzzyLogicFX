@@ -92,7 +92,7 @@ public class cvController {
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
     colSalary.setCellValueFactory(new PropertyValueFactory<CV,Integer>("salary"));
     colExperience.setCellValueFactory(new PropertyValueFactory<CV,String>("experience"));
-    colCategory.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryName"));
+    //colCategory.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryName"));
 
     tableCV.setOnMouseClicked( event -> {
       if( event.getClickCount() == 2 ) {
@@ -140,10 +140,8 @@ public class cvController {
           //Переменная IF
           for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
             LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
-            System.out.println("Получена переменная if " + ifVariable.getName());
             Condition ifCondition = entry.getValue();
             MembershipFunction ifMF = ifCondition.getMembershipFunction();
-            System.out.println("Получено condition if " + ifMF.getNameMF());
             Variable variable2 = Variable.getVariableByName(ifVariable.getName());
 
             if(variable1.equals(variable2)){
@@ -152,7 +150,6 @@ public class cvController {
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
                   rank = stWorkExperience;
-                  System.out.println("stWorkExperience " + stWorkExperience);
                   break;
                 case SALARY:
                   break;
@@ -167,10 +164,8 @@ public class cvController {
           //Переменная AND
           for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
             LinguisticVariable andVariable =  mapInputVariables.get(entry.getKey());
-            System.out.println("Получена переменная and " + andVariable.getName());
             Condition andCondition = entry.getValue();
             MembershipFunction andMF = andCondition.getMembershipFunction();
-            System.out.println("Получено condition and " + andMF.getNameMF());
             Variable variable3 = Variable.getVariableByName(andVariable.getName());
 
             if(variable1.equals(variable3)){
@@ -194,10 +189,8 @@ public class cvController {
           //Переменная THEN
           for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
             LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
-            System.out.println("Получена переменная THEN " + thenVariable.getName());
             Condition thenCondition = entry.getValue();
             MembershipFunction thenMF = thenCondition.getMembershipFunction();
-            System.out.println("Получено condition THEN " + thenMF.getNameMF());
             Variable variable4 = Variable.getVariableByName(thenVariable.getName());
 
             if(variable1.equals(variable4)){
@@ -230,11 +223,8 @@ public class cvController {
     XYChart.Series series = new XYChart.Series();
     String value[] = mf.getParamValueMF().split(" ");
     series.setName(mf.getNameMF());
-    System.out.println("MFname:" + mf.getNameMF());
     for(int i =0;i<value.length;i++){
       series.getData().add(new XYChart.Data(Double.valueOf(value[i]),i%2));
-      //series.getData().add(new XYChart.Data(1,19));
-      System.out.println(value[i]);
     }
     linechart.getData().add(series);
 
@@ -278,9 +268,7 @@ public class cvController {
 
     //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
-    System.out.println("Получен массив длины " + value.length + " " + mf.getParamValueMF());
     series.setName(mf.getNameMF());
-    System.out.println("MFname:" + mf.getNameMF());
     switch (value.length){
       case 3:
         for(int i =0;i<value.length;i++){
@@ -295,7 +283,6 @@ public class cvController {
       case 4:
         for(int i=0;i<value.length;i++){
           double val = Double.valueOf(value[i]);
-          System.out.println("val " + val);
           if(i==0 || i==3){
             series.getData().add(new XYChart.Data<Number,Number>(val,0));
           }else{
@@ -335,7 +322,6 @@ public class cvController {
       public void handle(ActionEvent actionEvent) {
         double newValue = 0;
         for (XYChart.Data<Number, Number> data : series1.getData()) {
-          //System.out.println("textField "+textFieldName);
           TextField textField = (TextField) scene.lookup(textFieldName);
 
           if(textField!=null) {
@@ -436,9 +422,7 @@ public class cvController {
 
     //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
-    System.out.println("Получен массив длины " + value.length + " " + mf.getParamValueMF());
     series.setName(mf.getNameMF());
-    System.out.println("MFname:" + mf.getNameMF());
     switch (value.length){
       case 3:
         for(int i =0;i<value.length;i++){
@@ -453,7 +437,6 @@ public class cvController {
       case 4:
         for(int i=0;i<value.length;i++){
           double val = Double.valueOf(value[i]);
-          System.out.println("val " + val);
           if(i==0 || i==3){
             series.getData().add(new XYChart.Data<Number,Number>(val,0));
           }else{
@@ -493,9 +476,7 @@ public class cvController {
         ArrayList<Double> valueList = new ArrayList<Double>();
         Pattern pattern = Pattern.compile("_(.*?)_");
         for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
-          //System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
-
-          Matcher matcher = pattern.matcher(entryLabel.getKey());
+           Matcher matcher = pattern.matcher(entryLabel.getKey());
           if (matcher.find()) {
             int id = Integer.valueOf(matcher.group(1));
             if(id==ruleID){
@@ -566,20 +547,9 @@ public class cvController {
             break;
         }
 
-//        double masOutput[] = new double[mapRules.size()];
-//        int z = 0;
-//        for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
-//          Rule outputRule = r.getValue();
-//          masOutput[z] = outputRule.getValueOutput();
-//          //System.out.println("Rank " + outputRule.getValueOutput());
-//          z+=1;
-//        }
-
-
         double accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
         TextField textField = (TextField) scene.lookup(textFieldName);
         if(textField!=null){
-          //System.out.println("Accumulation result " + accumulationResult);
           String categoryName = getCategoryName(accumulationResult);
 
           textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
@@ -788,7 +758,6 @@ public class cvController {
 
           for(int l = 0;l<params.length;l++){
             double paramValue = Double.valueOf(params[l]);
-            System.out.println("Params " + paramValue);
             if(paramValue < min){
               min = paramValue;
             }
@@ -837,7 +806,6 @@ public class cvController {
         TextField valueField = new TextField();
         valueField.setFont(new Font("Verdana", 14));
         valueField.setAlignment(Pos.CENTER);
-        System.out.println("id " + variableID);
         valueField.setId("textField"+variableID);
         if(!variable1.equals(Variable.RANK)){
           valueField.textProperty().bind(slider.valueProperty().asString("%.2f"));
@@ -854,18 +822,14 @@ public class cvController {
           rowIndex += 1;
           Rule rule = entryRule.getValue();
           int ruleID = rule.getIdRule();
-
-          System.out.println("idRule: " + rule.getIdRule());
           Map<String,Condition> mapIF = rule.getIFConditionMap();
           Map<String,Condition> mapAND = rule.getANDConditionMap();
           double param = 0;
           //Переменная IF
           for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
             LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
-            System.out.println("Получена переменная if " + ifVariable.getName());
             Condition ifCondition = entry.getValue();
             MembershipFunction ifMF = ifCondition.getMembershipFunction();
-            System.out.println("Получено condition if " + ifMF.getNameMF());
             Variable variable2 = Variable.getVariableByName(ifVariable.getName());
 
             if(variable1.equals(variable2)){
@@ -874,7 +838,6 @@ public class cvController {
                 case WORK_EXPERIENCE:
                   //Построение графика
                   Region chartExperience1 = getAreaChart(ifMF,cv.getExperience(),ruleID , variableID,linguisticVariable);
-                  System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
                   root.add(chartExperience1,i,rowIndex+1);
                   break;
                 case SALARY:
@@ -883,9 +846,6 @@ public class cvController {
                   root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
-                  System.out.println("POSITION " + param);
-                  System.out.println("Определение графика функции принадлежности " + ifMF.getCodeMF());
-                  //Построение графика
                   param = 0.5;
                   Region chartPosition1 = getAreaChart(ifMF,param, ruleID, variableID,linguisticVariable);
                   root.add(chartPosition1,i,rowIndex+1);
@@ -898,10 +858,8 @@ public class cvController {
           //Переменная AND
           for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
             LinguisticVariable andVariable =  mapInputVariables.get(entry.getKey());
-            System.out.println("Получена переменная and " + andVariable.getName());
             Condition andCondition = entry.getValue();
             MembershipFunction andMF = andCondition.getMembershipFunction();
-            System.out.println("Получено condition and " + andMF.getNameMF());
             Variable variable3 = Variable.getVariableByName(andVariable.getName());
 
             if(variable1.equals(variable3)){
@@ -929,7 +887,6 @@ public class cvController {
         if(i==listVariables.size()-1){
           rowIndex = 3;
         }
-        System.out.println("Rowindex " + rowIndex);
         //Цикл по правилам
         for(Map.Entry<Integer,Rule>entryRulesOutput:mapRules.entrySet()) {
           rowIndex += 1;
@@ -939,10 +896,8 @@ public class cvController {
           //Переменная THEN
           for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
             LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
-            System.out.println("Получена переменная THEN " + thenVariable.getName());
             Condition thenCondition = entry.getValue();
             MembershipFunction thenMF = thenCondition.getMembershipFunction();
-            System.out.println("Получено condition THEN " + thenMF.getNameMF());
             Variable variable4 = Variable.getVariableByName(thenVariable.getName());
 
             if(variable1.equals(variable4)){
@@ -1020,8 +975,6 @@ public class cvController {
   private ArrayList<LineChart> drawMFLineGraph(LinguisticVariable linguisticVariable) {
     ArrayList<LineChart> listCharts = new ArrayList<>();
     ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
-    System.out.println("Список MF: " + listMF.size());
-    System.out.println("Переменная: " + linguisticVariable.getName());
 
     if(listMF.size()>0){
       for(MembershipFunction mf:listMF){
@@ -1033,25 +986,6 @@ public class cvController {
     return listCharts;
   }
 
-
-
-//  private ArrayList<AreaChart> drawMFAreaGraph(LinguisticVariable linguisticVariable, double param) {
-//    ArrayList<AreaChart> listCharts = new ArrayList<>();
-//    ArrayList<MembershipFunction> listMF = linguisticVariable.getMfList();
-//    System.out.println("Список MF: " + listMF.size());
-//    System.out.println("Переменная: " + linguisticVariable.getName());
-//
-//    if(listMF.size()>0){
-//      for(MembershipFunction mf:listMF){
-//        //Определение принадлежности
-//        String nameVariable = linguisticVariable.getName();
-//        AreaChart chart = getAreaChart(mf,param,linguisticVariable.getId());
-//        listCharts.add(chart);
-//      }
-//
-//    }
-//    return listCharts;
-//  }
   private void fillData(){
     CVList.clear();
     StringBuilder query = new StringBuilder("select id, positionname, salary, experience from cvdata.bmstu.CV");

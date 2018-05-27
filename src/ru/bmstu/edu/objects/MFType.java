@@ -45,7 +45,6 @@ public class MFType {
           }else{
             if(value>=c&&value<=d){
               result = getValueMFB(c,d,value);
-              //System.out.println("C " + result + "/" + c +"/" + d + "/" + value);
             }else {
               result = 0;
             }

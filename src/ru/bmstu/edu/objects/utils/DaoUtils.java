@@ -30,27 +30,17 @@ public class DaoUtils {
       Object obj = parser.parse(value);
 
       JSONObject jsonObject = (JSONObject) obj;
-      System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
-      String nameMF = (String) jsonObject.get("Variable");
-      System.out.println(nameMF);
+      //System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
+      //String nameMF = (String) jsonObject.get("Variable");
       JSONArray mf = (JSONArray) jsonObject.get("MFParams");
       for(int i = 0;i<mf.size();i++){
         JSONObject mfParamName = (JSONObject) mf.get(i);
         String mfParam = mfParamName.get("MFParamName").toString();
-        System.out.println(mfParam);
         String mfParamValue =  mfParamName.get("MFParamValue").toString();
-        System.out.println(mfParamValue);
         String mfCode =  mfParamName.get("MFCode").toString();
-        System.out.println(mfCode);
         MembershipFunction membershipFunction = new MembershipFunction(mfParam,mfCode,mfParamValue);
         list.add(membershipFunction);
       }
-//      Iterator<JSONArray> iterator = mf.iterator();
-//      while (iterator.hasNext()) {
-//        System.out.println(iterator.next());
-//
-//
-//      }
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -513,7 +503,7 @@ public class DaoUtils {
         System.out.println("Парсинг JSON: " + jsonObject.toJSONString());
 
         JSONArray array = (JSONArray) jsonObject.get("values");
-        System.out.println("values: " + array);
+        //System.out.println("values: " + array);
         for(int i =0;i<array.size();i++){
           JSONObject param =  (JSONObject) array.get(i);
           String idVariable = param.get("idvariable").toString();
