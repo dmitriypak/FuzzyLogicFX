@@ -6,7 +6,6 @@ public class MFType {
 
   //Определение принадлежности
   public static double getTriangleMF(ArrayList<MembershipFunction>listMF, Double value,String codeMF){
-    MembershipFunction mf = new MembershipFunction();
     double result = 100;
     for(MembershipFunction m:listMF){
       String values[] = m.getParamValueMF().split(" ");
@@ -29,7 +28,6 @@ public class MFType {
   }
 
   public static double getTrapMF(ArrayList<MembershipFunction>listMF, Double value,String codeMF){
-    MembershipFunction mf = new MembershipFunction();
     double result = 100;
 
     for(MembershipFunction m:listMF){
@@ -46,7 +44,8 @@ public class MFType {
             result = 1;
           }else{
             if(value>=c&&value<=d){
-              result = getValueMFC(c,d,value);
+              result = getValueMFB(c,d,value);
+              //System.out.println("C " + result + "/" + c +"/" + d + "/" + value);
             }else {
               result = 0;
             }
@@ -69,8 +68,10 @@ public class MFType {
     return 1-(x-b)/(c-b);
   }
 
-  //Получение значение по формуле для треугольной функции
+
   private static double getValueMFC(double c, double d, double x){
+
     return 1-(x-c)/(d-x);
+
   }
 }

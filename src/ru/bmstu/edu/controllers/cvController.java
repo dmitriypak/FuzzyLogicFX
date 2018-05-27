@@ -382,22 +382,22 @@ public class cvController {
       public void handle(ActionEvent actionEvent) {
         double valueCategory = 0;
 
-        double valuesMas[] = new double[listInputVariables.size()];
-        int q = 0;
+        ArrayList<Double> valueList = new ArrayList<Double>();
+        Pattern pattern = Pattern.compile("_(.*?)_");
         for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
           //System.out.println("Label " + entryLabel.getKey() + "/" + entryLabel.getValue());
-          Pattern pattern = Pattern.compile("_(.*?)_");
-          Matcher matcher = pattern.matcher(entryLabel.getKey());
 
+          Matcher matcher = pattern.matcher(entryLabel.getKey());
           if (matcher.find()) {
             int id = Integer.valueOf(matcher.group(1));
             if(id==ruleID){
-              valuesMas[q] = entryLabel.getValue();
-              q+=1;
+              valueList.add(entryLabel.getValue());
             }
           }
         }
-        valueCategory = Mamdani.getAggregationResult(valuesMas);
+
+        // Расчет степени уверенности
+        valueCategory = Mamdani.getAggregationResult(valueList);
         Rule rule = mapRules.get(ruleID);
         if(rule!=null){
           rule.setValueOutput(valueCategory);
@@ -406,7 +406,7 @@ public class cvController {
 
         double XX = getX(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
 
-        // Расчет степени уверенности
+
         Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
         if(label!=null){
           label.setText(String.valueOf(valueCategory));
@@ -466,6 +466,8 @@ public class cvController {
           //System.out.println("Rank " + outputRule.getValueOutput());
           z+=1;
         }
+
+
         double accumulationResult = Mamdani.getAccumulationResult(masOutput);
         TextField textField = (TextField) scene.lookup(textFieldName);
         if(textField!=null){
@@ -908,12 +910,12 @@ public class cvController {
     CVList.clear();
     StringBuilder query = new StringBuilder("select id, positionname, salary, experience from cvdata.bmstu.CV");
     StringBuilder where = new StringBuilder("");
-    if(!txtPositionName.getText().isEmpty()){
-      if(where.toString().isEmpty()){
-        where.append(" where ");
-      }
-      where.append(" positionname like '%"+ txtPositionName.getText()+"%'");
+    if(txtPositionName.getText().isEmpty()) return;
+    if(where.toString().isEmpty()){
+      where.append(" where ");
     }
+    where.append(" positionname like '%"+ txtPositionName.getText()+"%'");
+
     if(!where.toString().isEmpty()){
       query.append(where.toString());
     }
