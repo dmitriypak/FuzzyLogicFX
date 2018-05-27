@@ -429,7 +429,7 @@ public class DaoUtils {
                   String nameVariable = rs2.getString("name");
                   Condition condition = new Condition(idVariable,nameVariable);
                   condition.setMembershipFunction(mf);
-                  ifMap.put(nameVariable,condition);
+                  thenMap.put(nameVariable,condition);
                 }
               }
             }

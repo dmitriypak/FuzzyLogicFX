@@ -58,7 +58,6 @@ public class EditRuleController {
   //Получение карты правил
   LinkedHashMap<String,LinguisticVariable>mapInputVariables = DaoUtils.getMapInputVariables();
   LinkedHashMap<String,LinguisticVariable>mapOutputVariables = DaoUtils.getMapOutputVariables();
-  //Condition condition = new Condition();
   @FXML
   private void initialize(){
     colVariableName.setCellValueFactory(new PropertyValueFactory<Condition,String>("nameVariable"));
@@ -111,7 +110,9 @@ public class EditRuleController {
       for(Map.Entry<String, Condition> m:mapAND.entrySet()){
         System.out.println("mapAND " + m.getKey());
         Condition condition = m.getValue();
+        MembershipFunction mf = condition.getMembershipFunction();
         System.out.println("CodeMF " + m.getValue().getMembershipFunction().getCodeMF());
+        condition.setValueMF(mf.getNameMF());
         conditionList.add(condition);
       }
       tableAnd.setItems(conditionList);
@@ -321,8 +322,6 @@ public class EditRuleController {
     }else{
       DaoUtils.updateRule(rule,idVariableIF,rule.getIdRule());
     }
-
-
     System.out.println(obj.toString());
     btnCancel.fire();
   }

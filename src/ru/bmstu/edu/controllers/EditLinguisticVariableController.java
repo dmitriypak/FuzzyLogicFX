@@ -80,10 +80,11 @@ public class EditLinguisticVariableController{
     tableMF.setOnMouseClicked( event -> {
       if( event.getClickCount() == 1 ) {
         MembershipFunction mf = (MembershipFunction)tableMF.getSelectionModel().getSelectedItem();
-        txtParamMF.setText(mf.getParamValueMF());
-        txtNameMF.setText(mf.getNameMF());
-        comboCode.setValue(mf.getmFname());
-
+        if(mf!=null){
+          txtParamMF.setText(mf.getParamValueMF());
+          txtNameMF.setText(mf.getNameMF());
+          comboCode.setValue(mf.getmFname());
+        }
       }});
 
 //    try {

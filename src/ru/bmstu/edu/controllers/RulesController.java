@@ -72,7 +72,6 @@ public class RulesController {
   }
 
   private void fillData() throws ParseException {
-    StringBuilder stringBuilder = new StringBuilder();
     rulesList = FXCollections.observableArrayList(DaoUtils.getRules());
     StringBuilder builder = new StringBuilder();
     if(rulesList.size()>0){
