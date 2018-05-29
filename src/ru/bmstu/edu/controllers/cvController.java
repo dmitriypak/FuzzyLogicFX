@@ -34,6 +34,7 @@ import org.controlsfx.control.textfield.CustomTextField;
 import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.*;
+import ru.bmstu.edu.objects.enums.MFname;
 import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.fuzzy.Mamdani;
 import ru.bmstu.edu.objects.utils.DaoUtils;
@@ -79,11 +80,28 @@ public class cvController {
   private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
   private Scene scene;
-  private Map<Integer,Rule> mapRules = DaoUtils.getMapRules();
+  private static Map<Integer,Rule> mapRules;
+
+  static {
+    try {
+      mapRules = DaoUtils.getMapRules();
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+  }
+
   private Timeline timeline;
   private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
   private static String totalRank = "";
   private static List<MembershipFunction> mfList;
+  private static XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
+  private static XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
+  private static XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
+  private static XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
+  private static XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
+  private static XYChart.Series<Number,Number> seriesOutput6 = new XYChart.Series<Number,Number>();
+
+
 
   public cvController() throws ParseException {
   }
@@ -387,12 +405,8 @@ public class cvController {
               series2.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
             }
 
-
             break;
         }
-
-
-
       }
     }));
     timeline.setCycleCount(Animation.INDEFINITE);
@@ -572,9 +586,10 @@ public class cvController {
     return stack;
   }
 
+//Итоговый график
+
   private StackPane getTotalOutputAreaChart(){
     StackPane stack = new StackPane();
-    XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
 
     Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
     for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
@@ -594,7 +609,9 @@ public class cvController {
 
     final NumberAxis xAxis = new NumberAxis(0,1,0) ;
     final NumberAxis yAxis = new NumberAxis(0,1,0) ;
+
     AreaChart<Number,Number> chart = new AreaChart<Number,Number>(xAxis, yAxis) ;
+
     chart.setTitle("");
     chart.setMaxWidth(200);
     chart.setMaxHeight(150);
@@ -604,11 +621,21 @@ public class cvController {
     chart.setId("chartTotalOutput");
     chart.setAnimated(false);
 
+
     //Map<String,Double>
     Timeline timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
+        seriesOutput1.getData().clear();
+        seriesOutput2.getData().clear();
+        seriesOutput3.getData().clear();
+        seriesOutput4.getData().clear();
+        seriesOutput5.getData().clear();
+        seriesOutput6.getData().clear();
+        for(int i = 0;i<mfList.size();i++){
+          mapGraph.put(mfList.get(i),0.0);
+        }
         for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
           Rule outputRule = r.getValue();
 
@@ -619,12 +646,11 @@ public class cvController {
             for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
               Condition condition = entry.getValue();
               MembershipFunction mfOut = condition.getMembershipFunction();
-
+              //Проверка на большее значение
               for(int i = 0;i<mfList.size();i++){
                 MembershipFunction m = mfList.get(i);
                 if(mfOut.getCodeMF().equals(m.getCodeMF())){
                   Double val = mapGraph.get(m);
-
                   if(val<ruleValueOutput){
                     mapGraph.put(m,ruleValueOutput);
                   }
@@ -636,7 +662,46 @@ public class cvController {
         }
 
         for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
-          //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue());
+          String value[] = m.getKey().getParamValueMF().split(" ");
+          System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
+
+          double valueCategory = m.getValue();
+          String mfCode = m.getKey().getCodeMF();
+          MFname mFname = MFname.getMFnameByCode(mfCode);
+          System.out.println("MFCode " + mfCode );
+          switch (mFname){
+            case PLS:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput1,value,valueCategory);
+              }
+              break;
+            case PS:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput2,value,valueCategory);
+              }
+              break;
+            case PLM:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput3,value,valueCategory);
+              }
+              break;
+            case PM:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput4,value,valueCategory);
+              }
+              break;
+            case PLB:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput5,value,valueCategory);
+              }
+              break;
+            case PB:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput6,value,valueCategory);
+              }
+              break;
+          }
+
         }
 
       }
@@ -644,13 +709,63 @@ public class cvController {
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.setAutoReverse(true);
     timeline.play();
-
-    chart.getData().addAll(series);
+    chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3,seriesOutput4,seriesOutput5,seriesOutput6);
     stack.getChildren().addAll(chart);
     return stack;
   }
 
+  private void getDataSeries(XYChart.Series<Number,Number> series, String value[], Double valueCategory){
 
+    double XX = getX(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
+    switch (value.length){
+      case 3:
+        //Заливка
+        if (XX >= Double.valueOf(value[0]) && XX <= Double.valueOf(value[1])) {
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+          double y = getY(XX, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+          series.getData().add(new XYChart.Data<Number, Number>(XX, y));
+          double x = getX(y, Double.valueOf(value[1]), Double.valueOf(value[2]), 1, 0);
+          series.getData().add(new XYChart.Data<Number, Number>(x, y));
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[2]), 0));
+        } else {
+          if (XX >= Double.valueOf(value[1]) && XX <= Double.valueOf(value[2])) {
+            series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[2]), 0));
+            double y = getY(XX, Double.valueOf(value[1]), Double.valueOf(value[2]), 1, 0);
+            series.getData().add(new XYChart.Data(XX, y));
+            double x = getX(y, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+            series.getData().add(new XYChart.Data<Number, Number>(x, y));
+            series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+          }
+        }
+
+        break;
+      case 4:
+
+        if(Double.valueOf(value[0])==0){
+          //Заливка  0 0 0.1 0.2
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+          double y = valueCategory;
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[1]), y));
+          double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+          series.getData().add(new XYChart.Data<Number, Number>(x, y));
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+        }else{
+          //Заливка  0.75 0.9 1 1
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[0]), 0));
+          double y = getY(XX, Double.valueOf(value[0]), Double.valueOf(value[1]), 0, 1);
+          series.getData().add(new XYChart.Data<Number, Number>(XX, y));
+          double x = getX(y, Double.valueOf(value[2]), Double.valueOf(value[3]), 1, 0);
+          series.getData().add(new XYChart.Data<Number, Number>(x, y));
+          series.getData().add(new XYChart.Data<Number, Number>(Double.valueOf(value[3]), 0));
+        }
+
+        break;
+
+    }
+
+
+
+  }
 
 
 
