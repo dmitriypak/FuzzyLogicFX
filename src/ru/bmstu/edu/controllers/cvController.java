@@ -44,6 +44,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,6 +83,7 @@ public class cvController {
   private Timeline timeline;
   private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
   private static String totalRank = "";
+  private static List<MembershipFunction> mfList;
 
   public cvController() throws ParseException {
   }
@@ -92,7 +94,7 @@ public class cvController {
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
     colSalary.setCellValueFactory(new PropertyValueFactory<CV,Integer>("salary"));
     colExperience.setCellValueFactory(new PropertyValueFactory<CV,String>("experience"));
-    //colCategory.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryName"));
+    colCategory.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryName"));
 
     tableCV.setOnMouseClicked( event -> {
       if( event.getClickCount() == 2 ) {
@@ -547,6 +549,7 @@ public class cvController {
             break;
         }
 
+        //Вывод COG
         double accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
         TextField textField = (TextField) scene.lookup(textFieldName);
         if(textField!=null){
@@ -554,7 +557,6 @@ public class cvController {
 
           textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
 
-         // totalRank = accumulationResult;
         }
 
 
@@ -573,6 +575,22 @@ public class cvController {
   private StackPane getTotalOutputAreaChart(){
     StackPane stack = new StackPane();
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
+
+    Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
+    for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
+      LinguisticVariable variable =  mapOutputVariables.get(entry.getKey());
+      Variable var= Variable.getVariableByName(variable.getName());
+      switch (var) {
+        case RANK:
+        mfList = variable.getMfList();
+        break;
+      }
+    }
+
+    for(int i = 0;i<mfList.size();i++){
+      mapGraph.put(mfList.get(i),0.0);
+    }
+
 
     final NumberAxis xAxis = new NumberAxis(0,1,0) ;
     final NumberAxis yAxis = new NumberAxis(0,1,0) ;
@@ -594,16 +612,31 @@ public class cvController {
         for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
           Rule outputRule = r.getValue();
 
-//          double ruleValueOutput = outputRule.getValueOutput();
-//          if(ruleValueOutput>0){
-//            Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
-////            for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
-////
-////            }
-//            //System.out.println("ruleValueOutput " +ruleValueOutput);
-//          }
+          double ruleValueOutput = outputRule.getValueOutput();
+          if(ruleValueOutput>0){
+            Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
 
+            for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+              Condition condition = entry.getValue();
+              MembershipFunction mfOut = condition.getMembershipFunction();
 
+              for(int i = 0;i<mfList.size();i++){
+                MembershipFunction m = mfList.get(i);
+                if(mfOut.getCodeMF().equals(m.getCodeMF())){
+                  Double val = mapGraph.get(m);
+
+                  if(val<ruleValueOutput){
+                    mapGraph.put(m,ruleValueOutput);
+                  }
+                }
+              }
+            }
+          }
+
+        }
+
+        for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
+          //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue());
         }
 
       }
@@ -922,8 +955,8 @@ public class cvController {
 
 
       //Построение итогового графика выходных переменных
-//      Region outputAreaChart = getTotalOutputAreaChart();
-//      root.add(outputAreaChart,columnIndex,mapRules.size()+5);
+      Region outputAreaChart = getTotalOutputAreaChart();
+      root.add(outputAreaChart,columnIndex,mapRules.size()+5);
 
       scrollPane.setContent(root);
       scrollPane.setPannable(true);
