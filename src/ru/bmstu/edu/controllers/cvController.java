@@ -81,7 +81,7 @@ public class cvController {
   private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
   private Scene scene;
   private static Map<Integer,Rule> mapRules;
-
+  private double accumulationResult;
   static {
     try {
       mapRules = DaoUtils.getMapRules();
@@ -94,12 +94,12 @@ public class cvController {
   private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
   private static String totalRank = "";
   private static List<MembershipFunction> mfList;
-  private static XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
-  private static XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
-  private static XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
-  private static XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
-  private static XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
-  private static XYChart.Series<Number,Number> seriesOutput6 = new XYChart.Series<Number,Number>();
+//  private static XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
+//  private static XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
+//  private static XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
+//  private static XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
+//  private static XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
+//  private static XYChart.Series<Number,Number> seriesOutput6 = new XYChart.Series<Number,Number>();
 
 
 
@@ -435,6 +435,8 @@ public class cvController {
 
     XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series0 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
 
     //Кол-во точек
     String value[] = mf.getParamValueMF().split(" ");
@@ -564,8 +566,9 @@ public class cvController {
         }
 
         //Вывод COG
-        double accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
+        accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
         TextField textField = (TextField) scene.lookup(textFieldName);
+
         if(textField!=null){
           String categoryName = getCategoryName(accumulationResult);
 
@@ -581,7 +584,7 @@ public class cvController {
     timeline.setAutoReverse(true);
     timeline.play();
 
-    chart.getData().addAll(series,series2);
+    chart.getData().addAll(series,series0,series1,series2);
     stack.getChildren().addAll(chart,stLabel);
     return stack;
   }
@@ -622,17 +625,47 @@ public class cvController {
     chart.setAnimated(false);
 
 
+
+    XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
+    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+
+    XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
+    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+
+
+    //Красная линия
+    XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
+    seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,0));
+    seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,1));
+
+    XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> seriesOutput6 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> seriesOutput7 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> seriesOutput8 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> seriesOutput9 = new XYChart.Series<Number,Number>();
+
+
+
     //Map<String,Double>
     Timeline timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
-        seriesOutput1.getData().clear();
-        seriesOutput2.getData().clear();
-        seriesOutput3.getData().clear();
         seriesOutput4.getData().clear();
         seriesOutput5.getData().clear();
         seriesOutput6.getData().clear();
+        seriesOutput7.getData().clear();
+        seriesOutput8.getData().clear();
+        seriesOutput9.getData().clear();
+        for (XYChart.Data<Number, Number> data : seriesOutput3.getData()) {
+            data.setXValue(accumulationResult);
+        }
+
         for(int i = 0;i<mfList.size();i++){
           mapGraph.put(mfList.get(i),0.0);
         }
@@ -658,46 +691,46 @@ public class cvController {
               }
             }
           }
-
         }
 
         for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
           String value[] = m.getKey().getParamValueMF().split(" ");
-          System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
+          //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
 
           double valueCategory = m.getValue();
           String mfCode = m.getKey().getCodeMF();
           MFname mFname = MFname.getMFnameByCode(mfCode);
-          System.out.println("MFCode " + mfCode );
+          //System.out.println("MFCode " + mfCode );
           switch (mFname){
             case PLS:
-              if(valueCategory>0){
-                getDataSeries(seriesOutput1,value,valueCategory);
-              }
-              break;
-            case PS:
-              if(valueCategory>0){
-                getDataSeries(seriesOutput2,value,valueCategory);
-              }
-              break;
-            case PLM:
-              if(valueCategory>0){
-                getDataSeries(seriesOutput3,value,valueCategory);
-              }
-              break;
-            case PM:
               if(valueCategory>0){
                 getDataSeries(seriesOutput4,value,valueCategory);
               }
               break;
-            case PLB:
+            case PS:
               if(valueCategory>0){
                 getDataSeries(seriesOutput5,value,valueCategory);
               }
               break;
-            case PB:
+            case PLM:
               if(valueCategory>0){
                 getDataSeries(seriesOutput6,value,valueCategory);
+              }
+              break;
+            case PM:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput7,value,valueCategory);
+              }
+              break;
+            case PLB:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput8,value,valueCategory);
+              }
+              break;
+            case PB:
+              if(valueCategory>0){
+                getDataSeries(seriesOutput9,value,valueCategory);
+
               }
               break;
           }
@@ -709,7 +742,8 @@ public class cvController {
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.setAutoReverse(true);
     timeline.play();
-    chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3,seriesOutput4,seriesOutput5,seriesOutput6);
+    chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3,
+         seriesOutput9,seriesOutput8,seriesOutput7,seriesOutput6,seriesOutput5,seriesOutput4);
     stack.getChildren().addAll(chart);
     return stack;
   }
@@ -1186,6 +1220,10 @@ public class cvController {
         viewRulesController.setCV((CV) tableCV.getSelectionModel().getSelectedItem());
         //viewRulesController.setStage((Stage) nodesource.getScene().getWindow());
         showDialog(cv);
+        AreaChart chart = (AreaChart) scene.lookup("#chartTotalOutput");
+        if(chart!=null){
+          chart.getData().clear();
+        }
         break;
 
       case "btnStop":
