@@ -132,6 +132,10 @@
     -fx-alignment: center;
 }
 
+#colCategory{
+    -fx-alignment: center;
+}
+
 #btnLinguisticVariables{
     -fx-background-image: url("../../resources/images/Candlestickchart.png");
     -fx-background-size: stretch;

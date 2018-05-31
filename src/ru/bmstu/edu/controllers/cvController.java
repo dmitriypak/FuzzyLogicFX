@@ -137,7 +137,6 @@ public class cvController {
   private double getRank(CV cv) {
     double rank = 0;
     if (cv!=null) {
-
       for(int i = 0;i<listVariables.size();i++){
 
         LinguisticVariable linguisticVariable = listVariables.get(i);
@@ -201,40 +200,41 @@ public class cvController {
               }
             }
           }
+        }
+      }
 
 
-          double valueCategory = 0;
+      //Цикл по правилам
+      for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()) {
+        Rule rule = entryRule.getValue();
+        int ruleID = rule.getIdRule();
+        double valueCategory = 0;
 
-          ArrayList<Double> valueList = new ArrayList<Double>();
-          Pattern pattern = Pattern.compile("_(.*?)_");
-          for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
-            Matcher matcher = pattern.matcher(entryLabel.getKey());
-            if (matcher.find()) {
-              int id = Integer.valueOf(matcher.group(1));
-              if(id==ruleID){
-                valueList.add(entryLabel.getValue());
-              }
+        ArrayList<Double> valueList = new ArrayList<Double>();
+        Pattern pattern = Pattern.compile("_(.*?)_");
+        for (Map.Entry<String, Double> entryLabel : mapLabelValues.entrySet()) {
+          Matcher matcher = pattern.matcher(entryLabel.getKey());
+          if (matcher.find()) {
+            int id = Integer.valueOf(matcher.group(1));
+            if (id == ruleID) {
+              valueList.add(entryLabel.getValue());
             }
           }
-
-          // Расчет степени уверенности
-          valueCategory = Mamdani.getAggregationResult(valueList);
-          //Rule ruleOutput = mapRules.get(ruleID);
-          if(rule!=null){
-            rule.setValueOutput(valueCategory);
-            mapRules.put(ruleID,rule);
-          }
-
-
-          //Вывод COG
-          rank = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
-
-
-
         }
 
+        // Расчет степени уверенности
+        valueCategory = Mamdani.getAggregationResult(valueList);
+        //Rule ruleOutput = mapRules.get(ruleID);
+        if (rule != null) {
+          rule.setValueOutput(valueCategory);
+          mapRules.put(ruleID, rule);
+        }
+
+        //Вывод COG
+        rank = Math.round(Mamdani.getCenterOfGravityResult(mapRules) * 100.0) / 100.0;
 
       }
+
     }
     return rank;
   }
