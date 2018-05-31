@@ -94,13 +94,6 @@ public class cvController {
   private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
   private static String totalRank = "";
   private static List<MembershipFunction> mfList;
-//  private static XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
-//  private static XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
-//  private static XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
-//  private static XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
-//  private static XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
-//  private static XYChart.Series<Number,Number> seriesOutput6 = new XYChart.Series<Number,Number>();
-
 
 
   public cvController() throws ParseException {
@@ -148,12 +141,14 @@ public class cvController {
       for(int i = 0;i<listVariables.size();i++){
 
         LinguisticVariable linguisticVariable = listVariables.get(i);
+        int variableID = linguisticVariable.getId();
 
         Variable variable1 = Variable.getVariableByName(linguisticVariable.getName());
 
         //Цикл по правилам
         for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()){
           Rule rule = entryRule.getValue();
+          int ruleID = rule.getIdRule();
           Map<String,Condition> mapIF = rule.getIFConditionMap();
           Map<String,Condition> mapAND = rule.getANDConditionMap();
           double param = 0;
@@ -165,17 +160,18 @@ public class cvController {
             Variable variable2 = Variable.getVariableByName(ifVariable.getName());
 
             if(variable1.equals(variable2)){
-
               switch (variable2) {
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
-                  rank = stWorkExperience;
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stWorkExperience);
                   break;
                 case SALARY:
+                  double stSalary = getStValue(ifMF,cv.getSalary(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
-                  //Построение графика
                   param = 0.5;
+                  double stPosition = getStValue(ifMF,param,linguisticVariable);
                   break;
               }
             }
@@ -191,36 +187,53 @@ public class cvController {
             if(variable1.equals(variable3)){
               switch (variable3) {
                 case WORK_EXPERIENCE:
+                  double stWorkExperience = getStValue(andMF,cv.getExperience(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stWorkExperience);
                   break;
                 case SALARY:
+                  double stSalary = getStValue(andMF,cv.getSalary(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
+                  param = 0.5;
+                  double stPosition = getStValue(andMF,param,linguisticVariable);
                   break;
               }
             }
           }
-        }
 
-        //Цикл по правилам
-        for(Map.Entry<Integer,Rule>entryRulesOutput:mapRules.entrySet()) {
-          Rule rule = entryRulesOutput.getValue();
-          Map<String,Condition> mapTHEN = rule.getTHENConditionMap();
-          int ruleID = rule.getIdRule();
-          //Переменная THEN
-          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
-            LinguisticVariable thenVariable =  mapOutputVariables.get(entry.getKey());
-            Condition thenCondition = entry.getValue();
-            MembershipFunction thenMF = thenCondition.getMembershipFunction();
-            Variable variable4 = Variable.getVariableByName(thenVariable.getName());
 
-            if(variable1.equals(variable4)){
-              switch (variable4) {
-                case RANK:
-                  break;
+          double valueCategory = 0;
+
+          ArrayList<Double> valueList = new ArrayList<Double>();
+          Pattern pattern = Pattern.compile("_(.*?)_");
+          for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
+            Matcher matcher = pattern.matcher(entryLabel.getKey());
+            if (matcher.find()) {
+              int id = Integer.valueOf(matcher.group(1));
+              if(id==ruleID){
+                valueList.add(entryLabel.getValue());
               }
             }
           }
+
+          // Расчет степени уверенности
+          valueCategory = Mamdani.getAggregationResult(valueList);
+          //Rule ruleOutput = mapRules.get(ruleID);
+          if(rule!=null){
+            rule.setValueOutput(valueCategory);
+            mapRules.put(ruleID,rule);
+          }
+
+
+          //Вывод COG
+          rank = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
+
+
+
         }
+
+
       }
     }
     return rank;
@@ -624,17 +637,11 @@ public class cvController {
     chart.setId("chartTotalOutput");
     chart.setAnimated(false);
 
-
-
     XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
-    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
-    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
-    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+    seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0,0));
 
     XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
-    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
-    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
-    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0.1, 0.1));
+    seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0,0));
 
 
     //Красная линия
@@ -656,6 +663,7 @@ public class cvController {
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
+
         seriesOutput4.getData().clear();
         seriesOutput5.getData().clear();
         seriesOutput6.getData().clear();
@@ -665,6 +673,13 @@ public class cvController {
         for (XYChart.Data<Number, Number> data : seriesOutput3.getData()) {
             data.setXValue(accumulationResult);
         }
+        for (XYChart.Data<Number, Number> data : seriesOutput2.getData()) {
+          data.setXValue(0.1);
+        }
+        for (XYChart.Data<Number, Number> data : seriesOutput1.getData()) {
+          data.setXValue(0.1);
+        }
+
 
         for(int i = 0;i<mfList.size();i++){
           mapGraph.put(mfList.get(i),0.0);
@@ -742,8 +757,13 @@ public class cvController {
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.setAutoReverse(true);
     timeline.play();
-    chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3,
-         seriesOutput9,seriesOutput8,seriesOutput7,seriesOutput6,seriesOutput5,seriesOutput4);
+    chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
+    chart.getData().addAll(seriesOutput4,seriesOutput5,seriesOutput6,seriesOutput7,seriesOutput8,seriesOutput9);
+    //chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
+
+
+
+        // seriesOutput9,seriesOutput8,seriesOutput7,seriesOutput6,seriesOutput5,seriesOutput4);
     stack.getChildren().addAll(chart);
     return stack;
   }
@@ -1193,7 +1213,7 @@ public class cvController {
         cv.setPositionname(rs.getString("positionname"));
         cv.setSalary(rs.getInt("salary"));
         cv.setExperience(rs.getInt("experience"));
-        //cv.setCategoryName(getRank(cv));
+        cv.setCategoryName(getRank(cv));
         CVList.add(cv);
       }
       tableCV.setItems(CVList);

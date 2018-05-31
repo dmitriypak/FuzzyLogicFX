@@ -15,6 +15,7 @@
 .default-color8.chart-series-area-fill { -fx-fill: #1E39FF; }
 .default-color9.chart-series-area-fill { -fx-fill: #1E39FF; }
 .default-color10.chart-series-area-fill { -fx-fill: #1E39FF; }
+.default-color11.chart-series-area-fill { -fx-fill: #1E39FF; }
 
 .default-color0.chart-series-area-line { -fx-stroke: #1E39FF; }
 .default-color1.chart-series-area-line { -fx-stroke: #1E39FF; }
@@ -27,3 +28,4 @@
 .default-color8.chart-series-area-line { -fx-stroke: #1E39FF; }
 .default-color9.chart-series-area-line { -fx-stroke: #1E39FF; }
 .default-color10.chart-series-area-line { -fx-stroke: #1E39FF; }
+.default-color11.chart-series-area-line { -fx-stroke: #1E39FF; }
