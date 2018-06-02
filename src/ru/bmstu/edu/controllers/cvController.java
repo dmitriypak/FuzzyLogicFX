@@ -1677,7 +1677,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
         for(int i = 0;i<CVList.size();i++){
           CV cvRank = CVList.get(i);
-          cvRank.setCategoryValueS(getRankSugeno(cvRank));
+          double rank = getRankSugeno(cvRank);
+          cvRank.setCategoryValueS(rank);
+          cvRank.setCategoryNameS(getCategoryName(rank));
           seriesS.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startS));
         }
 
@@ -1695,7 +1697,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
         for(int i = 0;i<CVList.size();i++){
           CV cvRank = CVList.get(i);
-          cvRank.setCategoryValueM(getRankMamdani(cvRank));
+          double rank = getRankMamdani(cvRank);
+          cvRank.setCategoryValueM(rank);
+          cvRank.setCategoryNameM(getCategoryName(rank));
           seriesM.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startM));
         }
 

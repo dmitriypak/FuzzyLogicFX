@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.cvController">
+<AnchorPane prefHeight="756.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.bmstu.edu.controllers.cvController">
    <children>
       <TableView fx:id="tableCV" layoutX="109.0" layoutY="183.0" prefHeight="447.0" prefWidth="1064.0" stylesheets="@../resources/css/style.css" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
         <columns>

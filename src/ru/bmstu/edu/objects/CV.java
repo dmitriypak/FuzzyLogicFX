@@ -30,28 +30,33 @@ public class CV {
   private SimpleStringProperty datemodify = new SimpleStringProperty("");
   private SimpleStringProperty deleted = new SimpleStringProperty("");
   private SimpleStringProperty fullnessrate = new SimpleStringProperty("");
+  private SimpleStringProperty categoryNameM = new SimpleStringProperty("");
+  private SimpleStringProperty categoryNameS = new SimpleStringProperty("");
+  private SimpleDoubleProperty categoryValueM = new SimpleDoubleProperty(0);
+  private SimpleDoubleProperty categoryValueS = new SimpleDoubleProperty(0);
 
-  public double getCategoryNameM() {
+
+  public String getCategoryNameM() {
     return categoryNameM.get();
   }
 
-  public SimpleDoubleProperty categoryNameMProperty() {
+  public SimpleStringProperty categoryNameMProperty() {
     return categoryNameM;
   }
 
-  public void setCategoryNameM(double categoryNameM) {
+  public void setCategoryNameM(String categoryNameM) {
     this.categoryNameM.set(categoryNameM);
   }
 
-  public double getCategoryNameS() {
+  public String getCategoryNameS() {
     return categoryNameS.get();
   }
 
-  public SimpleDoubleProperty categoryNameSProperty() {
+  public SimpleStringProperty categoryNameSProperty() {
     return categoryNameS;
   }
 
-  public void setCategoryNameS(double categoryNameS) {
+  public void setCategoryNameS(String categoryNameS) {
     this.categoryNameS.set(categoryNameS);
   }
 
@@ -79,10 +84,7 @@ public class CV {
     this.categoryValueS.set(categoryValueS);
   }
 
-  private SimpleDoubleProperty categoryNameM = new SimpleDoubleProperty(0);
-  private SimpleDoubleProperty categoryNameS = new SimpleDoubleProperty(0);
-  private SimpleDoubleProperty categoryValueM = new SimpleDoubleProperty(0);
-  private SimpleDoubleProperty categoryValueS = new SimpleDoubleProperty(0);
+
 
 
 
