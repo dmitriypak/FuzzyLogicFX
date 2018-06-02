@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.ToolBar?>
@@ -26,6 +27,7 @@
             <Button fx:id="btnStop" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" />
         </items>
       </ToolBar>
-      <ComboBox layoutX="573.0" layoutY="79.0" prefWidth="264.0" />
+      <ComboBox fx:id="comboTypeOutput" layoutX="586.0" layoutY="79.0" prefWidth="264.0" />
+      <Label layoutX="473.0" layoutY="83.0" text="Алгоритм вывода:" />
    </children>
 </AnchorPane>

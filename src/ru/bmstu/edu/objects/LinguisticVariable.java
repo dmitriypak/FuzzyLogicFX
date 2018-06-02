@@ -18,6 +18,7 @@ public class LinguisticVariable {
 
   /////////////////
 
+
   public Variable getVariable() {
     return variable;
   }

@@ -1,5 +1,6 @@
 package ru.bmstu.edu.objects;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import ru.bmstu.edu.objects.enums.MFname;
 
@@ -8,10 +9,23 @@ public class MembershipFunction {
   private SimpleStringProperty paramValueMF = new SimpleStringProperty("");
   private SimpleStringProperty codeMF = new SimpleStringProperty("");
   private ru.bmstu.edu.objects.enums.MFname mFname;
-
+  private SimpleDoubleProperty constantSugeno = new SimpleDoubleProperty(0);
   /////////////
 
+  public double getConstantSugeno() {
+    return constantSugeno.get();
+  }
+
+  public SimpleDoubleProperty constantSugenoProperty() {
+    return constantSugeno;
+  }
+
+  public void setConstantSugeno(double constantSugeno) {
+    this.constantSugeno.set(constantSugeno);
+  }
+
   public MembershipFunction(){
+
 
   }
 

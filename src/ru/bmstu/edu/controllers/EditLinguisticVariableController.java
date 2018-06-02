@@ -56,6 +56,10 @@ public class EditLinguisticVariableController{
   private TableColumn columnCodeMF;
   @FXML
   private AnchorPane root;
+  @FXML
+  private CustomTextField txtSugenoConstant;
+  @FXML
+  private TableColumn colConstant;
 
   private LinguisticVariable linguisticVariable;
 
@@ -76,6 +80,7 @@ public class EditLinguisticVariableController{
     colMFName.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("nameMF"));
     colMFParamValue.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("paramValueMF"));
     columnCodeMF.setCellValueFactory(new PropertyValueFactory<MembershipFunction,String>("codeMF"));
+    colConstant.setCellValueFactory(new PropertyValueFactory<MembershipFunction,Double>("constantSugeno"));
 
     tableMF.setOnMouseClicked( event -> {
       if( event.getClickCount() == 1 ) {
@@ -84,6 +89,7 @@ public class EditLinguisticVariableController{
           txtParamMF.setText(mf.getParamValueMF());
           txtNameMF.setText(mf.getNameMF());
           comboCode.setValue(mf.getmFname());
+          txtSugenoConstant.setText(String.valueOf(mf.getConstantSugeno()));
         }
       }});
 
@@ -136,6 +142,7 @@ public class EditLinguisticVariableController{
         saveMF.setNameMF(txtNameMF.getText());
         saveMF.setParamValueMF(txtParamMF.getText());
         saveMF.setmFname((MFname) comboCode.getSelectionModel().getSelectedItem());
+        saveMF.setConstantSugeno(Double.valueOf(txtSugenoConstant.getText()));
         mfList.set(tableMF.getSelectionModel().getSelectedIndex(),saveMF);
         drawGraphMF();
 //        editMembershipFunctionController.setMF((MembershipFunction)tableMF.getSelectionModel().getSelectedItem());
@@ -215,6 +222,9 @@ public class EditLinguisticVariableController{
     MFname codeMF = (MFname)comboCode.getSelectionModel().getSelectedItem();
     if(!nameMF.isEmpty() && !paramMF.isEmpty()){
       MembershipFunction mf = new MembershipFunction(nameMF,paramMF,codeMF.getCode());
+      if(!txtSugenoConstant.getText().isEmpty()){
+        mf.setConstantSugeno(Double.valueOf(txtSugenoConstant.getText()));
+      }
       mfList.add(mf);
       ObservableList<MembershipFunction> mfList2 = FXCollections.observableArrayList(mfList);
       tableMF.setItems(mfList2);
@@ -234,6 +244,7 @@ public class EditLinguisticVariableController{
     txtNameVariable.setText(linguisticVariable.getName());
     txtNameMF.clear();
     txtParamMF.clear();
+    txtSugenoConstant.clear();
     comboCode.getSelectionModel().clearSelection();
     comboTypeVariable.setValue(linguisticVariable.getType());
     if(linguisticVariable.getId()!=0){
@@ -244,6 +255,7 @@ public class EditLinguisticVariableController{
       txtNameVariable.clear();
       txtNameMF.clear();
       txtParamMF.clear();
+      txtSugenoConstant.clear();
       mfList.clear();
       chart1.getData().clear();
       chart1.setTitle("");
@@ -300,6 +312,8 @@ public class EditLinguisticVariableController{
       objMF.put("MFParamName",mfList.get(i).getNameMF());
       objMF.put("MFParamValue",mfList.get(i).getParamValueMF());
       objMF.put("MFCode",mfList.get(i).getCodeMF());
+      objMF.put("MFSugenoConstant",mfList.get(i).getConstantSugeno());
+
       ar.add(objMF);
     }
     obj.put("MFParams",ar);

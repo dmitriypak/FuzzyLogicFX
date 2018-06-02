@@ -37,6 +37,7 @@ import ru.bmstu.edu.objects.*;
 import ru.bmstu.edu.objects.enums.MFname;
 import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.fuzzy.Mamdani;
+import ru.bmstu.edu.objects.fuzzy.Sugeno;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
@@ -66,7 +67,8 @@ public class cvController {
   private CustomTextField txtPositionName;
   @FXML
   private Button btnViewRules;
-
+  @FXML
+  private ComboBox comboTypeOutput;
 
   private Node nodesource;
 
@@ -112,7 +114,7 @@ public class cvController {
         btnViewRules.fire();
       }});
 
-
+    createComboBox();
 
     try {
       fxmlLoader.setLocation(getClass().getResource("../fxml/viewRules.fxml"));
@@ -123,6 +125,16 @@ public class cvController {
     }
 
   }
+
+  private void createComboBox(){
+    ObservableList<String> typeOutput = FXCollections.observableArrayList(
+        "Mamdani",
+        "Sugeno");
+    comboTypeOutput.setItems(typeOutput);
+    comboTypeOutput.setValue(typeOutput.get(0));
+  }
+
+
 
   //Степень уверенности
   private double getStValue(MembershipFunction mf, double param, LinguisticVariable variable) {
@@ -433,9 +445,107 @@ public class cvController {
   }
 
 
+
+  //Выходной график Сугено
+
+  private StackPane getOutputAreaChartSugeno(MembershipFunction mf, double param, int ruleID, int variableID){
+    StackPane stack = new StackPane();
+    Label stLabel = getLabel();
+    stLabel.setId("label"+variableID+ ruleID+mf.getCodeMF());
+    stLabel.setMaxWidth(215);
+    stLabel.setMinWidth(50);
+
+    String textFieldName = "#textField"+variableID;
+    double constantValue = mf.getConstantSugeno();
+
+    System.out.println("Constant " + constantValue);
+    XYChart.Series<Number,Number> series = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series2 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series0 = new XYChart.Series<Number,Number>();
+    XYChart.Series<Number,Number> series1 = new XYChart.Series<Number,Number>();
+
+    final NumberAxis xAxis = new NumberAxis(0,1,0) ;
+    final NumberAxis yAxis = new NumberAxis(0,1,0) ;
+
+    AreaChart<Number,Number> chart = new AreaChart<Number,Number>(xAxis, yAxis) ;
+    chart.setTitle(mf.getNameMF());
+    chart.setMaxWidth(200);
+    chart.setMaxHeight(150);
+    chart.setMinHeight(100);
+    chart.setMinWidth(100);
+    chart.setCreateSymbols(true);
+    chart.setId("chart"+variableID+ruleID+mf.getCodeMF());
+    chart.setAnimated(false);
+
+
+
+    series.getData().add(new XYChart.Data<Number, Number>(constantValue, 0));
+    series.getData().add(new XYChart.Data<Number, Number>(constantValue, 1));
+
+    Timeline timeline = new Timeline();
+    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        double valueCategory = 0;
+
+        ArrayList<Double> valueList = new ArrayList<Double>();
+        Pattern pattern = Pattern.compile("_(.*?)_");
+        for(Map.Entry<String,Double> entryLabel:mapLabelValues.entrySet()){
+          Matcher matcher = pattern.matcher(entryLabel.getKey());
+          if (matcher.find()) {
+            int id = Integer.valueOf(matcher.group(1));
+            if(id==ruleID){
+              valueList.add(entryLabel.getValue());
+            }
+          }
+        }
+
+        // Расчет степени уверенности
+        valueCategory = Sugeno.getAggregationResult(valueList);
+        Rule rule = mapRules.get(ruleID);
+        if(rule!=null){
+          rule.setValueOutput(valueCategory);
+          mapRules.put(ruleID,rule);
+        }
+
+        series1.getData().clear();
+        series1.getData().add(new XYChart.Data<Number, Number>(constantValue, valueCategory));
+
+        Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
+        if(label!=null){
+          label.setText(String.valueOf(valueCategory));
+
+        }
+
+
+
+        //Вывод COG
+        accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
+        TextField textField = (TextField) scene.lookup(textFieldName);
+
+        if(textField!=null){
+          String categoryName = getCategoryName(accumulationResult);
+
+          textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
+
+        }
+
+
+
+      }
+    }));
+    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setAutoReverse(true);
+    timeline.play();
+
+    chart.getData().addAll(series,series0,series1,series2);
+    stack.getChildren().addAll(chart,stLabel);
+    return stack;
+  }
+
 // Выходные переменные
 
-  private StackPane getOutputAreaChart(MembershipFunction mf, double param, int ruleID, int variableID){
+  private StackPane getOutputAreaChartMamdani(MembershipFunction mf, double param, int ruleID, int variableID){
     StackPane stack = new StackPane();
     double maxValue = 0;
     Label stLabel = getLabel();
@@ -1105,8 +1215,18 @@ public class cvController {
             if(variable1.equals(variable4)){
               switch (variable4) {
                 case RANK:
-                  //Построение графика
-                  Region rank = getOutputAreaChart(thenMF,0,ruleID, variableID);
+                  Region rank = null;
+                  switch(comboTypeOutput.getSelectionModel().getSelectedIndex()){
+                    //Mamdani
+                    case 0:
+                      rank = getOutputAreaChartMamdani(thenMF,0,ruleID, variableID);
+                      break;
+
+                      //Sugeno
+                    case 1:
+                      rank = getOutputAreaChartSugeno(thenMF,0,ruleID, variableID);
+                      break;
+                  }
                   root.add(rank,i,rowIndex+1);
                   break;
               }

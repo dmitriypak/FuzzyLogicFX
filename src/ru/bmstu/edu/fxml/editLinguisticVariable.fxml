@@ -20,8 +20,9 @@
       <TableView fx:id="tableMF" layoutX="10.0" layoutY="217.0" prefHeight="203.0" prefWidth="712.0" stylesheets="@../resources/css/style.css" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="217.0">
         <columns>
           <TableColumn fx:id="colMFName" minWidth="120.0" prefWidth="120.0" text="Наименование" />
-          <TableColumn fx:id="colMFParamValue" prefWidth="495.0" text="Параметры" />
-            <TableColumn fx:id="columnCodeMF" minWidth="100.0" prefWidth="100.0" text="Код" />
+          <TableColumn fx:id="colMFParamValue" prefWidth="379.0" text="Параметры" />
+            <TableColumn fx:id="columnCodeMF" minWidth="76.0" prefWidth="106.0" text="Код" />
+            <TableColumn fx:id="colConstant" prefWidth="106.0" text="Константа" />
         </columns>
       </TableView>
       <CustomTextField fx:id="txtNameVariable" layoutX="350.0" layoutY="72.0" prefHeight="25.0" prefWidth="381.0" stylesheets="@../resources/css/style.css" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="10.0" />
@@ -56,5 +57,7 @@
       </ToolBar>
       <ComboBox fx:id="comboCode" layoutX="10.0" layoutY="181.0" prefHeight="25.0" prefWidth="303.0" stylesheets="@../resources/css/style.css" AnchorPane.leftAnchor="10.0" />
       <Label layoutX="12.0" layoutY="160.0" stylesheets="@../resources/css/style.css" text="Обозначение функции принадлежности:" />
+      <CustomTextField fx:id="txtSugenoConstant" layoutX="349.0" layoutY="183.0" prefHeight="25.0" prefWidth="372.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="10.0" />
+      <Label layoutX="350.0" layoutY="160.0" stylesheets="@../resources/css/style.css" text="Константное значение для алгоритма Сугено:" />
    </children>
 </AnchorPane>
