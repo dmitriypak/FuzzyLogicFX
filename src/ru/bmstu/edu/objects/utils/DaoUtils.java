@@ -228,11 +228,6 @@ public class DaoUtils {
               for(int j =0;j<mfList.size();j++){
                 MembershipFunction m = mfList.get(j);
                 if(m.getCodeMF().equals(codeMF)){
-//                  String nameMF = m.getNameMF();
-//                  String paramValueMF = m.getParamValueMF();
-//                  Double constantValueMF = m.getConstantSugeno();
-//                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-
                   String nameVariable = rs2.getString("name");
                   Condition condition = new Condition(idVariable,nameVariable);
                   condition.setMembershipFunction(m);
@@ -241,10 +236,6 @@ public class DaoUtils {
               }
             }
           }
-
-          //String paramValueMF = ifParam.get("paramValueMF").toString();
-
-
         }
 
         //AND
@@ -263,11 +254,6 @@ public class DaoUtils {
               for(int j =0;j<mfList.size();j++){
                 MembershipFunction m = mfList.get(j);
                 if(m.getCodeMF().equals(codeMF)){
-//                  String nameMF = m.getNameMF();
-//                  String paramValueMF = m.getParamValueMF();
-//
-//                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-
                   String nameVariable = rs2.getString("name");
                   Condition condition = new Condition(idVariable,nameVariable);
                   condition.setMembershipFunction(m);
@@ -294,11 +280,6 @@ public class DaoUtils {
               for(int j =0;j<mfList.size();j++){
                 MembershipFunction m = mfList.get(j);
                 if(m.getCodeMF().equals(codeMF)){
-//                  String nameMF = m.getNameMF();
-//                  String paramValueMF = m.getParamValueMF();
-//
-//                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-
                   String nameVariable = rs2.getString("name");
                   Condition condition = new Condition(idVariable,nameVariable);
                   condition.setMembershipFunction(m);
@@ -353,11 +334,6 @@ public class DaoUtils {
               for(int j =0;j<mfList.size();j++){
                 MembershipFunction m = mfList.get(j);
                 if(m.getCodeMF().equals(codeMF)){
-//                  String nameMF = m.getNameMF();
-//                  String paramValueMF = m.getParamValueMF();
-//
-//                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-
                   String nameVariable = rs2.getString("name");
                   Condition condition = new Condition(idVariable,nameVariable);
                   condition.setMembershipFunction(m);
@@ -384,11 +360,6 @@ public class DaoUtils {
               for(int j =0;j<mfList.size();j++){
                 MembershipFunction m = mfList.get(j);
                 if(m.getCodeMF().equals(codeMF)){
-//                  String nameMF = m.getNameMF();
-//                  String paramValueMF = m.getParamValueMF();
-//
-//                  MembershipFunction mf = new MembershipFunction(nameMF,codeMF,paramValueMF);
-
                   String nameVariable = rs2.getString("name");
                   Condition condition = new Condition(idVariable,nameVariable);
                   condition.setMembershipFunction(m);

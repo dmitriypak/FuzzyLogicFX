@@ -243,7 +243,7 @@ public class cvController {
         }
 
         //Вывод COG
-        rank = Math.round(Mamdani.getCenterOfGravityResult(mapRules) * 100.0) / 100.0;
+        rank = Math.round(Mamdani.getCenterOfGravity(mapRules) * 100.0) / 100.0;
 
       }
 
@@ -473,12 +473,12 @@ public class cvController {
     chart.setMaxHeight(150);
     chart.setMinHeight(100);
     chart.setMinWidth(100);
-    chart.setCreateSymbols(true);
+    chart.setCreateSymbols(false);
     chart.setId("chart"+variableID+ruleID+mf.getCodeMF());
     chart.setAnimated(false);
 
 
-
+    //Синяя линия
     series.getData().add(new XYChart.Data<Number, Number>(constantValue, 0));
     series.getData().add(new XYChart.Data<Number, Number>(constantValue, 1));
 
@@ -508,19 +508,25 @@ public class cvController {
           mapRules.put(ruleID,rule);
         }
 
-        series1.getData().clear();
-        series1.getData().add(new XYChart.Data<Number, Number>(constantValue, valueCategory));
+
+        if(valueCategory>0){
+          double offset=0.01;
+          series1.getData().clear();
+          series1.getData().add(new XYChart.Data<Number, Number>(constantValue-offset, valueCategory-offset));
+          series1.getData().add(new XYChart.Data<Number, Number>(constantValue-offset, valueCategory+offset*2));
+          series1.getData().add(new XYChart.Data<Number, Number>(constantValue+offset*2, valueCategory+offset*2));
+          series1.getData().add(new XYChart.Data<Number, Number>(constantValue+offset*2, valueCategory-offset*2));
+        }
+
 
         Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
         if(label!=null){
           label.setText(String.valueOf(valueCategory));
-
         }
 
 
-
         //Вывод COG
-        accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
+        accumulationResult = Math.round(Sugeno.getCenterOfGravitySingletons(mapRules)*100.0)/100.0;
         TextField textField = (TextField) scene.lookup(textFieldName);
 
         if(textField!=null){
@@ -689,7 +695,7 @@ public class cvController {
         }
 
         //Вывод COG
-        accumulationResult = Math.round(Mamdani.getCenterOfGravityResult(mapRules)*100.0)/100.0;
+        accumulationResult = Math.round(Mamdani.getCenterOfGravity(mapRules)*100.0)/100.0;
         TextField textField = (TextField) scene.lookup(textFieldName);
 
         if(textField!=null){
@@ -713,8 +719,141 @@ public class cvController {
   }
 
 //Итоговый график
+private StackPane getTotalOutputAreaChartSugeno(){
+  StackPane stack = new StackPane();
 
-  private StackPane getTotalOutputAreaChart(){
+  Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
+  for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
+    LinguisticVariable variable =  mapOutputVariables.get(entry.getKey());
+    Variable var= Variable.getVariableByName(variable.getName());
+    switch (var) {
+      case RANK:
+        mfList = variable.getMfList();
+        break;
+    }
+  }
+
+  for(int i = 0;i<mfList.size();i++){
+    mapGraph.put(mfList.get(i),0.0);
+  }
+
+
+  final NumberAxis xAxis = new NumberAxis(0,1,0) ;
+  final NumberAxis yAxis = new NumberAxis(0,1,0) ;
+
+  AreaChart<Number,Number> chart = new AreaChart<Number,Number>(xAxis, yAxis) ;
+
+  chart.setTitle("");
+  chart.setMaxWidth(200);
+  chart.setMaxHeight(150);
+  chart.setMinHeight(100);
+  chart.setMinWidth(100);
+  chart.setCreateSymbols(false);
+  chart.setId("chartTotalOutput");
+  chart.setAnimated(false);
+
+  XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
+  seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0,0));
+
+  XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
+  seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0,0));
+
+
+  //Красная линия
+  XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
+  seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,0));
+  seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,1));
+
+  XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
+  XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
+  XYChart.Series<Number,Number> seriesOutput6 = new XYChart.Series<Number,Number>();
+  XYChart.Series<Number,Number> seriesOutput7 = new XYChart.Series<Number,Number>();
+  XYChart.Series<Number,Number> seriesOutput8 = new XYChart.Series<Number,Number>();
+  XYChart.Series<Number,Number> seriesOutput9 = new XYChart.Series<Number,Number>();
+
+
+
+  //Map<String,Double>
+  Timeline timeline = new Timeline();
+  timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+    @Override
+    public void handle(ActionEvent actionEvent) {
+
+      seriesOutput4.getData().clear();
+      seriesOutput5.getData().clear();
+      seriesOutput6.getData().clear();
+      seriesOutput7.getData().clear();
+      seriesOutput8.getData().clear();
+      seriesOutput9.getData().clear();
+      for (XYChart.Data<Number, Number> data : seriesOutput3.getData()) {
+        data.setXValue(accumulationResult);
+      }
+      for (XYChart.Data<Number, Number> data : seriesOutput2.getData()) {
+        data.setXValue(0.1);
+      }
+      for (XYChart.Data<Number, Number> data : seriesOutput1.getData()) {
+        data.setXValue(0.1);
+      }
+
+
+      for(int i = 0;i<mfList.size();i++){
+        mapGraph.put(mfList.get(i),0.0);
+      }
+      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+        Rule outputRule = r.getValue();
+
+        double ruleValueOutput = outputRule.getValueOutput();
+        if(ruleValueOutput>0){
+          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+            Condition condition = entry.getValue();
+            MembershipFunction mfOut = condition.getMembershipFunction();
+            //Проверка на большее значение
+            for(int i = 0;i<mfList.size();i++){
+              MembershipFunction m = mfList.get(i);
+              if(mfOut.getCodeMF().equals(m.getCodeMF())){
+                Double val = mapGraph.get(m);
+                if(val<ruleValueOutput){
+                  mapGraph.put(m,ruleValueOutput);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
+        String value[] = m.getKey().getParamValueMF().split(" ");
+        //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
+
+        double valueCategory = m.getValue();
+        String mfCode = m.getKey().getCodeMF();
+        MFname mFname = MFname.getMFnameByCode(mfCode);
+        //System.out.println("MFCode " + mfCode );
+
+
+
+      }
+
+    }
+  }));
+  timeline.setCycleCount(Animation.INDEFINITE);
+  timeline.setAutoReverse(true);
+  timeline.play();
+  chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
+  chart.getData().addAll(seriesOutput4,seriesOutput5,seriesOutput6,seriesOutput7,seriesOutput8,seriesOutput9);
+  //chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
+
+
+
+  // seriesOutput9,seriesOutput8,seriesOutput7,seriesOutput6,seriesOutput5,seriesOutput4);
+  stack.getChildren().addAll(chart);
+  return stack;
+}
+
+
+  private StackPane getTotalOutputAreaChartMamdani(){
     StackPane stack = new StackPane();
 
     Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
@@ -1244,7 +1383,16 @@ public class cvController {
 
 
       //Построение итогового графика выходных переменных
-      Region outputAreaChart = getTotalOutputAreaChart();
+      Region outputAreaChart = null;
+      switch(comboTypeOutput.getSelectionModel().getSelectedIndex()) {
+        //Mamdani
+        case 0:
+          outputAreaChart = getTotalOutputAreaChartMamdani();
+          break;
+        case 1:
+          outputAreaChart = getTotalOutputAreaChartSugeno();
+          break;
+      }
       root.add(outputAreaChart,columnIndex,mapRules.size()+5);
 
       scrollPane.setContent(root);

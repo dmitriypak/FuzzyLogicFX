@@ -30,7 +30,7 @@ public class Mamdani {
     return maxValue;
   }
 
-  public static double getCenterOfGravityResult(Map<Integer,Rule> mapRules){
+  public static double getCenterOfGravity(Map<Integer,Rule> mapRules){
     double result = 0;
     double dy = 0;
     double ydy = 0;

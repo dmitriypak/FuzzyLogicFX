@@ -30,55 +30,34 @@ public class Sugeno {
     return maxValue;
   }
 
-  public static double getCenterOfGravityResult(Map<Integer,Rule> mapRules){
+  public static double getCenterOfGravitySingletons(Map<Integer,Rule> mapRules){
     double result = 0;
-    double dy = 0;
-    double ydy = 0;
+    double sumY = 0;
+    double sumXY = 0;
     for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
 
       Rule outputRule = r.getValue();
-      double x = outputRule.getValueOutput();
+      double y = outputRule.getValueOutput();
+
+      System.out.println("Output value " + y);
       //Правило активное
-      if(x>0){
+      if(y>0){
         Map<String,Condition> conditionMap = outputRule.getTHENConditionMap();
-        double minValue = 0;
-        double maxValue = 0;
         for(Map.Entry<String,Condition> c:conditionMap.entrySet()) {
           MembershipFunction mf = c.getValue().getMembershipFunction();
-          String values[] = mf.getParamValueMF().split(" ");
-          switch (values.length){
-            case 3:
-              minValue = Double.valueOf(values[0]);
-              maxValue = Double.valueOf(values[2]);
-              break;
-            case 4:
-              minValue = Double.valueOf(values[0]);
-              maxValue = Double.valueOf(values[3]);
-              break;
-
-          }
+          Double x = mf.getConstantSugeno();
+          System.out.println("Constant " + x);
+          sumY += y;
+          sumXY+=x*y;
         }
-        dy+= Sugeno.getIntegralDY(minValue,maxValue,x);
-        ydy+=Sugeno.getIntegralYDY(minValue,maxValue,x);
 
       }
 
+
     }
+    System.out.println("SUM XY " + sumXY + "|" + "SUMY " + sumY);
+    result = sumXY/sumY;
 
-    result = ydy/dy;
-
-    return result;
-  }
-
-  private static double getIntegralDY(double a, double b, double x){
-    double result = 0;
-    result = (b*x-a*x);
-    return result;
-  }
-
-  private static double getIntegralYDY(double a, double b, double x){
-    double result = 0;
-    result = (b*b/2)*x-(a*a/2)*x;
     return result;
   }
 
