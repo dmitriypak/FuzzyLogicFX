@@ -78,13 +78,17 @@ public class cvController {
   private LineChart timeChartM;
   @FXML
   private LineChart timeChartS;
-
+  private Stage cvStage;
   private Node nodesource;
+
 
   private ObservableList<CV> CVList = FXCollections.observableArrayList();
   private Parent fxmlEdit;
+  private Parent fxmlEditCV;
   private FXMLLoader fxmlLoader = new FXMLLoader();
+  private FXMLLoader fxmlLoaderCV = new FXMLLoader();
   private ViewRulesController viewRulesController;
+  private CVDetailController cvDetailController;
 //  private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
 //  private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
   private ArrayList<LinguisticVariable> listVariables = DaoUtils.getVariables();
@@ -134,6 +138,16 @@ public class cvController {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    try {
+      fxmlLoaderCV.setLocation(getClass().getResource("../fxml/cvDetail.fxml"));
+      fxmlEdit = fxmlLoaderCV.load();
+      cvDetailController = fxmlLoaderCV.getController();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
 
   }
 
@@ -1312,6 +1326,22 @@ private StackPane getTotalOutputAreaChartSugeno(){
     box.getChildren().addAll(label);
     return box;
   }
+
+  private void showDialogCVview(CV cv) {
+
+    if (cv!=null) {
+      cvStage = new Stage();
+      cvStage.setTitle("Просмотр резюме");
+      cvStage.setMinHeight(150);
+      cvStage.setMinWidth(300);
+      cvStage.setResizable(false);
+      cvStage.setScene(new Scene(fxmlEdit));
+      cvStage.initModality(Modality.WINDOW_MODAL);
+      cvStage.initOwner((Stage) nodesource.getScene().getWindow());
+    }
+    cvStage.showAndWait();
+  }
+
   private void showDialog(CV cv) {
     if (cv!=null) {
       Stage viewRulesStage = new Stage();
@@ -1709,6 +1739,17 @@ private StackPane getTotalOutputAreaChartSugeno(){
         System.out.println("Время выполнения " + timeConsumedMillisM);
         timeChartM.getData().add(seriesM);
         timeChartM.setLegendVisible(false);
+        break;
+
+
+
+      case "btnViewCV":
+        CV cvView = (CV) tableCV.getSelectionModel().getSelectedItem();
+        if(cvView!=null){
+          cvDetailController.setCV((CV) tableCV.getSelectionModel().getSelectedItem());
+          showDialogCVview(cvView);
+        }
+
         break;
     }
 

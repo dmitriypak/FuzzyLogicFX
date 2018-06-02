@@ -264,24 +264,10 @@ public class EditLinguisticVariableController{
   }
 
   private void fillData(){
-//    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, VALUE from cvdata.bmstu.linguisticvariables")) {
-//      ResultSet rs = statement.executeQuery();
-//      while (rs.next()){
-//        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"), rs.getString("value"));
-//        MFList.add(linguisticVariable);
-//      }
-//      tableViewVariables.setItems(variableList.getVariablesList());
-//    } catch (SQLException e) {
-//      e.printStackTrace();
-//    }
-
-
-    //System.out.println("Список" + mfList.size());
     if(mfList.size()>0){
       tableMF.setItems(mfList);
       drawGraphMF();
     }
-
   }
 
 

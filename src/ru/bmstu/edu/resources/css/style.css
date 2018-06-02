@@ -135,7 +135,12 @@
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
 }
+#btnViewCV{
+    -fx-background-image: url("../../resources/images/reseller_account_template.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
 
+}
 
 #colEndDate{
     -fx-alignment: center;
