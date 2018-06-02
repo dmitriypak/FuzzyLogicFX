@@ -38,24 +38,19 @@ public class Sugeno {
 
       Rule outputRule = r.getValue();
       double y = outputRule.getValueOutput();
-
-      System.out.println("Output value " + y);
       //Правило активное
       if(y>0){
         Map<String,Condition> conditionMap = outputRule.getTHENConditionMap();
         for(Map.Entry<String,Condition> c:conditionMap.entrySet()) {
           MembershipFunction mf = c.getValue().getMembershipFunction();
           Double x = mf.getConstantSugeno();
-          System.out.println("Constant " + x);
           sumY += y;
           sumXY+=x*y;
         }
 
       }
-
-
     }
-    System.out.println("SUM XY " + sumXY + "|" + "SUMY " + sumY);
+    //System.out.println("SUM XY " + sumXY + "|" + "SUMY " + sumY);
     result = sumXY/sumY;
 
     return result;

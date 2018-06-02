@@ -536,8 +536,6 @@ public class cvController {
 
         }
 
-
-
       }
     }));
     timeline.setCycleCount(Animation.INDEFINITE);
@@ -753,16 +751,16 @@ private StackPane getTotalOutputAreaChartSugeno(){
   chart.setAnimated(false);
 
   XYChart.Series<Number,Number> seriesOutput1 = new XYChart.Series<Number,Number>();
-  seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0,0));
+//  seriesOutput1.getData().add(new XYChart.Data<Number, Number>(0,0));
 
   XYChart.Series<Number,Number> seriesOutput2 = new XYChart.Series<Number,Number>();
-  seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0,0));
+//  seriesOutput2.getData().add(new XYChart.Data<Number, Number>(0,0));
 
 
   //Красная линия
   XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
-  seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,0));
-  seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,1));
+//  seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,0));
+//  seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,1));
 
   XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
   XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
@@ -785,9 +783,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
       seriesOutput7.getData().clear();
       seriesOutput8.getData().clear();
       seriesOutput9.getData().clear();
-      for (XYChart.Data<Number, Number> data : seriesOutput3.getData()) {
-        data.setXValue(accumulationResult);
-      }
+
+
+
       for (XYChart.Data<Number, Number> data : seriesOutput2.getData()) {
         data.setXValue(0.1);
       }
@@ -824,15 +822,46 @@ private StackPane getTotalOutputAreaChartSugeno(){
       }
 
       for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
-        String value[] = m.getKey().getParamValueMF().split(" ");
+        double constant = m.getKey().getConstantSugeno();
         //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
 
         double valueCategory = m.getValue();
         String mfCode = m.getKey().getCodeMF();
         MFname mFname = MFname.getMFnameByCode(mfCode);
         //System.out.println("MFCode " + mfCode );
+        switch (mFname){
+          case PLS:
+            if(valueCategory>0){
+              getDataSeriesSugeno(seriesOutput4,constant,valueCategory);
+            }
+            break;
+          case PS:
+            if(valueCategory>0){
+              getDataSeriesSugeno(seriesOutput5,constant,valueCategory);
+            }
+            break;
+          case PLM:
+            if(valueCategory>0){
+              getDataSeriesSugeno(seriesOutput6,constant,valueCategory);
+            }
+            break;
+          case PM:
+            if(valueCategory>0){
+              getDataSeriesSugeno(seriesOutput7,constant,valueCategory);
+            }
+            break;
+          case PLB:
+            if(valueCategory>0){
+              getDataSeriesSugeno(seriesOutput8,constant,valueCategory);
+            }
+            break;
+          case PB:
+            if(valueCategory>0){
+              getDataSeriesSugeno(seriesOutput9,constant,valueCategory);
 
-
+            }
+            break;
+        }
 
       }
 
@@ -960,7 +989,6 @@ private StackPane getTotalOutputAreaChartSugeno(){
         for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
           String value[] = m.getKey().getParamValueMF().split(" ");
           //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
-
           double valueCategory = m.getValue();
           String mfCode = m.getKey().getCodeMF();
           MFname mFname = MFname.getMFnameByCode(mfCode);
@@ -994,13 +1022,10 @@ private StackPane getTotalOutputAreaChartSugeno(){
             case PB:
               if(valueCategory>0){
                 getDataSeries(seriesOutput9,value,valueCategory);
-
               }
               break;
           }
-
         }
-
       }
     }));
     timeline.setCycleCount(Animation.INDEFINITE);
@@ -1008,15 +1033,20 @@ private StackPane getTotalOutputAreaChartSugeno(){
     timeline.play();
     chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
     chart.getData().addAll(seriesOutput4,seriesOutput5,seriesOutput6,seriesOutput7,seriesOutput8,seriesOutput9);
-    //chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
-
-
-
-        // seriesOutput9,seriesOutput8,seriesOutput7,seriesOutput6,seriesOutput5,seriesOutput4);
     stack.getChildren().addAll(chart);
     return stack;
   }
 
+  private void getDataSeriesSugeno(XYChart.Series<Number,Number> series, double constant, double valueCategory) {
+    double offset = 0.01;
+    series.getData().clear();
+    series.getData().add(new XYChart.Data<Number, Number>(constant-offset, valueCategory-offset));
+    series.getData().add(new XYChart.Data<Number, Number>(constant-offset, valueCategory+offset*2));
+    series.getData().add(new XYChart.Data<Number, Number>(constant+offset*2, valueCategory+offset*2));
+    series.getData().add(new XYChart.Data<Number, Number>(constant+offset*2, valueCategory-offset*2));
+
+
+  }
   private void getDataSeries(XYChart.Series<Number,Number> series, String value[], Double valueCategory){
 
     double XX = getX(valueCategory,Double.valueOf(value[0]),Double.valueOf(value[1]),0,1);
