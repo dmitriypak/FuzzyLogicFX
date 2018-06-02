@@ -16,10 +16,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
@@ -75,6 +72,12 @@ public class cvController {
   private Button btnViewRules;
   @FXML
   private ComboBox comboTypeOutput;
+  @FXML
+  private Label labelCount;
+  @FXML
+  private LineChart timeChartM;
+  @FXML
+  private LineChart timeChartS;
 
   private Node nodesource;
 
@@ -1615,9 +1618,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
       query.append(where.toString());
     }
 
-    query.append("order by id limit 1000;");
+    query.append("order by id;");
     System.out.println(query.toString());
-
+    int count = 0;
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement(query.toString())) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
@@ -1628,8 +1631,10 @@ private StackPane getTotalOutputAreaChartSugeno(){
         cv.setExperience(rs.getInt("experience"));
         //cv.setCategoryName(getRank(cv));
         CVList.add(cv);
+        count +=1;
       }
       tableCV.setItems(CVList);
+      labelCount.setText("Количество строк: " + String.valueOf(count));
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -1641,6 +1646,11 @@ private StackPane getTotalOutputAreaChartSugeno(){
     }
     nodesource = (Node) actionEvent.getSource();
     Button clickedButton = (Button) source;
+
+
+    XYChart.Series seriesM = new XYChart.Series();
+    XYChart.Series seriesS = new XYChart.Series();
+
 
     switch (clickedButton.getId()) {
       case "btnSearch":
@@ -1660,30 +1670,41 @@ private StackPane getTotalOutputAreaChartSugeno(){
         break;
 
       case "btnSugenoResult":
+        timeChartS.setCreateSymbols(false);
         long startS = System.currentTimeMillis();
+        //seriesS.getData().clear();
+
 
         for(int i = 0;i<CVList.size();i++){
           CV cvRank = CVList.get(i);
           cvRank.setCategoryValueS(getRankSugeno(cvRank));
+          seriesS.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startS));
         }
 
         long finishS = System.currentTimeMillis();
         long timeConsumedMillisS = finishS - startS;
         tableCV.setItems(CVList);
         System.out.println("Время выполнения " + timeConsumedMillisS);
+        timeChartS.getData().add(seriesS);
+        timeChartS.setLegendVisible(false);
+        break;
 
       case "btnMamdaniResult":
+        timeChartM.setCreateSymbols(false);
         long startM = System.currentTimeMillis();
 
         for(int i = 0;i<CVList.size();i++){
           CV cvRank = CVList.get(i);
           cvRank.setCategoryValueM(getRankMamdani(cvRank));
+          seriesM.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startM));
         }
 
         long finishM = System.currentTimeMillis();
         long timeConsumedMillisM = finishM - startM;
         tableCV.setItems(CVList);
         System.out.println("Время выполнения " + timeConsumedMillisM);
+        timeChartM.getData().add(seriesM);
+        timeChartM.setLegendVisible(false);
         break;
     }
 
