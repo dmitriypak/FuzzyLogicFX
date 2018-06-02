@@ -31,6 +31,58 @@ public class CV {
   private SimpleStringProperty deleted = new SimpleStringProperty("");
   private SimpleStringProperty fullnessrate = new SimpleStringProperty("");
 
+  public double getCategoryNameM() {
+    return categoryNameM.get();
+  }
+
+  public SimpleDoubleProperty categoryNameMProperty() {
+    return categoryNameM;
+  }
+
+  public void setCategoryNameM(double categoryNameM) {
+    this.categoryNameM.set(categoryNameM);
+  }
+
+  public double getCategoryNameS() {
+    return categoryNameS.get();
+  }
+
+  public SimpleDoubleProperty categoryNameSProperty() {
+    return categoryNameS;
+  }
+
+  public void setCategoryNameS(double categoryNameS) {
+    this.categoryNameS.set(categoryNameS);
+  }
+
+  public double getCategoryValueM() {
+    return categoryValueM.get();
+  }
+
+  public SimpleDoubleProperty categoryValueMProperty() {
+    return categoryValueM;
+  }
+
+  public void setCategoryValueM(double categoryValueM) {
+    this.categoryValueM.set(categoryValueM);
+  }
+
+  public double getCategoryValueS() {
+    return categoryValueS.get();
+  }
+
+  public SimpleDoubleProperty categoryValueSProperty() {
+    return categoryValueS;
+  }
+
+  public void setCategoryValueS(double categoryValueS) {
+    this.categoryValueS.set(categoryValueS);
+  }
+
+  private SimpleDoubleProperty categoryNameM = new SimpleDoubleProperty(0);
+  private SimpleDoubleProperty categoryNameS = new SimpleDoubleProperty(0);
+  private SimpleDoubleProperty categoryValueM = new SimpleDoubleProperty(0);
+  private SimpleDoubleProperty categoryValueS = new SimpleDoubleProperty(0);
 
 
 
@@ -40,19 +92,7 @@ public class CV {
   }
 
 
-  public double getCategoryName() {
-    return categoryName.get();
-  }
 
-  public SimpleDoubleProperty categoryNameProperty() {
-    return categoryName;
-  }
-
-  public void setCategoryName(double categoryName) {
-    this.categoryName.set(categoryName);
-  }
-
-  private SimpleDoubleProperty categoryName = new SimpleDoubleProperty(0);
 
 
   public int getId() {

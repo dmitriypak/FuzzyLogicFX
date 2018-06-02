@@ -125,6 +125,18 @@
     -fx-background-repeat: no-repeat;
 }
 
+#btnMamdaniResult{
+    -fx-background-image: url("../../resources/images/LetterM.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+#btnSugenoResult{
+    -fx-background-image: url("../../resources/images/LetterS.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+}
+
+
 #colEndDate{
     -fx-alignment: center;
 }

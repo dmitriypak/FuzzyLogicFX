@@ -60,7 +60,13 @@ public class cvController {
   @FXML
   private TableColumn colExperience;
   @FXML
-  private TableColumn colCategory;
+  private TableColumn colCategoryNameM;
+  @FXML
+  private TableColumn colCategoryValueM;
+  @FXML
+  private TableColumn colCategoryNameS;
+  @FXML
+  private TableColumn colCategoryValueS;
   @FXML
   private TableView tableCV;
   @FXML
@@ -107,8 +113,10 @@ public class cvController {
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
     colSalary.setCellValueFactory(new PropertyValueFactory<CV,Integer>("salary"));
     colExperience.setCellValueFactory(new PropertyValueFactory<CV,String>("experience"));
-    colCategory.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryName"));
-
+    colCategoryNameM.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryNameM"));
+    colCategoryValueM.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryValueM"));
+    colCategoryNameS.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryNameS"));
+    colCategoryValueS.setCellValueFactory(new PropertyValueFactory<CV,String>("categoryValueS"));
     tableCV.setOnMouseClicked( event -> {
       if( event.getClickCount() == 2 ) {
         btnViewRules.fire();
@@ -146,7 +154,114 @@ public class cvController {
   }
 
 
-  private double getRank(CV cv) {
+  private double getRankSugeno(CV cv) {
+    double rank = 0;
+    if (cv!=null) {
+      for(int i = 0;i<listVariables.size();i++){
+
+        LinguisticVariable linguisticVariable = listVariables.get(i);
+        int variableID = linguisticVariable.getId();
+
+        Variable variable1 = Variable.getVariableByName(linguisticVariable.getName());
+
+        //Цикл по правилам
+        for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()){
+          Rule rule = entryRule.getValue();
+          int ruleID = rule.getIdRule();
+          Map<String,Condition> mapIF = rule.getIFConditionMap();
+          Map<String,Condition> mapAND = rule.getANDConditionMap();
+          double param = 0;
+          //Переменная IF
+          for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
+            LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
+            Condition ifCondition = entry.getValue();
+            MembershipFunction ifMF = ifCondition.getMembershipFunction();
+            Variable variable2 = Variable.getVariableByName(ifVariable.getName());
+
+            if(variable1.equals(variable2)){
+              switch (variable2) {
+                case WORK_EXPERIENCE:
+                  double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stWorkExperience);
+                  break;
+                case SALARY:
+                  double stSalary = getStValue(ifMF,cv.getSalary(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
+                  break;
+                case POSITION:
+                  param = 0.5;
+                  double stPosition = getStValue(ifMF,param,linguisticVariable);
+                  break;
+              }
+            }
+          }
+
+          //Переменная AND
+          for(Map.Entry<String, Condition> entry:mapAND.entrySet()){
+            LinguisticVariable andVariable =  mapInputVariables.get(entry.getKey());
+            Condition andCondition = entry.getValue();
+            MembershipFunction andMF = andCondition.getMembershipFunction();
+            Variable variable3 = Variable.getVariableByName(andVariable.getName());
+
+            if(variable1.equals(variable3)){
+              switch (variable3) {
+                case WORK_EXPERIENCE:
+                  double stWorkExperience = getStValue(andMF,cv.getExperience(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stWorkExperience);
+                  break;
+                case SALARY:
+                  double stSalary = getStValue(andMF,cv.getSalary(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stSalary);
+                  break;
+                case POSITION:
+                  param = 0.5;
+                  double stPosition = getStValue(andMF,param,linguisticVariable);
+                  break;
+              }
+            }
+          }
+        }
+      }
+
+
+      //Цикл по правилам
+      for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()) {
+        Rule rule = entryRule.getValue();
+        int ruleID = rule.getIdRule();
+        double valueCategory = 0;
+
+        ArrayList<Double> valueList = new ArrayList<Double>();
+        Pattern pattern = Pattern.compile("_(.*?)_");
+        for (Map.Entry<String, Double> entryLabel : mapLabelValues.entrySet()) {
+          Matcher matcher = pattern.matcher(entryLabel.getKey());
+          if (matcher.find()) {
+            int id = Integer.valueOf(matcher.group(1));
+            if (id == ruleID) {
+              valueList.add(entryLabel.getValue());
+            }
+          }
+        }
+
+        // Расчет степени уверенности
+        valueCategory = Sugeno.getAggregationResult(valueList);
+        //Rule ruleOutput = mapRules.get(ruleID);
+        if (rule != null) {
+          rule.setValueOutput(valueCategory);
+          mapRules.put(ruleID, rule);
+        }
+
+        //Вывод COG
+        rank = Math.round(Sugeno.getCenterOfGravitySingletons(mapRules) * 100.0) / 100.0;
+
+      }
+
+    }
+    return rank;
+  }
+
+
+
+  private double getRankMamdani(CV cv) {
     double rank = 0;
     if (cv!=null) {
       for(int i = 0;i<listVariables.size();i++){
@@ -1511,7 +1626,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
         cv.setPositionname(rs.getString("positionname"));
         cv.setSalary(rs.getInt("salary"));
         cv.setExperience(rs.getInt("experience"));
-        cv.setCategoryName(getRank(cv));
+        //cv.setCategoryName(getRank(cv));
         CVList.add(cv);
       }
       tableCV.setItems(CVList);
@@ -1544,8 +1659,31 @@ private StackPane getTotalOutputAreaChartSugeno(){
         }
         break;
 
-      case "btnStop":
-        timeline.stop();
+      case "btnSugenoResult":
+        long startS = System.currentTimeMillis();
+
+        for(int i = 0;i<CVList.size();i++){
+          CV cvRank = CVList.get(i);
+          cvRank.setCategoryValueS(getRankSugeno(cvRank));
+        }
+
+        long finishS = System.currentTimeMillis();
+        long timeConsumedMillisS = finishS - startS;
+        tableCV.setItems(CVList);
+        System.out.println("Время выполнения " + timeConsumedMillisS);
+
+      case "btnMamdaniResult":
+        long startM = System.currentTimeMillis();
+
+        for(int i = 0;i<CVList.size();i++){
+          CV cvRank = CVList.get(i);
+          cvRank.setCategoryValueM(getRankMamdani(cvRank));
+        }
+
+        long finishM = System.currentTimeMillis();
+        long timeConsumedMillisM = finishM - startM;
+        tableCV.setItems(CVList);
+        System.out.println("Время выполнения " + timeConsumedMillisM);
         break;
     }
 
