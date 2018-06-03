@@ -34,7 +34,22 @@ public class CV {
   private SimpleStringProperty categoryNameS = new SimpleStringProperty("");
   private SimpleDoubleProperty categoryValueM = new SimpleDoubleProperty(0);
   private SimpleDoubleProperty categoryValueS = new SimpleDoubleProperty(0);
+  private SimpleIntegerProperty age = new SimpleIntegerProperty(0);
 
+  ///////////////
+
+
+  public int getAge() {
+    return age.get();
+  }
+
+  public SimpleIntegerProperty ageProperty() {
+    return age;
+  }
+
+  public void setAge(int age) {
+    this.age.set(age);
+  }
 
   public String getCategoryNameM() {
     return categoryNameM.get();
@@ -88,7 +103,7 @@ public class CV {
 
 
 
-///////////////
+
 
   public CV() {
   }

@@ -1398,6 +1398,11 @@ private StackPane getTotalOutputAreaChartSugeno(){
         double param1 = 0;
         rowIndex += 1;
         switch (variable1){
+          case AGE:
+            param1 = cv.getAge();
+            Region labelAge = getLabel(String.valueOf(param1));
+            root.add(labelAge,i,rowIndex);
+            break;
           case WORK_EXPERIENCE:
             param1 = cv.getExperience();
             Region labelWorkExperience = getLabel(String.valueOf(param1));

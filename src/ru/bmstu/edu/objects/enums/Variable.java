@@ -1,7 +1,7 @@
 package ru.bmstu.edu.objects.enums;
 
 public enum Variable {
-
+  AGE("Возраст"),
   SALARY ("Размер заработной платы"),
   WORK_EXPERIENCE("Стаж работы"),
   POSITION("Желаемая должность"),
