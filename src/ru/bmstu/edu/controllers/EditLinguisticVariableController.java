@@ -221,7 +221,7 @@ public class EditLinguisticVariableController{
     String paramMF = txtParamMF.getText();
     MFname codeMF = (MFname)comboCode.getSelectionModel().getSelectedItem();
     if(!nameMF.isEmpty() && !paramMF.isEmpty()){
-      MembershipFunction mf = new MembershipFunction(nameMF,paramMF,codeMF.getCode());
+      MembershipFunction mf = new MembershipFunction(nameMF,codeMF.getCode(),paramMF);
       if(!txtSugenoConstant.getText().isEmpty()){
         mf.setConstantSugeno(Double.valueOf(txtSugenoConstant.getText()));
       }
