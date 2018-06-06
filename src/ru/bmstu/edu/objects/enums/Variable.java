@@ -5,6 +5,8 @@ public enum Variable {
   SALARY ("Размер заработной платы"),
   WORK_EXPERIENCE("Стаж работы"),
   POSITION("Желаемая должность"),
+  EDUCATION("Образование"),
+  BUSY_TYPE("Занятость"),
   RANK("Категория");
 
 

@@ -1403,6 +1403,17 @@ private StackPane getTotalOutputAreaChartSugeno(){
             Region labelAge = getLabel(String.valueOf(param1));
             root.add(labelAge,i,rowIndex);
             break;
+          case EDUCATION:
+            param1 = cv.getEducation();
+            Region labelEducation = getLabel(String.valueOf(param1));
+            root.add(labelEducation,i,rowIndex);
+            break;
+          case BUSY_TYPE:
+            param1 = cv.getBusytype();
+            Region labelBusyType = getLabel(String.valueOf(param1));
+            root.add(labelBusyType,i,rowIndex);
+            break;
+
           case WORK_EXPERIENCE:
             param1 = cv.getExperience();
             Region labelWorkExperience = getLabel(String.valueOf(param1));
@@ -1469,6 +1480,19 @@ private StackPane getTotalOutputAreaChartSugeno(){
             if(variable1.equals(variable2)){
 
               switch (variable2) {
+                case AGE:
+                  Region chartAge1 = getAreaChart(ifMF,cv.getAge(),ruleID , variableID,linguisticVariable);
+                  root.add(chartAge1,i,rowIndex+1);
+                  break;
+                case EDUCATION:
+                  Region chartEducation1 = getAreaChart(ifMF,cv.getEducation(), ruleID, variableID,linguisticVariable);
+                  root.add(chartEducation1,i,rowIndex+1);
+                  break;
+                case BUSY_TYPE:
+                  Region chartBusyType1 = getAreaChart(ifMF,cv.getBusytype(), ruleID, variableID,linguisticVariable);
+                  root.add(chartBusyType1,i,rowIndex+1);
+                  break;
+
                 case WORK_EXPERIENCE:
                   //Построение графика
                   Region chartExperience1 = getAreaChart(ifMF,cv.getExperience(),ruleID , variableID,linguisticVariable);
@@ -1498,6 +1522,18 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
             if(variable1.equals(variable3)){
               switch (variable3) {
+                case AGE:
+                  Region chartAge2 = getAreaChart(andMF,cv.getAge(), ruleID, variableID,linguisticVariable);
+                  root.add(chartAge2,i,rowIndex+1);
+                  break;
+                case EDUCATION:
+                  Region chartEducation2 = getAreaChart(andMF,cv.getEducation(), ruleID, variableID,linguisticVariable);
+                  root.add(chartEducation2,i,rowIndex+1);
+                  break;
+                case BUSY_TYPE:
+                  Region chartBusyType2 = getAreaChart(andMF,cv.getBusytype(), ruleID, variableID,linguisticVariable);
+                  root.add(chartBusyType2,i,rowIndex+1);
+                  break;
                 case WORK_EXPERIENCE:
                   //Построение графика
                   Region chartExperience2 = getAreaChart(andMF,cv.getExperience(), ruleID, variableID,linguisticVariable);
@@ -1639,15 +1675,16 @@ private StackPane getTotalOutputAreaChartSugeno(){
     return listCharts;
   }
 
-  private void fillData(){
+  private void fillData() throws SQLException {
     CVList.clear();
-    StringBuilder query = new StringBuilder("select id, positionname, salary, experience from cvdata.bmstu.CV");
+    StringBuilder query = new StringBuilder("SELECT q.graduateyear,id, positionname, salary, experience,busytype,idowner FROM cvdata.bmstu.cv c,\n" +
+        "LATERAL (select min(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q ");
     StringBuilder where = new StringBuilder("");
     if(txtPositionName.getText().isEmpty()) return;
     if(where.toString().isEmpty()){
       where.append(" where ");
     }
-    where.append(" positionname like '%"+ txtPositionName.getText()+"%'");
+    where.append(" positionname ilike '%"+ txtPositionName.getText()+"%'");
 
     if(!where.toString().isEmpty()){
       query.append(where.toString());
@@ -1661,10 +1698,48 @@ private StackPane getTotalOutputAreaChartSugeno(){
       while (rs.next()){
         CV cv = new CV();
         cv.setId(rs.getInt("id"));
+        int graduateYear = rs.getInt("graduateyear");
+        cv.setAge(2018-graduateYear+18+rs.getInt("experience"));
         cv.setPositionname(rs.getString("positionname"));
         cv.setSalary(rs.getInt("salary"));
         cv.setExperience(rs.getInt("experience"));
-        //cv.setCategoryName(getRank(cv));
+        String idOwner = rs.getString("idowner");
+        String busyType = rs.getString("busytype");
+        switch (busyType){
+          case "Частичная занятость":
+            cv.setBusytype(0.1);
+            break;
+          case "Временная":
+            cv.setBusytype(0.25);
+            break;
+          case "Полная занятость":
+            cv.setBusytype(0.7);
+            break;
+        }
+        if(graduateYear>0){
+          String eduQueryH = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
+              "(legalname ILIKE ('%университет%') or legalname ILIKE ('%институт%') or legalname ILIKE ('%академия%')) and idowner = '"+idOwner+"' limit 1;";
+
+          try(PreparedStatement stmt2 = PostgreSQLConnection.getConnection().prepareStatement(eduQueryH.toString())) {
+            ResultSet rs2 = stmt2.executeQuery();
+            if(rs2.next()){
+              cv.setEducation(0.85);
+            }else{
+              String eduQueryM = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
+                  "(legalname ILIKE ('%техникум%') or legalname ILIKE ('%колледж%') or legalname ILIKE ('%сред%проф%')) and idowner = '"+idOwner+"' limit 1;";
+              try(PreparedStatement stmt3 = PostgreSQLConnection.getConnection().prepareStatement(eduQueryH.toString())) {
+                ResultSet rs3 = stmt3.executeQuery();
+                if (rs3.next()) {
+                  cv.setEducation(0.5);
+                } else {
+                  cv.setEducation(0.175);
+                }
+              }
+            }
+          }
+        }
+
+
         CVList.add(cv);
         count +=1;
       }
@@ -1674,7 +1749,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
       e.printStackTrace();
     }
   }
-  public void actionButtonPressed(ActionEvent actionEvent) {
+  public void actionButtonPressed(ActionEvent actionEvent) throws SQLException {
     Object source = actionEvent.getSource();
     if (!(source instanceof Button)) {
       return;

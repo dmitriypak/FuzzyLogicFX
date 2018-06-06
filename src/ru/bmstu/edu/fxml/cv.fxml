@@ -30,7 +30,7 @@
             <Button fx:id="btnViewCV" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" />
             <Button fx:id="btnMamdaniResult" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
             <Button fx:id="btnSugenoResult" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" />
-            <CustomTextField fx:id="txtPositionName" prefHeight="25.0" prefWidth="315.0" text="бухгалтер" />
+            <CustomTextField fx:id="txtPositionName" prefHeight="25.0" prefWidth="315.0" text="программист" />
             <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#actionButtonPressed" text="Поиск" />
         </items>
       </ToolBar>

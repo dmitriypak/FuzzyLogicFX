@@ -9,7 +9,7 @@ public class CV {
   private SimpleStringProperty creationdate = new SimpleStringProperty("");
   private SimpleStringProperty candidateid = new SimpleStringProperty("");
   private SimpleStringProperty locality = new SimpleStringProperty("");
-  private SimpleStringProperty positionname = new SimpleStringProperty("");
+
   private SimpleStringProperty idowner = new SimpleStringProperty("");
   private SimpleStringProperty drivelicences = new SimpleStringProperty("");
   private SimpleStringProperty countryName = new SimpleStringProperty("");
@@ -19,7 +19,7 @@ public class CV {
   private SimpleIntegerProperty salary = new SimpleIntegerProperty(0);
   private SimpleStringProperty skills = new SimpleStringProperty("");
   private SimpleStringProperty additionalskills = new SimpleStringProperty("");
-  private SimpleStringProperty busytype = new SimpleStringProperty("");
+
   private SimpleStringProperty relocation = new SimpleStringProperty("");
   private SimpleStringProperty businesstrips = new SimpleStringProperty("");
   private SimpleStringProperty addcertificates = new SimpleStringProperty("");
@@ -34,9 +34,41 @@ public class CV {
   private SimpleStringProperty categoryNameS = new SimpleStringProperty("");
   private SimpleDoubleProperty categoryValueM = new SimpleDoubleProperty(0);
   private SimpleDoubleProperty categoryValueS = new SimpleDoubleProperty(0);
+
+
+  private SimpleStringProperty positionname = new SimpleStringProperty("");
   private SimpleIntegerProperty age = new SimpleIntegerProperty(0);
+  private SimpleDoubleProperty busytype = new SimpleDoubleProperty(0);
+  private SimpleDoubleProperty education = new SimpleDoubleProperty(0);
 
   ///////////////
+
+  public double getEducation() {
+    return education.get();
+  }
+
+  public SimpleDoubleProperty educationProperty() {
+    return education;
+  }
+
+  public void setEducation(double education) {
+    this.education.set(education);
+  }
+
+
+
+  public double getBusytype() {
+    return busytype.get();
+  }
+
+  public SimpleDoubleProperty busytypeProperty() {
+    return busytype;
+  }
+
+  public void setBusytype(double busytype) {
+    this.busytype.set(busytype);
+  }
+
 
 
   public int getAge() {
@@ -278,18 +310,6 @@ public class CV {
 
   public void setAdditionalskills(String additionalskills) {
     this.additionalskills.set(additionalskills);
-  }
-
-  public String getBusytype() {
-    return busytype.get();
-  }
-
-  public SimpleStringProperty busytypeProperty() {
-    return busytype;
-  }
-
-  public void setBusytype(String busytype) {
-    this.busytype.set(busytype);
   }
 
   public String getRelocation() {

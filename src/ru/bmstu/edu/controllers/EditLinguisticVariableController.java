@@ -281,7 +281,7 @@ public class EditLinguisticVariableController{
 
   public void actionSave(ActionEvent actionEvent) throws SQLException {
     if(mfList.size()==0) return;
-    if(comboTypeVariable.getValue()==null || comboCode.getValue()==null){
+    if(comboTypeVariable.getValue()==null){
       Alert alert = new Alert(Alert.AlertType.WARNING);
       alert.setTitle("Ошибка");
       alert.setHeaderText(null);
