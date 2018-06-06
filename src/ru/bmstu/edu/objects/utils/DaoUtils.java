@@ -167,7 +167,7 @@ public class DaoUtils {
 
   public static void updateRule(Rule rule, int idVariable, int idRule) throws SQLException {
     String query = "UPDATE cvdata.bmstu.rules "
-        + " SET idvariable = ?, value = ? WHERE id = ?" ;
+        + " SET idvariable = ?, value = ? WHERE id = ?;" ;
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
         int i = 0;
         pstmt.setInt(++i,idVariable);
@@ -177,7 +177,6 @@ public class DaoUtils {
         pstmt.setObject(++i, jsonObject);
         pstmt.setInt(++i,rule.getIdRule());
         pstmt.executeUpdate();
-
       }catch (Exception ex){
       ex.printStackTrace();
     }

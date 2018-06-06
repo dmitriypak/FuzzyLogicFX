@@ -89,23 +89,15 @@ public class cvController {
   private FXMLLoader fxmlLoaderCV = new FXMLLoader();
   private ViewRulesController viewRulesController;
   private CVDetailController cvDetailController;
-//  private ArrayList<LinguisticVariable> listInputVariables = DaoUtils.getInputVariables();
-//  private ArrayList<LinguisticVariable> listOutputVariables = DaoUtils.getOutputVariables();
-  private ArrayList<LinguisticVariable> listVariables = DaoUtils.getVariables();
-  private Map<String,LinguisticVariable> mapInputVariables = DaoUtils.getMapInputVariables();
-  private Map<String,LinguisticVariable> mapOutputVariables = DaoUtils.getMapOutputVariables();
+  private ArrayList<LinguisticVariable> listVariables;
+  private Map<String,LinguisticVariable> mapInputVariables;
+  private Map<String,LinguisticVariable> mapOutputVariables;
   private Scene scene;
   private static Map<Integer,Rule> mapRules;
   private double accumulationResult;
-  static {
-    try {
-      mapRules = DaoUtils.getMapRules();
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-  }
 
-  private Timeline timeline;
+
+  private static Timeline timeline = new Timeline();
   private Map<String,Double> mapLabelValues = new LinkedHashMap<>();
   private static String totalRank = "";
   private static List<MembershipFunction> mfList;
@@ -116,6 +108,8 @@ public class cvController {
 
   @FXML
   private void initialize(){
+    System.out.println("Initialize");
+
     DaoUtils.setupClearButtonField(txtPositionName);
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
     colSalary.setCellValueFactory(new PropertyValueFactory<CV,Integer>("salary"));
@@ -218,8 +212,8 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
-                  param = 0.5;
-                  double stPosition = getStValue(ifMF,param,linguisticVariable);
+                  double stPosition = getStValue(ifMF,cv.getPosition(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stPosition);
                   break;
               }
             }
@@ -255,8 +249,8 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
-                  param = 0.5;
-                  double stPosition = getStValue(andMF,param,linguisticVariable);
+                  double stPosition = getStValue(andMF,cv.getPosition(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stPosition);
                   break;
               }
             }
@@ -318,7 +312,6 @@ public class cvController {
           int ruleID = rule.getIdRule();
           Map<String,Condition> mapIF = rule.getIFConditionMap();
           Map<String,Condition> mapAND = rule.getANDConditionMap();
-          double param = 0;
           //Переменная IF
           for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
             LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
@@ -350,8 +343,8 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
-                  param = 0.5;
-                  double stPosition = getStValue(ifMF,param,linguisticVariable);
+                  double stPosition = getStValue(ifMF,cv.getPosition(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stPosition);
                   break;
               }
             }
@@ -387,8 +380,8 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
-                  param = 0.5;
-                  double stPosition = getStValue(andMF,param,linguisticVariable);
+                  double stPosition = getStValue(andMF,cv.getPosition(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stPosition);
                   break;
               }
             }
@@ -542,8 +535,8 @@ public class cvController {
     series1.getData().add(new XYChart.Data<Number,Number>(param,0));
     series1.getData().add(new XYChart.Data<Number,Number>(param,1));
 
-    timeline = new Timeline();
-    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+   // timeline = new Timeline();
+      timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
         double newValue = 0;
@@ -793,7 +786,7 @@ public class cvController {
     chart.setId("chart"+variableID+ruleID+mf.getCodeMF());
     chart.setAnimated(false);
 
-    Timeline timeline = new Timeline();
+    //Timeline timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -879,7 +872,7 @@ public class cvController {
 
         if(textField!=null){
           String categoryName = getCategoryName(accumulationResult);
-
+          System.out.println(categoryName);
           textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
 
         }
@@ -1391,8 +1384,13 @@ private StackPane getTotalOutputAreaChartSugeno(){
     cvStage.showAndWait();
   }
 
-  private void showDialog(CV cv) {
+  private void showDialog(CV cv) throws ParseException {
     if (cv!=null) {
+      mapRules = DaoUtils.getMapRules();
+      listVariables = DaoUtils.getVariables();
+      mapInputVariables = DaoUtils.getMapInputVariables();
+      mapOutputVariables = DaoUtils.getMapOutputVariables();
+
       Stage viewRulesStage = new Stage();
       GridPane root = new GridPane();
       root.setAlignment(Pos.CENTER);
@@ -1474,7 +1472,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
             root.add(labelSalary,i,rowIndex);
             break;
           case POSITION:
-            param1 = 0.5;
+            param1 = cv.getPosition();
             Region labelPosition = getLabel(String.valueOf(param1));
             root.add(labelPosition,i,rowIndex);
             break;
@@ -1518,7 +1516,6 @@ private StackPane getTotalOutputAreaChartSugeno(){
           int ruleID = rule.getIdRule();
           Map<String,Condition> mapIF = rule.getIFConditionMap();
           Map<String,Condition> mapAND = rule.getANDConditionMap();
-          double param = 0;
           //Переменная IF
           for(Map.Entry<String, Condition> entry:mapIF.entrySet()){
             LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
@@ -1553,8 +1550,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
                   root.add(chartSalary1,i,rowIndex+1);
                   break;
                 case POSITION:
-                  param = 0.5;
-                  Region chartPosition1 = getAreaChart(ifMF,param, ruleID, variableID,linguisticVariable);
+                  Region chartPosition1 = getAreaChart(ifMF,cv.getPosition(), ruleID, variableID,linguisticVariable);
                   root.add(chartPosition1,i,rowIndex+1);
 
                   break;
@@ -1596,7 +1592,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
                   break;
                 case POSITION:
                   //Построение графика
-                  Region chartPosition2 = getAreaChart(andMF,param,ruleID, variableID,linguisticVariable);
+                  Region chartPosition2 = getAreaChart(andMF,cv.getPosition(),ruleID, variableID,linguisticVariable);
                   root.add(chartPosition2,i,rowIndex+1);
                   break;
               }
@@ -1749,7 +1745,22 @@ private StackPane getTotalOutputAreaChartSugeno(){
         cv.setId(rs.getInt("id"));
         int graduateYear = rs.getInt("graduateyear");
         cv.setAge(2018-graduateYear+18+rs.getInt("experience"));
-        cv.setPositionname(rs.getString("positionname"));
+        String positionName = rs.getString("positionname");
+        cv.setPositionname(positionName);
+        if(positionName.toLowerCase().indexOf("директор")>0){
+          cv.setPosition(0.9);
+        }else{
+          if(positionName.toLowerCase().indexOf("начальник")>0) {
+            cv.setPosition(0.8);
+          }else{
+            if(positionName.toLowerCase().indexOf("руководитель")>0) {
+              cv.setPosition(0.7);
+            }else{
+              cv.setPosition(0.5);
+            }
+          }
+        }
+
         cv.setSalary(rs.getInt("salary"));
         cv.setExperience(rs.getInt("experience"));
         String idOwner = rs.getString("idowner");
@@ -1802,7 +1813,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
       e.printStackTrace();
     }
   }
-  public void actionButtonPressed(ActionEvent actionEvent) throws SQLException {
+  public void actionButtonPressed(ActionEvent actionEvent) throws SQLException, ParseException {
     Object source = actionEvent.getSource();
     if (!(source instanceof Button)) {
       return;
@@ -1830,6 +1841,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
         if(chart!=null){
           chart.getData().clear();
         }
+
+        timeline.getKeyFrames().clear();
+        timeline.stop();
         break;
 
       case "btnSugenoResult":

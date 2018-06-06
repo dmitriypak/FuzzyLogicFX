@@ -104,6 +104,7 @@ public class MainController {
           Stage stage = getStage("../fxml/projects.fxml","Список проектов");
           stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
           stage.showAndWait();
+
         } catch (IOException e) {
           e.printStackTrace();
         }

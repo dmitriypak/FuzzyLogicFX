@@ -37,6 +37,7 @@ public class CV {
 
 
   private SimpleStringProperty positionname = new SimpleStringProperty("");
+  private SimpleDoubleProperty position = new SimpleDoubleProperty(0);
   private SimpleIntegerProperty age = new SimpleIntegerProperty(0);
   private SimpleDoubleProperty busytype = new SimpleDoubleProperty(0);
   private SimpleDoubleProperty education = new SimpleDoubleProperty(0);
@@ -49,6 +50,30 @@ public class CV {
 
   public SimpleDoubleProperty educationProperty() {
     return education;
+  }
+
+  public String getPositionname() {
+    return positionname.get();
+  }
+
+  public SimpleStringProperty positionnameProperty() {
+    return positionname;
+  }
+
+  public void setPositionname(String positionname) {
+    this.positionname.set(positionname);
+  }
+
+  public double getPosition() {
+    return position.get();
+  }
+
+  public SimpleDoubleProperty positionProperty() {
+    return position;
+  }
+
+  public void setPosition(double position) {
+    this.position.set(position);
   }
 
   public void setEducation(double education) {
@@ -192,17 +217,6 @@ public class CV {
     this.locality.set(locality);
   }
 
-  public String getPositionname() {
-    return positionname.get();
-  }
-
-  public SimpleStringProperty positionnameProperty() {
-    return positionname;
-  }
-
-  public void setPositionname(String positionname) {
-    this.positionname.set(positionname);
-  }
 
   public String getIdowner() {
     return idowner.get();
