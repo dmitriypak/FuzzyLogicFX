@@ -201,6 +201,18 @@ public class cvController {
                   double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stWorkExperience);
                   break;
+                case AGE:
+                  double stAge = getStValue(ifMF,cv.getAge(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stAge);
+                  break;
+                case EDUCATION:
+                  double stEducation = getStValue(ifMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stEducation);
+                  break;
+                case BUSY_TYPE:
+                  double stBusyType = getStValue(ifMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stBusyType);
+                  break;
                 case SALARY:
                   double stSalary = getStValue(ifMF,cv.getSalary(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
@@ -222,6 +234,18 @@ public class cvController {
 
             if(variable1.equals(variable3)){
               switch (variable3) {
+                case AGE:
+                  double stAge = getStValue(andMF,cv.getAge(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stAge);
+                  break;
+                case EDUCATION:
+                  double stEducation = getStValue(andMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stEducation);
+                  break;
+                case BUSY_TYPE:
+                  double stBusyType = getStValue(andMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stBusyType);
+                  break;
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(andMF,cv.getExperience(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stWorkExperience);
@@ -304,6 +328,19 @@ public class cvController {
 
             if(variable1.equals(variable2)){
               switch (variable2) {
+                case AGE:
+                  double stAge = getStValue(ifMF,cv.getAge(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stAge);
+                  break;
+                case EDUCATION:
+                  double stEducation = getStValue(ifMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stEducation);
+                  break;
+                case BUSY_TYPE:
+                  double stBusyType = getStValue(ifMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stBusyType);
+                  break;
+
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stWorkExperience);
@@ -329,6 +366,18 @@ public class cvController {
 
             if(variable1.equals(variable3)){
               switch (variable3) {
+                case AGE:
+                  double stAge = getStValue(andMF,cv.getAge(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stAge);
+                  break;
+                case EDUCATION:
+                  double stEducation = getStValue(andMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stEducation);
+                  break;
+                case BUSY_TYPE:
+                  double stBusyType = getStValue(andMF,cv.getEducation(),linguisticVariable);
+                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stBusyType);
+                  break;
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(andMF,cv.getExperience(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stWorkExperience);
@@ -1707,7 +1756,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
         String busyType = rs.getString("busytype");
         switch (busyType){
           case "Частичная занятость":
-            cv.setBusytype(0.1);
+            cv.setBusytype(0.15);
             break;
           case "Временная":
             cv.setBusytype(0.25);
@@ -1715,6 +1764,10 @@ private StackPane getTotalOutputAreaChartSugeno(){
           case "Полная занятость":
             cv.setBusytype(0.7);
             break;
+          case "Сезонная":
+          case "Стажировка":
+          case "Удаленная":
+            cv.setBusytype(0.1);
         }
         if(graduateYear>0){
           String eduQueryH = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
