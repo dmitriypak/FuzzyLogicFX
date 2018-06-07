@@ -1,6 +1,5 @@
 package ru.bmstu.edu.controllers;
 
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
@@ -16,7 +15,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.*;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
@@ -608,7 +610,7 @@ public class cvController {
         }
       }
     }));
-    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setCycleCount(1);
     timeline.setAutoReverse(true);
     timeline.play();
     chart.getData().addAll(series,series2,series1);
@@ -712,7 +714,7 @@ public class cvController {
 
       }
     }));
-    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setCycleCount(1);
     timeline.setAutoReverse(true);
     timeline.play();
 
@@ -872,7 +874,7 @@ public class cvController {
 
         if(textField!=null){
           String categoryName = getCategoryName(accumulationResult);
-          System.out.println(categoryName);
+          //System.out.println(categoryName);
           textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
 
         }
@@ -881,7 +883,7 @@ public class cvController {
 
       }
     }));
-    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setCycleCount(1);
     timeline.setAutoReverse(true);
     timeline.play();
 
@@ -1041,7 +1043,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
     }
   }));
-  timeline.setCycleCount(Animation.INDEFINITE);
+  timeline.setCycleCount(1);
   timeline.setAutoReverse(true);
   timeline.play();
   chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
@@ -1202,7 +1204,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
         }
       }
     }));
-    timeline.setCycleCount(Animation.INDEFINITE);
+    timeline.setCycleCount(1);
     timeline.setAutoReverse(true);
     timeline.play();
     chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
@@ -1486,6 +1488,8 @@ private StackPane getTotalOutputAreaChartSugeno(){
           public void changed(ObservableValue<? extends Number> obsVal,
                               Number oldVal, Number newVal) {
             System.out.println(newVal.doubleValue());
+            timeline.stop();
+            timeline.play();
           }
         });
         hBox.getChildren().add(slider);
@@ -1723,7 +1727,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
   private void fillData() throws SQLException {
     CVList.clear();
     StringBuilder query = new StringBuilder("SELECT q.graduateyear,id, positionname, salary, experience,busytype,idowner FROM cvdata.bmstu.cv c,\n" +
-        "LATERAL (select min(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q ");
+        "LATERAL (select max(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q ");
     StringBuilder where = new StringBuilder("");
     if(txtPositionName.getText().isEmpty()) return;
     if(where.toString().isEmpty()){
