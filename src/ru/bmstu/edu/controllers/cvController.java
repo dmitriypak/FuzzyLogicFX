@@ -624,7 +624,7 @@ public class cvController {
 
   //Выходной график Сугено
 
-  private StackPane getOutputAreaChartSugeno(MembershipFunction mf, double param, int ruleID, int variableID){
+  private StackPane getOutputAreaChartSugeno(MembershipFunction mf, int ruleID, int variableID){
     StackPane stack = new StackPane();
     Label stLabel = getLabel();
     stLabel.setId("label"+variableID+ ruleID+mf.getCodeMF());
@@ -658,7 +658,7 @@ public class cvController {
     series.getData().add(new XYChart.Data<Number, Number>(constantValue, 0));
     series.getData().add(new XYChart.Data<Number, Number>(constantValue, 1));
 
-    Timeline timeline = new Timeline();
+    //Timeline timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -685,14 +685,14 @@ public class cvController {
         }
 
 
-        if(valueCategory>0){
+        //if(valueCategory>0){
           double offset=0.01;
           series1.getData().clear();
           series1.getData().add(new XYChart.Data<Number, Number>(constantValue-offset, valueCategory-offset));
           series1.getData().add(new XYChart.Data<Number, Number>(constantValue-offset, valueCategory+offset*2));
           series1.getData().add(new XYChart.Data<Number, Number>(constantValue+offset*2, valueCategory+offset*2));
           series1.getData().add(new XYChart.Data<Number, Number>(constantValue+offset*2, valueCategory-offset*2));
-        }
+        //}
 
 
         Label label = (Label) scene.lookup("#label"+variableID+ruleID+mf.getCodeMF());
@@ -1113,7 +1113,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
 
     //Map<String,Double>
-    Timeline timeline = new Timeline();
+    //Timeline timeline = new Timeline();
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
@@ -1631,7 +1631,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
                       //Sugeno
                     case 1:
-                      rank = getOutputAreaChartSugeno(thenMF,0,ruleID, variableID);
+                      rank = getOutputAreaChartSugeno(thenMF,ruleID, variableID);
                       break;
                   }
                   root.add(rank,i,rowIndex+1);

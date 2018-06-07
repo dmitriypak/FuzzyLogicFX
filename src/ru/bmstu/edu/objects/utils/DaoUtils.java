@@ -197,7 +197,7 @@ public class DaoUtils {
     Map<Integer,Rule> mapRules = new LinkedHashMap<>();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
-        ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
+        ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true' ORDER by id")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         Map<String,Condition> ifMap = new LinkedHashMap<>();
