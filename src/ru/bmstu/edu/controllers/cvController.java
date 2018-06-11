@@ -109,8 +109,14 @@ public class cvController {
   }
 
   @FXML
-  private void initialize(){
+  private void initialize() throws ParseException {
     System.out.println("Initialize");
+
+    mapRules = DaoUtils.getMapRules();
+    listVariables = DaoUtils.getVariables();
+    mapInputVariables = DaoUtils.getMapInputVariables();
+    mapOutputVariables = DaoUtils.getMapOutputVariables();
+
 
     DaoUtils.setupClearButtonField(txtPositionName);
     colPosition.setCellValueFactory(new PropertyValueFactory<CV,String>("positionname"));
@@ -419,7 +425,7 @@ public class cvController {
         }
 
         //Вывод COG
-        rank = Math.round(Mamdani.getCenterOfGravity(mapRules) * 100.0) / 100.0;
+        //rank = Math.round(Mamdani.getCenterOfGravity(mapRules) * 100.0) / 100.0;
 
       }
 
@@ -868,19 +874,6 @@ public class cvController {
             break;
         }
 
-        //Вывод COG
-        accumulationResult = Math.round(Mamdani.getCenterOfGravity(mapRules)*100.0)/100.0;
-        TextField textField = (TextField) scene.lookup(textFieldName);
-
-        if(textField!=null){
-          String categoryName = getCategoryName(accumulationResult);
-          //System.out.println(categoryName);
-          textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
-
-        }
-
-
-
       }
     }));
     timeline.setCycleCount(1);
@@ -1060,21 +1053,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
   private StackPane getTotalOutputAreaChartMamdani(){
     StackPane stack = new StackPane();
-
-    Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
-    for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
-      LinguisticVariable variable =  mapOutputVariables.get(entry.getKey());
-      Variable var= Variable.getVariableByName(variable.getName());
-      switch (var) {
-        case RANK:
-        mfList = variable.getMfList();
-        break;
-      }
-    }
-
-    for(int i = 0;i<mfList.size();i++){
-      mapGraph.put(mfList.get(i),0.0);
-    }
+//    for(int i = 0;i<mfList.size();i++){
+//      mapGraph.put(mfList.get(i),0.0);
+//    }
 
 
     final NumberAxis xAxis = new NumberAxis(0,1,0) ;
@@ -1117,6 +1098,18 @@ private StackPane getTotalOutputAreaChartSugeno(){
     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
+
+        Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
+        LinguisticVariable variable = null;
+        for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
+          variable =  mapOutputVariables.get(entry.getKey());
+          Variable var= Variable.getVariableByName(variable.getName());
+          switch (var) {
+            case RANK:
+              mfList = variable.getMfList();
+              break;
+          }
+        }
 
         seriesOutput4.getData().clear();
         seriesOutput5.getData().clear();
@@ -1162,13 +1155,14 @@ private StackPane getTotalOutputAreaChartSugeno(){
           }
         }
 
+        double valueCategory = 0;
         for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
           String value[] = m.getKey().getParamValueMF().split(" ");
           //System.out.println("Graph " + m.getKey().getCodeMF() + "  " + m.getValue() + " size " + mapGraph.size());
-          double valueCategory = m.getValue();
+          valueCategory = m.getValue();
           String mfCode = m.getKey().getCodeMF();
           MFname mFname = MFname.getMFnameByCode(mfCode);
-          //System.out.println("MFCode " + mfCode );
+
           switch (mFname){
             case PLS:
               if(valueCategory>0){
@@ -1201,6 +1195,18 @@ private StackPane getTotalOutputAreaChartSugeno(){
               }
               break;
           }
+        }
+
+
+        //Вывод COG
+        accumulationResult = Math.round(Mamdani.getCenterOfGravity(mapGraph)*100.0)/100.0;
+
+        String textFieldName =  "#textField"+variable.getId();
+        TextField textField = (TextField) scene.lookup(textFieldName);
+        if(textField!=null){
+          String categoryName = getCategoryName(accumulationResult);
+          //System.out.println(categoryName);
+          textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
         }
       }
     }));
@@ -1388,11 +1394,6 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
   private void showDialog(CV cv) throws ParseException {
     if (cv!=null) {
-      mapRules = DaoUtils.getMapRules();
-      listVariables = DaoUtils.getVariables();
-      mapInputVariables = DaoUtils.getMapInputVariables();
-      mapOutputVariables = DaoUtils.getMapOutputVariables();
-
       Stage viewRulesStage = new Stage();
       GridPane root = new GridPane();
       root.setAlignment(Pos.CENTER);
@@ -1727,13 +1728,14 @@ private StackPane getTotalOutputAreaChartSugeno(){
   private void fillData() throws SQLException {
     CVList.clear();
     StringBuilder query = new StringBuilder("SELECT q.graduateyear,id, positionname, salary, experience,busytype,idowner FROM cvdata.bmstu.cv c,\n" +
-        "LATERAL (select max(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q ");
+        "LATERAL (select max(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q  ");
     StringBuilder where = new StringBuilder("");
     if(txtPositionName.getText().isEmpty()) return;
     if(where.toString().isEmpty()){
       where.append(" where ");
     }
     where.append(" positionname ilike '%"+ txtPositionName.getText()+"%'");
+    where.append(" and locality = '7700000000000'");
 
     if(!where.toString().isEmpty()){
       query.append(where.toString());
