@@ -18,7 +18,7 @@ import org.controlsfx.control.CheckTreeView;
 import org.json.simple.parser.ParseException;
 import ru.bmstu.edu.objects.Condition;
 import ru.bmstu.edu.objects.Rule;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;

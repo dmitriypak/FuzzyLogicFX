@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import ru.bmstu.edu.objects.CV;
 import ru.bmstu.edu.objects.LinguisticVariable;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.util.ArrayList;
 

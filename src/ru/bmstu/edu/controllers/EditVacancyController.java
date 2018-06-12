@@ -15,7 +15,7 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Vacancy;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

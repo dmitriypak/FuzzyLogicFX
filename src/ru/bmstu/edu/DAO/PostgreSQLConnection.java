@@ -5,20 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class PostgreSQLConnection {
-    private static Connection conn;
+    private static Connection connection;
 
     public static Connection getConnection() throws SQLException {
-        if (conn==null){
+        if (connection==null){
             try {
                 Class.forName("org.postgresql.Driver");
-                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/cvdata","postgres", "postgres");
+                connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/cvdata","postgres", "postgres");
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
                 return null;
             }
         }
-        return conn;
+        return connection;
     }
 
 

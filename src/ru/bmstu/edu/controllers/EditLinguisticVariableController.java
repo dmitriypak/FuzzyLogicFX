@@ -18,14 +18,11 @@ import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.postgresql.util.PGobject;
-import ru.bmstu.edu.DAO.PostgreSQLConnection;
+import ru.bmstu.edu.model.DaoUtils;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.enums.MFname;
-import ru.bmstu.edu.objects.utils.DaoUtils;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class EditLinguisticVariableController{
@@ -310,50 +307,15 @@ public class EditLinguisticVariableController{
     linguisticVariable.setType(comboTypeVariable.getValue().toString());
 
     if(linguisticVariable.getId()!=0){
-      updateLinguisticVariable(linguisticVariable);
+      DaoUtils.updateLinguisticVariable(linguisticVariable);
     }
     else{
-      insertLinguisticVariable(linguisticVariable);
+      DaoUtils.insertLinguisticVariable(linguisticVariable);
     }
 
     actionClose(actionEvent);
   }
 
-  private void insertLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
-    String query = "INSERT INTO cvdata.bmstu.linguisticvariables "
-        + " (name, value, description, type) "
-        + " VALUES (?, ?, ?, ?);";
-    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
-      int i = 0;
-      pstmt.setString(++i,linguisticVariable.getName());
-      PGobject jsonObject = new PGobject();
-      jsonObject.setType("json");
-      jsonObject.setValue(linguisticVariable.getValue());
-      pstmt.setObject(++i, jsonObject);
-      pstmt.setString(++i,"");
-      pstmt.setString(++i,comboTypeVariable.getValue().toString());
-      pstmt.executeUpdate();
-    }
-  }
-
-  private void updateLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
-    String query = "update cvdata.bmstu.linguisticvariables "
-        + " set name = ?, value = ?, description = ?, type = ? WHERE id = ?";
-    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
-      int i = 0;
-      pstmt.setString(++i,linguisticVariable.getName());
-
-      PGobject jsonObject = new PGobject();
-      jsonObject.setType("json");
-      jsonObject.setValue(linguisticVariable.getValue());
-      pstmt.setObject(++i, jsonObject);
-      pstmt.setString(++i,"");
-      pstmt.setString(++i,comboTypeVariable.getValue().toString());
-      pstmt.setInt(++i,linguisticVariable.getId());
-
-      pstmt.executeUpdate();
-    }
-  }
 
   public LinguisticVariable getVariable(){
     return linguisticVariable;

@@ -20,7 +20,7 @@ import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Project;
 import ru.bmstu.edu.objects.Vacancy;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;

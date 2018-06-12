@@ -17,7 +17,7 @@ import ru.bmstu.edu.objects.Condition;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.Rule;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;

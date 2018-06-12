@@ -36,7 +36,7 @@ import ru.bmstu.edu.objects.enums.MFname;
 import ru.bmstu.edu.objects.enums.Variable;
 import ru.bmstu.edu.objects.fuzzy.Mamdani;
 import ru.bmstu.edu.objects.fuzzy.Sugeno;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.bmstu.edu.objects.utils.DaoUtils.getCVList;
+import static ru.bmstu.edu.model.DaoUtils.getCVList;
 
 
 public class cvController {
@@ -1397,7 +1397,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
       GridPane root = new GridPane();
       root.setAlignment(Pos.CENTER);
       //root.setGridLinesVisible(true);
-      viewRulesStage.setTitle("Мамдани");
+      viewRulesStage.setTitle("Нечеткий вывод");
       viewRulesStage.setMinHeight(600);
       viewRulesStage.setMinWidth(800);
       viewRulesStage.setResizable(true);

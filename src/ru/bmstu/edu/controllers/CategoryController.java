@@ -31,7 +31,7 @@ import ru.bmstu.edu.objects.Category;
 import ru.bmstu.edu.objects.LinguisticVariable;
 import ru.bmstu.edu.objects.MembershipFunction;
 import ru.bmstu.edu.objects.enums.Variable;
-import ru.bmstu.edu.objects.utils.DaoUtils;
+import ru.bmstu.edu.model.DaoUtils;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;

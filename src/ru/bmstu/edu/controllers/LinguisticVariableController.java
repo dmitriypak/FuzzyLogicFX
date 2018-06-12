@@ -3,6 +3,8 @@ package ru.bmstu.edu.controllers;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,14 +21,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import ru.bmstu.edu.DAO.PostgreSQLConnection;
-import ru.bmstu.edu.interfaces.CollectionImpl.LinguisticVariableList;
-import ru.bmstu.edu.interfaces.Collections.LinguisticVariableCollection;
+import ru.bmstu.edu.model.DaoUtils;
 import ru.bmstu.edu.objects.LinguisticVariable;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
@@ -52,7 +50,7 @@ public class LinguisticVariableController {
   private TableColumn colState;
 
 
-  private LinguisticVariableCollection variableList = new LinguisticVariableList();
+  private ObservableList variableList;
   private Parent fxmlEdit;
   private FXMLLoader fxmlLoader = new FXMLLoader();
   private EditLinguisticVariableController editLinguisticVariableController;
@@ -80,7 +78,7 @@ public class LinguisticVariableController {
                               Boolean newValue) {
             linguisticVariable.setIsactive(newValue);
             try {
-              updateVariable(linguisticVariable);
+              DaoUtils.updateVariable(linguisticVariable);
             } catch (SQLException e) {
               e.printStackTrace();
             }
@@ -159,66 +157,25 @@ public class LinguisticVariableController {
 
       case "btnEditVariable":
         editLinguisticVariableController.setLinguisticVariable((LinguisticVariable) tableViewVariables.getSelectionModel().getSelectedItem());
-        //variableList.clear();
-        //fillData();
         showDialog();
         break;
 
       case "btnDeleteVariable":
         LinguisticVariable delVariable;
         delVariable = (LinguisticVariable)tableViewVariables.getSelectionModel().getSelectedItem();
-        variableList.delete(delVariable);
-        deleteVariable(delVariable);
+        variableList.remove(delVariable);
+        DaoUtils.deleteVariable(delVariable);
         break;
-//      case "btnSaveVariable":
-//        String query = "UPDATE INTO cvdata.bmstu.linguisticvariables set isactive = ? where id = ?";
-//        try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
-//          int i = 0;
-//          pstmt.setObject(++i,);
-//          pstmt.setObject(++i, jsonObject);
-//
-//          pstmt.executeUpdate();
-//        }
-//        break;
     }
 
 
   }
-  private void updateVariable(LinguisticVariable linguisticVariable) throws SQLException {
-    String query = "UPDATE cvdata.bmstu.linguisticvariables set isactive = ? where id = ?";
-      try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
-        int i = 0;
-        pstmt.setObject(++i,linguisticVariable.getIsactive());
-        pstmt.setObject(++i, linguisticVariable.getId());
-        pstmt.executeUpdate();
-      }
-  }
 
-
-  private void deleteVariable(LinguisticVariable delVariable) throws SQLException {
-    String query = "delete from cvdata.bmstu.linguisticvariables WHERE id = ?";
-    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
-      pstmt.setInt(1,delVariable.getId());
-      pstmt.executeUpdate();
-    }
-
-
-  }
 
 
   private void fillData(){
-    variableList.clear();
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement("select id, name, type, VALUE, isactive from cvdata.bmstu.linguisticvariables order by id")) {
-      ResultSet rs = statement.executeQuery();
-      while (rs.next()){
-        LinguisticVariable linguisticVariable = new LinguisticVariable(rs.getInt("id"), rs.getString("name"),
-            rs.getString("value"), rs.getString("type"),rs.getBoolean("isactive"));
-        variableList.add(linguisticVariable);
-      }
-      tableViewVariables.setItems(variableList.getVariablesList());
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    variableList = FXCollections.observableArrayList(DaoUtils.getVariables());
+    tableViewVariables.setItems(variableList);
   }
 
 }

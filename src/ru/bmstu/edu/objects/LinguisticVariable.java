@@ -14,7 +14,7 @@ public class LinguisticVariable {
   private SimpleStringProperty type = new SimpleStringProperty("");
   private Boolean isactive;
   private Variable variable;
-
+  private ArrayList<MembershipFunction> mfList = new ArrayList<>();
 
   /////////////////
 
@@ -39,7 +39,7 @@ public class LinguisticVariable {
     this.type.set(type);
   }
 
-  private ArrayList<MembershipFunction> mfList = new ArrayList<>();
+
 
   public ArrayList<MembershipFunction> getMfList() {
     return mfList;

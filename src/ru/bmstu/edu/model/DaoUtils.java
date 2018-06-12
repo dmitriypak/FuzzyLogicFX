@@ -1,4 +1,4 @@
-package ru.bmstu.edu.objects.utils;
+package ru.bmstu.edu.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.TextField;
@@ -21,6 +21,64 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DaoUtils {
+
+  public static void updateVariable(LinguisticVariable linguisticVariable) throws SQLException {
+    String query = "UPDATE cvdata.bmstu.linguisticvariables set isactive = ? where id = ?";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      int i = 0;
+      pstmt.setObject(++i,linguisticVariable.getIsactive());
+      pstmt.setObject(++i, linguisticVariable.getId());
+      pstmt.executeUpdate();
+    }
+  }
+
+
+  public static void deleteVariable(LinguisticVariable delVariable) throws SQLException {
+    String query = "delete from cvdata.bmstu.linguisticvariables WHERE id = ?";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      pstmt.setInt(1,delVariable.getId());
+      pstmt.executeUpdate();
+    }
+  }
+
+
+  public static void insertLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
+    String query = "INSERT INTO cvdata.bmstu.linguisticvariables "
+        + " (name, value, description, type) "
+        + " VALUES (?, ?, ?, ?);";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      int i = 0;
+      pstmt.setString(++i,linguisticVariable.getName());
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(linguisticVariable.getValue());
+      pstmt.setObject(++i, jsonObject);
+      pstmt.setString(++i,"");
+      pstmt.setString(++i,linguisticVariable.getType());
+      pstmt.executeUpdate();
+    }
+  }
+
+  public static void updateLinguisticVariable(LinguisticVariable linguisticVariable) throws SQLException {
+    String query = "update cvdata.bmstu.linguisticvariables "
+        + " set name = ?, value = ?, description = ?, type = ? WHERE id = ?";
+    try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
+      int i = 0;
+      pstmt.setString(++i,linguisticVariable.getName());
+
+      PGobject jsonObject = new PGobject();
+      jsonObject.setType("json");
+      jsonObject.setValue(linguisticVariable.getValue());
+      pstmt.setObject(++i, jsonObject);
+      pstmt.setString(++i,"");
+      pstmt.setString(++i,linguisticVariable.getType());
+      pstmt.setInt(++i,linguisticVariable.getId());
+
+      pstmt.executeUpdate();
+    }
+  }
+
+
 
   public static ArrayList getMFList(String value){
     ArrayList list = new ArrayList();
@@ -304,7 +362,7 @@ public class DaoUtils {
     ArrayList<Rule> listRules = new ArrayList<>();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
-        ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
+        ("select id, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true'")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         Map<String,Condition> ifMap = new LinkedHashMap<>();
