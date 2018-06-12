@@ -197,7 +197,7 @@ public class DaoUtils {
     Map<Integer,Rule> mapRules = new LinkedHashMap<>();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
     try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement
-        ("select id, idvariable, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true' ORDER by id")) {
+        ("select id, VALUE, isactive from cvdata.bmstu.rules WHERE isactive = 'true' ORDER by id")) {
       ResultSet rs = statement.executeQuery();
       while (rs.next()){
         Map<String,Condition> ifMap = new LinkedHashMap<>();
@@ -496,6 +496,8 @@ public class DaoUtils {
     return listCategories;
   }
 
+
+  //Список резюме
   public static ArrayList<Vacancy> getVacanciesList(int idProject) throws ParseException {
     ArrayList<Vacancy> listVacancies = new ArrayList<>();
     org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
@@ -522,6 +524,95 @@ public class DaoUtils {
     return listVacancies;
   }
 
+  public static ArrayList<CV> getCVList(String positionName) throws SQLException {
+
+    ArrayList<CV> list = new ArrayList<>();
+    StringBuilder query = new StringBuilder("SELECT q.graduateyear,id, positionname, salary, experience,busytype,idowner FROM cvdata.bmstu.cv c,\n" +
+        "LATERAL (select max(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q  ");
+    StringBuilder where = new StringBuilder("");
+
+    if (where.toString().isEmpty()) {
+      where.append(" where ");
+    }
+    where.append(" positionname ilike '%" + positionName + "%'");
+    where.append(" and locality = '7700000000000'");
+
+    if (!where.toString().isEmpty()) {
+      query.append(where.toString());
+    }
+
+    query.append("order by id;");
+    System.out.println(query.toString());
+    try (PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement(query.toString())) {
+      ResultSet rs = statement.executeQuery();
+      while (rs.next()) {
+        CV cv = new CV();
+        cv.setId(rs.getInt("id"));
+        int graduateYear = rs.getInt("graduateyear");
+        cv.setAge(2018 - graduateYear + 18 + rs.getInt("experience"));
+        String position = rs.getString("positionname");
+        cv.setPositionname(position);
+        if (position.toLowerCase().indexOf("директор") > 0) {
+          cv.setPosition(0.9);
+        } else {
+          if (position.toLowerCase().indexOf("начальник") > 0) {
+            cv.setPosition(0.8);
+          } else {
+            if (position.toLowerCase().indexOf("руководитель") > 0) {
+              cv.setPosition(0.7);
+            } else {
+              cv.setPosition(0.5);
+            }
+          }
+        }
+
+        cv.setSalary(rs.getInt("salary"));
+        cv.setExperience(rs.getInt("experience"));
+        String idOwner = rs.getString("idowner");
+        String busyType = rs.getString("busytype");
+        switch (busyType) {
+          case "Частичная занятость":
+            cv.setBusytype(0.15);
+            break;
+          case "Временная":
+            cv.setBusytype(0.25);
+            break;
+          case "Полная занятость":
+            cv.setBusytype(0.7);
+            break;
+          case "Сезонная":
+          case "Стажировка":
+          case "Удаленная":
+            cv.setBusytype(0.1);
+        }
+        if (graduateYear > 0) {
+          String eduQueryH = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
+              "(legalname ILIKE ('%университет%') or legalname ILIKE ('%институт%') or legalname ILIKE ('%академия%')) and idowner = '" + idOwner + "' limit 1;";
+
+          try (PreparedStatement stmt2 = PostgreSQLConnection.getConnection().prepareStatement(eduQueryH.toString())) {
+            ResultSet rs2 = stmt2.executeQuery();
+            if (rs2.next()) {
+              cv.setEducation(0.85);
+            } else {
+              String eduQueryM = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
+                  "(legalname ILIKE ('%техникум%') or legalname ILIKE ('%колледж%') or legalname ILIKE ('%сред%проф%')) and idowner = '" + idOwner + "' limit 1;";
+              try (PreparedStatement stmt3 = PostgreSQLConnection.getConnection().prepareStatement(eduQueryH.toString())) {
+                ResultSet rs3 = stmt3.executeQuery();
+                if (rs3.next()) {
+                  cv.setEducation(0.5);
+                } else {
+                  cv.setEducation(0.175);
+                }
+              }
+            }
+          }
+        }
+        list.add(cv);
+      }
+
+    }
+    return list;
+  }
 
 }
 

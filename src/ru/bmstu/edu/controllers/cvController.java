@@ -31,7 +31,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.json.simple.parser.ParseException;
-import ru.bmstu.edu.DAO.PostgreSQLConnection;
 import ru.bmstu.edu.objects.*;
 import ru.bmstu.edu.objects.enums.MFname;
 import ru.bmstu.edu.objects.enums.Variable;
@@ -40,8 +39,6 @@ import ru.bmstu.edu.objects.fuzzy.Sugeno;
 import ru.bmstu.edu.objects.utils.DaoUtils;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -49,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ru.bmstu.edu.objects.utils.DaoUtils.getCVList;
 
 
 public class cvController {
@@ -1726,98 +1725,10 @@ private StackPane getTotalOutputAreaChartSugeno(){
   }
 
   private void fillData() throws SQLException {
-    CVList.clear();
-    StringBuilder query = new StringBuilder("SELECT q.graduateyear,id, positionname, salary, experience,busytype,idowner FROM cvdata.bmstu.cv c,\n" +
-        "LATERAL (select max(e.graduateyear) as graduateyear from cvdata.bmstu.education e where e.idowner = c.idowner and e.type = 'Education') q  ");
-    StringBuilder where = new StringBuilder("");
     if(txtPositionName.getText().isEmpty()) return;
-    if(where.toString().isEmpty()){
-      where.append(" where ");
-    }
-    where.append(" positionname ilike '%"+ txtPositionName.getText()+"%'");
-    where.append(" and locality = '7700000000000'");
-
-    if(!where.toString().isEmpty()){
-      query.append(where.toString());
-    }
-
-    query.append("order by id;");
-    System.out.println(query.toString());
-    int count = 0;
-    try(PreparedStatement statement = PostgreSQLConnection.getConnection().prepareStatement(query.toString())) {
-      ResultSet rs = statement.executeQuery();
-      while (rs.next()){
-        CV cv = new CV();
-        cv.setId(rs.getInt("id"));
-        int graduateYear = rs.getInt("graduateyear");
-        cv.setAge(2018-graduateYear+18+rs.getInt("experience"));
-        String positionName = rs.getString("positionname");
-        cv.setPositionname(positionName);
-        if(positionName.toLowerCase().indexOf("директор")>0){
-          cv.setPosition(0.9);
-        }else{
-          if(positionName.toLowerCase().indexOf("начальник")>0) {
-            cv.setPosition(0.8);
-          }else{
-            if(positionName.toLowerCase().indexOf("руководитель")>0) {
-              cv.setPosition(0.7);
-            }else{
-              cv.setPosition(0.5);
-            }
-          }
-        }
-
-        cv.setSalary(rs.getInt("salary"));
-        cv.setExperience(rs.getInt("experience"));
-        String idOwner = rs.getString("idowner");
-        String busyType = rs.getString("busytype");
-        switch (busyType){
-          case "Частичная занятость":
-            cv.setBusytype(0.15);
-            break;
-          case "Временная":
-            cv.setBusytype(0.25);
-            break;
-          case "Полная занятость":
-            cv.setBusytype(0.7);
-            break;
-          case "Сезонная":
-          case "Стажировка":
-          case "Удаленная":
-            cv.setBusytype(0.1);
-        }
-        if(graduateYear>0){
-          String eduQueryH = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
-              "(legalname ILIKE ('%университет%') or legalname ILIKE ('%институт%') or legalname ILIKE ('%академия%')) and idowner = '"+idOwner+"' limit 1;";
-
-          try(PreparedStatement stmt2 = PostgreSQLConnection.getConnection().prepareStatement(eduQueryH.toString())) {
-            ResultSet rs2 = stmt2.executeQuery();
-            if(rs2.next()){
-              cv.setEducation(0.85);
-            }else{
-              String eduQueryM = "SELECT 1 as exist FROM cvdata.bmstu.education where " +
-                  "(legalname ILIKE ('%техникум%') or legalname ILIKE ('%колледж%') or legalname ILIKE ('%сред%проф%')) and idowner = '"+idOwner+"' limit 1;";
-              try(PreparedStatement stmt3 = PostgreSQLConnection.getConnection().prepareStatement(eduQueryH.toString())) {
-                ResultSet rs3 = stmt3.executeQuery();
-                if (rs3.next()) {
-                  cv.setEducation(0.5);
-                } else {
-                  cv.setEducation(0.175);
-                }
-              }
-            }
-          }
-        }
-
-
-        CVList.add(cv);
-        count +=1;
-      }
-      tableCV.setItems(CVList);
-      labelCount.setText("Количество строк: " + String.valueOf(count));
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    CVList = FXCollections.observableArrayList(getCVList(txtPositionName.getText()));
+    tableCV.setItems(CVList);
+    labelCount.setText("Количество строк: " + String.valueOf(CVList.size()));
   }
   public void actionButtonPressed(ActionEvent actionEvent) throws SQLException, ParseException {
     Object source = actionEvent.getSource();
