@@ -206,13 +206,12 @@ public class DaoUtils {
   }
 
 
-  public static void insertRule(Rule rule, int idVariable) throws SQLException {
+  public static void insertRule(Rule rule) throws SQLException {
     String query = "INSERT INTO cvdata.bmstu.rules "
-        + " (idvariable, value) "
-        + " VALUES (?, ?);";
+        + " (value) "
+        + " VALUES (?);";
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
       int i = 0;
-      pstmt.setInt(++i,idVariable);
       PGobject jsonObject = new PGobject();
       jsonObject.setType("json");
       jsonObject.setValue(rule.getValue());
@@ -223,12 +222,11 @@ public class DaoUtils {
     }
   }
 
-  public static void updateRule(Rule rule, int idVariable, int idRule) throws SQLException {
+  public static void updateRule(Rule rule, int idRule) throws SQLException {
     String query = "UPDATE cvdata.bmstu.rules "
-        + " SET idvariable = ?, value = ? WHERE id = ?;" ;
+        + " SET value = ? WHERE id = ?;" ;
     try (PreparedStatement pstmt = PostgreSQLConnection.getConnection().prepareStatement(query)) {
         int i = 0;
-        pstmt.setInt(++i,idVariable);
         PGobject jsonObject = new PGobject();
         jsonObject.setType("json");
         jsonObject.setValue(rule.getValue());

@@ -318,9 +318,9 @@ public class EditRuleController {
 
 
     if(rule.getIdRule()==0){
-      DaoUtils.insertRule(rule,idVariableIF);
+      DaoUtils.insertRule(rule);
     }else{
-      DaoUtils.updateRule(rule,idVariableIF,rule.getIdRule());
+      DaoUtils.updateRule(rule,rule.getIdRule());
     }
     System.out.println(obj.toString());
     btnCancel.fire();

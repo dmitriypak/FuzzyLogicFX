@@ -1,8 +1,6 @@
 package ru.bmstu.edu.objects.fuzzy;
 
-import ru.bmstu.edu.objects.Condition;
 import ru.bmstu.edu.objects.MembershipFunction;
-import ru.bmstu.edu.objects.Rule;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,24 +28,18 @@ public class Sugeno {
     return maxValue;
   }
 
-  public static double getCenterOfGravitySingletons(Map<Integer,Rule> mapRules){
+  public static double getCenterOfGravitySingletons(Map<MembershipFunction,Double> mapGraph){
     double result = 0;
     double sumY = 0;
     double sumXY = 0;
-    for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
-
-      Rule outputRule = r.getValue();
-      double y = outputRule.getValueOutput();
+    for(Map.Entry<MembershipFunction,Double> m:mapGraph.entrySet()){
+      double y = m.getValue();
       //Правило активное
       if(y>0){
-        Map<String,Condition> conditionMap = outputRule.getTHENConditionMap();
-        for(Map.Entry<String,Condition> c:conditionMap.entrySet()) {
-          MembershipFunction mf = c.getValue().getMembershipFunction();
-          Double x = mf.getConstantSugeno();
-          sumY += y;
-          sumXY+=x*y;
-        }
-
+         MembershipFunction mf = m.getKey();
+         Double x = mf.getConstantSugeno();
+         sumY += y;
+         sumXY+=x*y;
       }
     }
     //System.out.println("SUM XY " + sumXY + "|" + "SUMY " + sumY);
@@ -58,3 +50,5 @@ public class Sugeno {
 
 
 }
+
+

@@ -174,6 +174,7 @@ public class cvController {
 
   private double getRankSugeno(CV cv) {
     double rank = 0;
+    Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
     if (cv!=null) {
       for(int i = 0;i<listVariables.size();i++){
 
@@ -211,7 +212,7 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stEducation);
                   break;
                 case BUSY_TYPE:
-                  double stBusyType = getStValue(ifMF,cv.getEducation(),linguisticVariable);
+                  double stBusyType = getStValue(ifMF,cv.getBusytype(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stBusyType);
                   break;
                 case SALARY:
@@ -244,7 +245,7 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stEducation);
                   break;
                 case BUSY_TYPE:
-                  double stBusyType = getStValue(andMF,cv.getEducation(),linguisticVariable);
+                  double stBusyType = getStValue(andMF,cv.getBusytype(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stBusyType);
                   break;
                 case WORK_EXPERIENCE:
@@ -263,9 +264,10 @@ public class cvController {
             }
           }
         }
+        if(variable1.equals(Variable.RANK)){
+          mfList = linguisticVariable.getMfList();
+        }
       }
-
-
       //Цикл по правилам
       for(Map.Entry<Integer, Rule> entryRule:mapRules.entrySet()) {
         Rule rule = entryRule.getValue();
@@ -273,7 +275,7 @@ public class cvController {
         double valueCategory = 0;
 
         ArrayList<Double> valueList = new ArrayList<Double>();
-        Pattern pattern = Pattern.compile("_(.*?)_");
+        Pattern pattern = Pattern.compile("_(.*?)_"); //ruleID
         for (Map.Entry<String, Double> entryLabel : mapLabelValues.entrySet()) {
           Matcher matcher = pattern.matcher(entryLabel.getKey());
           if (matcher.find()) {
@@ -285,18 +287,42 @@ public class cvController {
         }
 
         // Расчет степени уверенности
-        valueCategory = Sugeno.getAggregationResult(valueList);
-        //Rule ruleOutput = mapRules.get(ruleID);
+        valueCategory = Mamdani.getAggregationResult(valueList);
         if (rule != null) {
           rule.setValueOutput(valueCategory);
           mapRules.put(ruleID, rule);
         }
-
-        //Вывод COG
-        rank = Math.round(Sugeno.getCenterOfGravitySingletons(mapRules) * 100.0) / 100.0;
-
       }
 
+
+      for(int i = 0;i<mfList.size();i++){
+        mapGraph.put(mfList.get(i),0.0);
+      }
+      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+        Rule outputRule = r.getValue();
+
+        double ruleValueOutput = outputRule.getValueOutput();
+        if(ruleValueOutput>0){
+          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+            Condition condition = entry.getValue();
+            MembershipFunction mfOut = condition.getMembershipFunction();
+            //Проверка на большее значение
+            for(int i = 0;i<mfList.size();i++){
+              MembershipFunction m = mfList.get(i);
+              if(mfOut.getCodeMF().equals(m.getCodeMF())){
+                Double val = mapGraph.get(m);
+                if(val<ruleValueOutput){
+                  mapGraph.put(m,ruleValueOutput);
+                }
+              }
+            }
+          }
+        }
+      }
+      //Вывод COG
+      rank = Math.round(Sugeno.getCenterOfGravitySingletons(mapGraph) * 100.0) / 100.0;
     }
     return rank;
   }
@@ -305,6 +331,7 @@ public class cvController {
 
   private double getRankMamdani(CV cv) {
     double rank = 0;
+    Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
     if (cv!=null) {
       for(int i = 0;i<listVariables.size();i++){
 
@@ -337,7 +364,7 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stEducation);
                   break;
                 case BUSY_TYPE:
-                  double stBusyType = getStValue(ifMF,cv.getEducation(),linguisticVariable);
+                  double stBusyType = getStValue(ifMF,cv.getBusytype(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stBusyType);
                   break;
 
@@ -375,7 +402,7 @@ public class cvController {
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stEducation);
                   break;
                 case BUSY_TYPE:
-                  double stBusyType = getStValue(andMF,cv.getEducation(),linguisticVariable);
+                  double stBusyType = getStValue(andMF,cv.getBusytype(),linguisticVariable);
                   mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stBusyType);
                   break;
                 case WORK_EXPERIENCE:
@@ -394,6 +421,10 @@ public class cvController {
             }
           }
         }
+        if(variable1.equals(Variable.RANK)){
+          mfList = linguisticVariable.getMfList();
+        }
+
       }
 
 
@@ -404,7 +435,7 @@ public class cvController {
         double valueCategory = 0;
 
         ArrayList<Double> valueList = new ArrayList<Double>();
-        Pattern pattern = Pattern.compile("_(.*?)_");
+        Pattern pattern = Pattern.compile("_(.*?)_"); //ruleID
         for (Map.Entry<String, Double> entryLabel : mapLabelValues.entrySet()) {
           Matcher matcher = pattern.matcher(entryLabel.getKey());
           if (matcher.find()) {
@@ -417,17 +448,41 @@ public class cvController {
 
         // Расчет степени уверенности
         valueCategory = Mamdani.getAggregationResult(valueList);
-        //Rule ruleOutput = mapRules.get(ruleID);
         if (rule != null) {
           rule.setValueOutput(valueCategory);
           mapRules.put(ruleID, rule);
         }
-
-        //Вывод COG
-        //rank = Math.round(Mamdani.getCenterOfGravity(mapRules) * 100.0) / 100.0;
-
       }
 
+
+      for(int i = 0;i<mfList.size();i++){
+        mapGraph.put(mfList.get(i),0.0);
+      }
+      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+        Rule outputRule = r.getValue();
+
+        double ruleValueOutput = outputRule.getValueOutput();
+        if(ruleValueOutput>0){
+          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+            Condition condition = entry.getValue();
+            MembershipFunction mfOut = condition.getMembershipFunction();
+            //Проверка на большее значение
+            for(int i = 0;i<mfList.size();i++){
+              MembershipFunction m = mfList.get(i);
+              if(mfOut.getCodeMF().equals(m.getCodeMF())){
+                Double val = mapGraph.get(m);
+                if(val<ruleValueOutput){
+                  mapGraph.put(m,ruleValueOutput);
+                }
+              }
+            }
+          }
+        }
+      }
+      //Вывод COG
+      rank = Math.round(Mamdani.getCenterOfGravity(mapGraph) * 100.0) / 100.0;
     }
     return rank;
   }
@@ -706,17 +761,6 @@ public class cvController {
         }
 
 
-        //Вывод COG
-        accumulationResult = Math.round(Sugeno.getCenterOfGravitySingletons(mapRules)*100.0)/100.0;
-        TextField textField = (TextField) scene.lookup(textFieldName);
-
-        if(textField!=null){
-          String categoryName = getCategoryName(accumulationResult);
-
-          textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
-
-        }
-
       }
     }));
     timeline.setCycleCount(1);
@@ -888,20 +932,9 @@ public class cvController {
 private StackPane getTotalOutputAreaChartSugeno(){
   StackPane stack = new StackPane();
 
-  Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
-  for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
-    LinguisticVariable variable =  mapOutputVariables.get(entry.getKey());
-    Variable var= Variable.getVariableByName(variable.getName());
-    switch (var) {
-      case RANK:
-        mfList = variable.getMfList();
-        break;
-    }
-  }
-
-  for(int i = 0;i<mfList.size();i++){
-    mapGraph.put(mfList.get(i),0.0);
-  }
+//  for(int i = 0;i<mfList.size();i++){
+//    mapGraph.put(mfList.get(i),0.0);
+//  }
 
 
   final NumberAxis xAxis = new NumberAxis(0,1,0) ;
@@ -940,10 +973,23 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
 
   //Map<String,Double>
-  Timeline timeline = new Timeline();
+  //Timeline timeline = new Timeline();
   timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
     @Override
     public void handle(ActionEvent actionEvent) {
+      Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
+      LinguisticVariable variable = null;
+      for(Map.Entry<String, LinguisticVariable> entry:mapOutputVariables.entrySet()){
+        variable =  mapOutputVariables.get(entry.getKey());
+        Variable var= Variable.getVariableByName(variable.getName());
+        switch (var) {
+          case RANK:
+            mfList = variable.getMfList();
+            break;
+        }
+      }
+
+
 
       seriesOutput4.getData().clear();
       seriesOutput5.getData().clear();
@@ -1032,6 +1078,19 @@ private StackPane getTotalOutputAreaChartSugeno(){
         }
 
       }
+
+      //Вывод COG
+      String textFieldName =  "#textField"+variable.getId();
+      accumulationResult = Math.round(Sugeno.getCenterOfGravitySingletons(mapGraph)*100.0)/100.0;
+      TextField textField = (TextField) scene.lookup(textFieldName);
+
+      if(textField!=null){
+        String categoryName = getCategoryName(accumulationResult);
+
+        textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
+
+      }
+
 
     }
   }));
