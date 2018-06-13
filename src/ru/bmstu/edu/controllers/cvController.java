@@ -165,8 +165,17 @@ public class cvController {
   //Степень уверенности
   private double getStValue(MembershipFunction mf, double param, LinguisticVariable variable) {
     double stValue = 0;
+    String value[] = mf.getParamValueMF().split(" ");
     if(param>0) {
-      stValue = Math.round(MFType.getTriangleMF(variable.getMfList(), param, mf.getCodeMF()) * 100.0) / 100.0;
+      switch (value.length){
+        case 3:
+          stValue = Math.round(MFType.getTriangleMF(variable.getMfList(), param, mf.getCodeMF()) * 100.0) / 100.0;
+          break;
+        case 4:
+          stValue =  Math.round(MFType.getTrapMF(variable.getMfList(),param,mf.getCodeMF()) * 100.0) / 100.0;
+          break;
+      }
+
     }
     return stValue;
   }
@@ -330,6 +339,7 @@ public class cvController {
 
 
   private double getRankMamdani(CV cv) {
+    Map<String,Double> mapLabelValue = new LinkedHashMap<>();
     double rank = 0;
     Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
     if (cv!=null) {
@@ -351,34 +361,37 @@ public class cvController {
             LinguisticVariable ifVariable =  mapInputVariables.get(entry.getKey());
             Condition ifCondition = entry.getValue();
             MembershipFunction ifMF = ifCondition.getMembershipFunction();
+
             Variable variable2 = Variable.getVariableByName(ifVariable.getName());
 
             if(variable1.equals(variable2)){
               switch (variable2) {
                 case AGE:
-                  double stAge = getStValue(ifMF,cv.getAge(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stAge);
+                  double stAge = 0;
+                  stAge = getStValue(ifMF,cv.getAge(),linguisticVariable);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stAge);
                   break;
                 case EDUCATION:
                   double stEducation = getStValue(ifMF,cv.getEducation(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stEducation);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stEducation);
                   break;
                 case BUSY_TYPE:
                   double stBusyType = getStValue(ifMF,cv.getBusytype(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stBusyType);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stBusyType);
                   break;
 
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(ifMF,cv.getExperience(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stWorkExperience);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stWorkExperience);
                   break;
                 case SALARY:
                   double stSalary = getStValue(ifMF,cv.getSalary(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
                   double stPosition = getStValue(ifMF,cv.getPosition(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stPosition);
+                  //System.out.println("stPosition" + stPosition);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+ifMF.getCodeMF(),stPosition);
                   break;
               }
             }
@@ -395,27 +408,27 @@ public class cvController {
               switch (variable3) {
                 case AGE:
                   double stAge = getStValue(andMF,cv.getAge(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stAge);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stAge);
                   break;
                 case EDUCATION:
                   double stEducation = getStValue(andMF,cv.getEducation(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stEducation);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stEducation);
                   break;
                 case BUSY_TYPE:
                   double stBusyType = getStValue(andMF,cv.getBusytype(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stBusyType);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stBusyType);
                   break;
                 case WORK_EXPERIENCE:
                   double stWorkExperience = getStValue(andMF,cv.getExperience(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stWorkExperience);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stWorkExperience);
                   break;
                 case SALARY:
                   double stSalary = getStValue(andMF,cv.getSalary(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stSalary);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stSalary);
                   break;
                 case POSITION:
                   double stPosition = getStValue(andMF,cv.getPosition(),linguisticVariable);
-                  mapLabelValues.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stPosition);
+                  mapLabelValue.put("label"+variableID + "_"+ruleID+"_"+andMF.getCodeMF(),stPosition);
                   break;
               }
             }
@@ -436,7 +449,7 @@ public class cvController {
 
         ArrayList<Double> valueList = new ArrayList<Double>();
         Pattern pattern = Pattern.compile("_(.*?)_"); //ruleID
-        for (Map.Entry<String, Double> entryLabel : mapLabelValues.entrySet()) {
+        for (Map.Entry<String, Double> entryLabel : mapLabelValue.entrySet()) {
           Matcher matcher = pattern.matcher(entryLabel.getKey());
           if (matcher.find()) {
             int id = Integer.valueOf(matcher.group(1));
@@ -450,6 +463,7 @@ public class cvController {
         valueCategory = Mamdani.getAggregationResult(valueList);
         if (rule != null) {
           rule.setValueOutput(valueCategory);
+          System.out.println("valueCategory" + valueCategory);
           mapRules.put(ruleID, rule);
         }
       }
