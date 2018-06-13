@@ -605,7 +605,7 @@ public class DaoUtils {
         CV cv = new CV();
         cv.setId(rs.getInt("id"));
         int graduateYear = rs.getInt("graduateyear");
-        cv.setAge(2018 - graduateYear + 15 + rs.getInt("experience"));
+        cv.setAge(2018 - graduateYear + 18 + rs.getInt("experience"));
         String position = rs.getString("positionname");
         cv.setPositionname(position);
         if (position.toLowerCase().indexOf("директор") > 0) {

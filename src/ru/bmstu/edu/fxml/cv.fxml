@@ -27,9 +27,9 @@
       <ToolBar layoutX="10.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0" stylesheets="@../resources/css/style.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <Button fx:id="btnViewRules" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
-            <Button fx:id="btnViewCV" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" />
             <Button fx:id="btnMamdaniResult" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="32.0" prefWidth="32.0" stylesheets="@../resources/css/style.css" />
             <Button fx:id="btnSugenoResult" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" />
+            <Button fx:id="btnViewCV" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" onAction="#actionButtonPressed" stylesheets="@../resources/css/style.css" visible="false" />
             <CustomTextField fx:id="txtPositionName" prefHeight="25.0" prefWidth="315.0" text="разработчик" />
             <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#actionButtonPressed" text="Поиск" />
         </items>
