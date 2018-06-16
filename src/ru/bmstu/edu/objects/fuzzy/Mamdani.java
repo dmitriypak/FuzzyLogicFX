@@ -108,16 +108,16 @@ public class Mamdani {
   private static double getIntegralDY(double a, double b, double x){
     double result = 0;
     result = (b*x-a*x);
-    System.out.println("b " + b + " | "+ "x " + x + " | "+ "a " + a);
-    System.out.println("result " + result);
+    //System.out.println("b " + b + " | "+ "x " + x + " | "+ "a " + a);
+    //System.out.println("result " + result);
     return result;
   }
 
   private static double getIntegralYDY(double a, double b, double x){
     double result = 0;
     result = (b*b/2)*x-(a*a/2)*x;
-    System.out.println("b " + b + " | "+ "x " + x + " | "+ "a " + a);
-    System.out.println("result2 " + result);
+    //System.out.println("b " + b + " | "+ "x " + x + " | "+ "a " + a);
+    //System.out.println("result2 " + result);
     return result;
   }
 

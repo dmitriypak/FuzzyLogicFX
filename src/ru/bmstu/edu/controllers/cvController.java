@@ -310,27 +310,8 @@ public class cvController {
           mapRules.put(ruleID, rule);
         }
       }
-
-
-      for(int i = 0;i<mfList.size();i++){
-        mapGraph.put(mfList.get(i),0.0);
-      }
-      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
-        Rule outputRule = r.getValue();
-
-        double ruleValueOutput = outputRule.getValueOutput();
-        if(ruleValueOutput>0){
-          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
-
-          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()) {
-            Condition condition = entry.getValue();
-            MembershipFunction mfOut = condition.getMembershipFunction();
-            mapGraph.put(mfOut, ruleValueOutput);
-          }
-        }
-      }
       //Вывод COG
-      rank = Math.round(Sugeno.getCenterOfGravitySingletons(mapGraph) * 100.0) / 100.0;
+      rank = Math.round(Sugeno.getCenterOfGravitySingletons(mapRules) * 100.0) / 100.0;
     }
     return rank;
   }
@@ -945,11 +926,6 @@ public class cvController {
 private StackPane getTotalOutputAreaChartSugeno(){
   StackPane stack = new StackPane();
 
-//  for(int i = 0;i<mfList.size();i++){
-//    mapGraph.put(mfList.get(i),0.0);
-//  }
-
-
   final NumberAxis xAxis = new NumberAxis(0,1,0) ;
   final NumberAxis yAxis = new NumberAxis(0,1,0) ;
 
@@ -1002,16 +978,12 @@ private StackPane getTotalOutputAreaChartSugeno(){
         }
       }
 
-
-
       seriesOutput4.getData().clear();
       seriesOutput5.getData().clear();
       seriesOutput6.getData().clear();
       seriesOutput7.getData().clear();
       seriesOutput8.getData().clear();
       seriesOutput9.getData().clear();
-
-
 
       for (XYChart.Data<Number, Number> data : seriesOutput2.getData()) {
         data.setXValue(0.1);
@@ -1021,32 +993,22 @@ private StackPane getTotalOutputAreaChartSugeno(){
       }
 
 
-      for(int i = 0;i<mfList.size();i++){
-        mapGraph.put(mfList.get(i),0.0);
-      }
-      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
-        Rule outputRule = r.getValue();
-
-        double ruleValueOutput = outputRule.getValueOutput();
-        if(ruleValueOutput>0){
-          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
-
-          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
-            Condition condition = entry.getValue();
-            MembershipFunction mfOut = condition.getMembershipFunction();
-            //Проверка на большее значение
-            for(int i = 0;i<mfList.size();i++){
-              MembershipFunction m = mfList.get(i);
-              if(mfOut.getCodeMF().equals(m.getCodeMF())){
-                Double val = mapGraph.get(m);
-                if(val<ruleValueOutput){
-                  mapGraph.put(m,ruleValueOutput);
-                }
-              }
-            }
-          }
-        }
-      }
+//      for(int i = 0;i<mfList.size();i++){
+//        mapGraph.put(mfList.get(i),0.0);
+//      }
+//      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+//        Rule outputRule = r.getValue();
+//
+//        double ruleValueOutput = outputRule.getValueOutput();
+//        if(ruleValueOutput>0){
+//          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+//          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+//            Condition condition = entry.getValue();
+//            MembershipFunction mfOut = condition.getMembershipFunction();
+//            mapGraph.put(mfOut,ruleValueOutput);
+//          }
+//        }
+//      }
 
       for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
         double constant = m.getKey().getConstantSugeno();
@@ -1094,14 +1056,12 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
       //Вывод COG
       String textFieldName =  "#textField"+variable.getId();
-      accumulationResult = Math.round(Sugeno.getCenterOfGravitySingletons(mapGraph)*100.0)/100.0;
+      accumulationResult = Math.round(Sugeno.getCenterOfGravitySingletons(mapRules)*100.0)/100.0;
       TextField textField = (TextField) scene.lookup(textFieldName);
 
       if(textField!=null){
         String categoryName = getCategoryName(accumulationResult);
-
         textField.setText(String.valueOf(categoryName + " ("+accumulationResult+")"));
-
       }
 
 
@@ -1817,6 +1777,8 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
     switch (clickedButton.getId()) {
       case "btnSearch":
+        timeChartS.getData().clear();
+        timeChartM.getData().clear();
         fillData();
         break;
 
