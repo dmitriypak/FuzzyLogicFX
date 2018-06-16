@@ -79,6 +79,14 @@ public class cvController {
   private LineChart timeChartM;
   @FXML
   private LineChart timeChartS;
+  @FXML
+  private Label totalTimeMamdani;
+  @FXML
+  private Label totalTimeSugeno;
+  @FXML
+  private Label avgTimeMamdani;
+  @FXML
+  private Label avgTimeSugeno;
   private Stage cvStage;
   private Node nodesource;
 
@@ -296,7 +304,7 @@ public class cvController {
         }
 
         // Расчет степени уверенности
-        valueCategory = Mamdani.getAggregationResult(valueList);
+        valueCategory = Sugeno.getAggregationResult(valueList);
         if (rule != null) {
           rule.setValueOutput(valueCategory);
           mapRules.put(ruleID, rule);
@@ -314,19 +322,10 @@ public class cvController {
         if(ruleValueOutput>0){
           Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
 
-          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()) {
             Condition condition = entry.getValue();
             MembershipFunction mfOut = condition.getMembershipFunction();
-            //Проверка на большее значение
-            for(int i = 0;i<mfList.size();i++){
-              MembershipFunction m = mfList.get(i);
-              if(mfOut.getCodeMF().equals(m.getCodeMF())){
-                Double val = mapGraph.get(m);
-                if(val<ruleValueOutput){
-                  mapGraph.put(m,ruleValueOutput);
-                }
-              }
-            }
+            mapGraph.put(mfOut, ruleValueOutput);
           }
         }
       }
@@ -463,7 +462,7 @@ public class cvController {
         valueCategory = Mamdani.getAggregationResult(valueList);
         if (rule != null) {
           rule.setValueOutput(valueCategory);
-          System.out.println("valueCategory" + valueCategory);
+          //System.out.println("valueCategory" + valueCategory);
           mapRules.put(ruleID, rule);
         }
       }
@@ -1850,10 +1849,12 @@ private StackPane getTotalOutputAreaChartSugeno(){
           seriesS.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startS));
         }
 
-        long finishS = System.currentTimeMillis();
-        long timeConsumedMillisS = finishS - startS;
+        Long finishS = System.currentTimeMillis();
+        Long timeConsumedMillisS = finishS - startS;
         tableCV.setItems(CVList);
         System.out.println("Время выполнения " + timeConsumedMillisS);
+        totalTimeSugeno.setText("Общее время выполнения по методу Сугено: " + timeConsumedMillisS.toString());
+        avgTimeSugeno.setText("Среднее время получения результата на 1 запись: " + String.valueOf(timeConsumedMillisS/CVList.size()));
         timeChartS.getData().add(seriesS);
         timeChartS.setLegendVisible(false);
         break;
@@ -1870,10 +1871,12 @@ private StackPane getTotalOutputAreaChartSugeno(){
           seriesM.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startM));
         }
 
-        long finishM = System.currentTimeMillis();
-        long timeConsumedMillisM = finishM - startM;
+        Long finishM = System.currentTimeMillis();
+        Long timeConsumedMillisM = finishM - startM;
         tableCV.setItems(CVList);
         System.out.println("Время выполнения " + timeConsumedMillisM);
+        totalTimeMamdani.setText("Общее время выполнения по методу Мамдани: " + timeConsumedMillisM.toString());
+        avgTimeMamdani.setText("Среднее время получения результата на 1 запись: "+String.valueOf(timeConsumedMillisM/CVList.size()));
         timeChartM.getData().add(seriesM);
         timeChartM.setLegendVisible(false);
         break;

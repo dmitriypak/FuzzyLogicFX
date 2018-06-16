@@ -36,7 +36,7 @@
       </ToolBar>
       <ComboBox fx:id="comboTypeOutput" layoutX="156.0" layoutY="50.0" prefHeight="25.0" prefWidth="272.0" />
       <Label layoutX="14.0" layoutY="54.0" stylesheets="@../resources/css/style.css" text="Алгоритм вывода:" />
-      <Label fx:id="labelCount" layoutX="14.0" layoutY="87.0" stylesheets="@../resources/css/style.css" text="Количество строк: 0" />
+      <Label fx:id="labelCount" layoutX="452.0" layoutY="55.0" stylesheets="@../resources/css/style.css" text="Количество строк: 0" />
       <LineChart fx:id="timeChartM" layoutX="14.0" layoutY="116.0" prefHeight="195.0" prefWidth="525.0">
         <xAxis>
           <NumberAxis side="BOTTOM" />
@@ -45,7 +45,7 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </LineChart>
-      <LineChart fx:id="timeChartS" layoutX="535.0" layoutY="103.0" prefHeight="195.0" prefWidth="525.0" AnchorPane.rightAnchor="10.0">
+      <LineChart fx:id="timeChartS" layoutX="545.0" layoutY="116.0" prefHeight="195.0" prefWidth="525.0" AnchorPane.rightAnchor="10.0">
          <xAxis>
             <NumberAxis side="BOTTOM" />
          </xAxis>
@@ -53,5 +53,9 @@
             <NumberAxis side="LEFT" />
          </yAxis>
       </LineChart>
+      <Label fx:id="totalTimeMamdani" layoutX="61.0" layoutY="82.0" prefHeight="17.0" prefWidth="384.0" stylesheets="@../resources/css/style.css" text="Общее время выполнения по методу Мамдани: 0" />
+      <Label fx:id="totalTimeSugeno" layoutX="596.0" layoutY="84.0" prefHeight="17.0" prefWidth="384.0" stylesheets="@../resources/css/style.css" text="Общее время выполнения по методу Сугено: 0" />
+      <Label fx:id="avgTimeMamdani" layoutX="61.0" layoutY="104.0" prefHeight="17.0" prefWidth="384.0" stylesheets="@../resources/css/style.css" text="Среднее время получения результата на 1 запись: 0" />
+      <Label fx:id="avgTimeSugeno" layoutX="595.0" layoutY="106.0" prefHeight="17.0" prefWidth="384.0" stylesheets="@../resources/css/style.css" text="Среднее время получения результата на 1 запись: 0" />
    </children>
 </AnchorPane>
