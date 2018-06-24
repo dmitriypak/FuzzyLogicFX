@@ -86,6 +86,8 @@ public class RulesController {
         builder.append(DaoUtils.getRuleDescr(mapTHEN," ТОГДА "));
 
         rule.setDescr(builder.toString());
+
+        //System.out.println(i+1+"."+builder.toString());
         builder.setLength(0);
       }
 

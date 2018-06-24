@@ -191,7 +191,6 @@ public class cvController {
 
   private double getRankSugeno(CV cv) {
     double rank = 0;
-    Map <MembershipFunction,Double> mapGraph = new LinkedHashMap<>();
     if (cv!=null) {
       for(int i = 0;i<listVariables.size();i++){
 
@@ -280,9 +279,6 @@ public class cvController {
               }
             }
           }
-        }
-        if(variable1.equals(Variable.RANK)){
-          mfList = linguisticVariable.getMfList();
         }
       }
       //Цикл по правилам
@@ -959,8 +955,6 @@ private StackPane getTotalOutputAreaChartSugeno(){
   XYChart.Series<Number,Number> seriesOutput8 = new XYChart.Series<Number,Number>();
   XYChart.Series<Number,Number> seriesOutput9 = new XYChart.Series<Number,Number>();
 
-
-
   //Map<String,Double>
   //Timeline timeline = new Timeline();
   timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
@@ -993,22 +987,22 @@ private StackPane getTotalOutputAreaChartSugeno(){
       }
 
 
-//      for(int i = 0;i<mfList.size();i++){
-//        mapGraph.put(mfList.get(i),0.0);
-//      }
-//      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
-//        Rule outputRule = r.getValue();
-//
-//        double ruleValueOutput = outputRule.getValueOutput();
-//        if(ruleValueOutput>0){
-//          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
-//          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
-//            Condition condition = entry.getValue();
-//            MembershipFunction mfOut = condition.getMembershipFunction();
-//            mapGraph.put(mfOut,ruleValueOutput);
-//          }
-//        }
-//      }
+      for(int i = 0;i<mfList.size();i++){
+        mapGraph.put(mfList.get(i),0.0);
+      }
+      for(Map.Entry<Integer,Rule> r:mapRules.entrySet()){
+        Rule outputRule = r.getValue();
+
+        double ruleValueOutput = outputRule.getValueOutput();
+        if(ruleValueOutput>0){
+          Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
+          for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()){
+            Condition condition = entry.getValue();
+            MembershipFunction mfOut = condition.getMembershipFunction();
+            mapGraph.put(mfOut,ruleValueOutput);
+          }
+        }
+      }
 
       for(Map.Entry<MembershipFunction,Double> m :mapGraph.entrySet()){
         double constant = m.getKey().getConstantSugeno();
@@ -1112,8 +1106,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
     //Красная линия
     XYChart.Series<Number,Number> seriesOutput3 = new XYChart.Series<Number,Number>();
-    seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,0));
-    seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,1));
+
 
     XYChart.Series<Number,Number> seriesOutput4 = new XYChart.Series<Number,Number>();
     XYChart.Series<Number,Number> seriesOutput5 = new XYChart.Series<Number,Number>();
@@ -1148,9 +1141,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
         seriesOutput7.getData().clear();
         seriesOutput8.getData().clear();
         seriesOutput9.getData().clear();
-        for (XYChart.Data<Number, Number> data : seriesOutput3.getData()) {
-            data.setXValue(accumulationResult);
-        }
+//        for (XYChart.Data<Number, Number> data : seriesOutput3.getData()) {
+//            data.setXValue(accumulationResult);
+//        }
         for (XYChart.Data<Number, Number> data : seriesOutput2.getData()) {
           data.setXValue(0.1);
         }
@@ -1231,6 +1224,8 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
         //Вывод COG
         accumulationResult = Math.round(Mamdani.getCenterOfGravity(mapGraph)*100.0)/100.0;
+        seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,0));
+        seriesOutput3.getData().add(new XYChart.Data<Number,Number>(accumulationResult,1));
 
         String textFieldName =  "#textField"+variable.getId();
         TextField textField = (TextField) scene.lookup(textFieldName);
@@ -1246,6 +1241,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
     timeline.play();
     chart.getData().addAll(seriesOutput1,seriesOutput2,seriesOutput3);
     chart.getData().addAll(seriesOutput4,seriesOutput5,seriesOutput6,seriesOutput7,seriesOutput8,seriesOutput9);
+
     stack.getChildren().addAll(chart);
     return stack;
   }
@@ -1799,6 +1795,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
 
       case "btnSugenoResult":
         timeChartS.setCreateSymbols(false);
+        ArrayList<Long>timeListS = new ArrayList<>();
         long startS = System.currentTimeMillis();
         //seriesS.getData().clear();
 
@@ -1808,7 +1805,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
           double rank = getRankSugeno(cvRank);
           cvRank.setCategoryValueS(rank);
           cvRank.setCategoryNameS(getCategoryName(rank));
-          seriesS.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startS));
+          timeListS.add(System.currentTimeMillis()-startS);
         }
 
         Long finishS = System.currentTimeMillis();
@@ -1817,12 +1814,16 @@ private StackPane getTotalOutputAreaChartSugeno(){
         System.out.println("Время выполнения " + timeConsumedMillisS);
         totalTimeSugeno.setText("Общее время выполнения по методу Сугено: " + timeConsumedMillisS.toString());
         avgTimeSugeno.setText("Среднее время получения результата на 1 запись: " + String.valueOf(timeConsumedMillisS/CVList.size()));
+        for(int i=0;i<timeListS.size();i++){
+          seriesS.getData().add(new XYChart.Data<Number, Number>(i, timeListS.get(i)));
+        }
         timeChartS.getData().add(seriesS);
         timeChartS.setLegendVisible(false);
         break;
 
       case "btnMamdaniResult":
         timeChartM.setCreateSymbols(false);
+        ArrayList<Long>timeListM = new ArrayList<>();
         long startM = System.currentTimeMillis();
 
         for(int i = 0;i<CVList.size();i++){
@@ -1830,6 +1831,7 @@ private StackPane getTotalOutputAreaChartSugeno(){
           double rank = getRankMamdani(cvRank);
           cvRank.setCategoryValueM(rank);
           cvRank.setCategoryNameM(getCategoryName(rank));
+          timeListM.add(System.currentTimeMillis()-startM);
           seriesM.getData().add(new XYChart.Data<Number, Number>(i, System.currentTimeMillis()-startM));
         }
 
@@ -1839,6 +1841,9 @@ private StackPane getTotalOutputAreaChartSugeno(){
         System.out.println("Время выполнения " + timeConsumedMillisM);
         totalTimeMamdani.setText("Общее время выполнения по методу Мамдани: " + timeConsumedMillisM.toString());
         avgTimeMamdani.setText("Среднее время получения результата на 1 запись: "+String.valueOf(timeConsumedMillisM/CVList.size()));
+        for(int i=0;i<timeListM.size();i++){
+          seriesS.getData().add(new XYChart.Data<Number, Number>(i, timeListM.get(i)));
+        }
         timeChartM.getData().add(seriesM);
         timeChartM.setLegendVisible(false);
         break;

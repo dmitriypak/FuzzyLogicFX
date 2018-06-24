@@ -43,7 +43,6 @@ public class Sugeno {
       double y = outputRule.getValueOutput();
       if(y>0){
         Map<String,Condition> mapTHEN = outputRule.getTHENConditionMap();
-
         for(Map.Entry<String, Condition> entry:mapTHEN.entrySet()) {
           Condition condition = entry.getValue();
           MembershipFunction mfOut = condition.getMembershipFunction();
